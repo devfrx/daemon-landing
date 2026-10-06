@@ -1,0 +1,77 @@
+<h2 class="sr-only">Bozza della direzione B, Tavola tecnica: la pagina come un disegno tecnico, col marchio costruito dai suoi cerchi e il sistema a strati che si apre.</h2>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@500;600&family=Geist:wght@300;400;500&display=swap">
+<style>
+.sr-only{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.dmB{background:#F3EEE6;color:#1B1718;border-radius:12px;overflow:hidden;font-family:Geist,system-ui,sans-serif;border:1px solid #DCD2C4}
+.dmB .nav{display:flex;align-items:center;gap:16px;padding:10px 16px;border-bottom:1px solid #DCD2C4;font-size:12px;color:#655B57;background:#FBF8F3}
+.dmB .lab{font:600 11px/16px Barlow,system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#655B57}
+.dmB .pill{border:1px solid #847A73;border-radius:999px;padding:2px 10px;color:#1B1718}
+.dmB svg text{font-family:Geist,system-ui,sans-serif}
+</style>
+<div class="dmB">
+  <div class="nav"><svg width="14" height="14" viewBox="-500 -500 1000 1000" aria-hidden="true"><path d="M460 0A460 460 0 1 0 -460 0A460 460 0 1 0 460 0ZM460 0A284.3 284.3 0 1 0 -108.59 0A284.3 284.3 0 1 0 460 0Z" fill="#1B1718" fill-rule="evenodd"/><circle cx="252.49" cy="-76.79" r="175.7" fill="#7A1F2E"/></svg><span>Cos'è</span><span>Architettura</span><span>Meccanismi</span><span>Stato</span><span style="margin-left:auto">IT · EN</span><span class="pill">GitHub</span></div>
+  <div style="position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;min-height:300px">
+    <svg style="position:absolute;inset:0;width:100%;height:100%" aria-hidden="true"><defs><pattern id="gB" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M24 0H0V24" fill="none" stroke="#E2D9CC" stroke-width="1"/></pattern></defs><rect width="100%" height="100%" fill="url(#gB)"/></svg>
+    <div style="position:relative;padding:0 8px 0 28px;display:flex;flex-direction:column;gap:10px">
+      <span class="lab">Fig. 0 · Il marchio</span>
+      <p style="margin:0;white-space:nowrap;font:500 58px/1 Geist,system-ui,sans-serif;letter-spacing:-0.02em" translate="no"><span class="sr-only">daemon</span><span aria-hidden="true">daem<svg viewBox="0 -547 625 563" style="width:0.625em;height:0.563em;vertical-align:-0.016em;margin-right:-0.02em;overflow:visible"><path d="M594 -265.5A281.5 281.5 0 1 0 31 -265.5A281.5 281.5 0 1 0 594 -265.5ZM594 -265.5A173.98 173.98 0 1 0 246.05 -265.5A173.98 173.98 0 1 0 594 -265.5Z" fill="#1B1718" fill-rule="evenodd"/><circle cx="467.01" cy="-312.49" r="107.52" fill="#7A1F2E"/></svg>n</span></p>
+      <p style="margin:0;font-size:17px;line-height:26px">Un kernel con capacità paritarie.</p>
+      <span style="font:400 12px/16px ui-monospace,Consolas,monospace;color:#655B57">r · r/φ · r/φ² · semi a 137,5°</span>
+    </div>
+    <svg id="conB" viewBox="-620 -560 1240 1120" style="position:relative;display:block;width:100%;height:250px;padding-right:16px;box-sizing:border-box" role="img" aria-label="Il marchio costruito con tre cerchi in rapporto aureo">
+      <path id="cresB" d="M460 0A460 460 0 1 0 -460 0A460 460 0 1 0 460 0ZM460 0A284.3 284.3 0 1 0 -108.59 0A284.3 284.3 0 1 0 460 0Z" fill="#1B1718" fill-rule="evenodd" opacity="0.12"/>
+      <circle id="eyeB" cx="252.49" cy="-76.79" r="175.7" fill="#7A1F2E" opacity="0.15"/>
+      <g id="guideB" fill="none" stroke="#655B57" stroke-width="4"><circle r="460" stroke-dasharray="12 12"/><circle cx="175.7" r="284.3" stroke-dasharray="12 12"/><circle cx="252.5" cy="-76.8" r="175.7" stroke-dasharray="12 12"/><path d="M0 0L-325.3 325.3M175.7 0L175.7 284.3M252.5 -76.8L376.7 -201"/></g>
+      <g id="dotsB" fill="#655B57"><circle r="11"/><circle cx="175.7" r="11"/><circle cx="252.5" cy="-76.8" r="11"/><circle cx="460" r="11"/><circle cx="376.7" cy="-201" r="11"/></g>
+      <g id="tickB" fill="#655B57" style="font:600 40px Barlow,system-ui,sans-serif"><text x="-205" y="150">r</text><text x="194" y="165">r/φ</text><text x="395" y="-215">r/φ²</text></g>
+    </svg>
+  </div>
+</div>
+<div style="display:flex;align-items:center;gap:12px;margin:12px 0 20px">
+  <label for="sB1" style="font-size:13px;color:var(--text-secondary)">Costruzione</label>
+  <input id="sB1" type="range" min="0" max="100" step="1" value="0" style="flex:1">
+  <span style="font-size:13px;color:var(--text-secondary);min-width:70px">Marchio</span>
+</div>
+<div class="dmB">
+  <svg id="stB" viewBox="0 0 680 340" style="display:block;width:100%" role="img" aria-label="I quattro livelli del sistema, da L0 fondamenta a L3 integrazione, che si separano"></svg>
+</div>
+<div style="display:flex;align-items:center;gap:12px;margin:12px 0 0">
+  <label for="sB2" style="font-size:13px;color:var(--text-secondary)">Esplodi</label>
+  <input id="sB2" type="range" min="0" max="100" step="1" value="70" style="flex:1">
+</div>
+<script>
+(() => {
+  const s1 = document.getElementById('sB1');
+  const paint = () => {
+    const k = s1.value / 100;
+    document.getElementById('cresB').setAttribute('opacity', (0.12 + 0.88 * k).toFixed(2));
+    document.getElementById('eyeB').setAttribute('opacity', (0.15 + 0.85 * k).toFixed(2));
+    ['guideB', 'dotsB', 'tickB'].forEach((id) => document.getElementById(id).setAttribute('opacity', (1 - 0.85 * k).toFixed(2)));
+  };
+  s1.addEventListener('input', paint); paint();
+  const L = [
+    { n: 'L3 · integrazione', d: ['GUI · sistema operativo'], a: 'ADR-0027' },
+    { n: 'L2 · capacità', d: ['conversazione e conoscenza · agenti e coding', 'voce e gesti · generazione asset 3D'], a: 'ADR-0001' },
+    { n: 'L1 · arbitri trasversali', d: ['arbitro GPU · gateway di inferenza'], a: 'ADR-0005 · ADR-0011', hi: true },
+    { n: 'L0 · fondamenta', d: ['persistenza · cifratura · backup', 'segreti · confinamento'], a: 'ADR-0022 · ADR-0025' },
+  ];
+  const svg = document.getElementById('stB'), s2 = document.getElementById('sB2'), NS = 'http://www.w3.org/2000/svg';
+  const el = (t, a, txt) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); if (txt) e.textContent = txt; return e; };
+  const draw = () => {
+    const e = s2.value / 100, gap = 28 + 38 * e, cx = 170, hw = 130, hh = 34, y0 = 84;
+    svg.replaceChildren();
+    svg.appendChild(el('text', { x: 24, y: 30, fill: '#655B57', style: 'font:600 11px Barlow,system-ui,sans-serif;letter-spacing:.14em' }, 'FIG. 3 · I QUATTRO LIVELLI'));
+    for (let i = L.length - 1; i >= 0; i--) {
+      const y = y0 + i * gap, l = L[i];
+      svg.appendChild(el('path', { d: `M${cx} ${y - hh}L${cx + hw} ${y}L${cx} ${y + hh}L${cx - hw} ${y}Z`, fill: l.hi ? '#EFE1DD' : '#FBF8F3', stroke: l.hi ? '#7A1F2E' : '#847A73', 'stroke-width': 1.2 }));
+      const ly = 60 + i * 68, ty = ly + 14;
+      svg.appendChild(el('path', { d: `M${cx + hw} ${y}L344 ${ly + 10}H352`, stroke: '#A39A8F', 'stroke-dasharray': '3 3', fill: 'none' }));
+      svg.appendChild(el('circle', { cx: cx + hw, cy: y, r: 3, fill: l.hi ? '#7A1F2E' : '#655B57' }));
+      svg.appendChild(el('text', { x: 360, y: ty, fill: '#1B1718', 'font-size': 13, 'font-weight': 500 }, l.n));
+      l.d.forEach((d, j) => svg.appendChild(el('text', { x: 360, y: ty + 16 + 15 * j, fill: '#655B57', 'font-size': 11 }, d)));
+      svg.appendChild(el('text', { x: 360, y: ty + 16 + 15 * l.d.length, fill: '#7A1F2E', style: 'font:600 11px Barlow,system-ui,sans-serif;letter-spacing:.08em' }, l.a));
+    }
+  };
+  s2.addEventListener('input', draw); draw();
+})();
+</script>

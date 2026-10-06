@@ -1,0 +1,114 @@
+<h2 class="sr-only">Bozza della direzione A, L'occhio: l'intro del marchio guidata dallo scorrimento, poi l'architettura spiegata un passo alla volta.</h2>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@500;600&family=Geist:wght@300;400;500&display=swap">
+<style>
+.sr-only{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.dmA{background:#151112;color:#ECE6DA;border-radius:12px;overflow:hidden;font-family:Geist,system-ui,sans-serif}
+.dmA .nav{display:flex;align-items:center;gap:16px;padding:10px 16px;border-bottom:1px solid #2F2829;font-size:12px;color:#A39A8F}
+.dmA .lab{font:600 11px/16px Barlow,system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#A39A8F}
+.dmA .pill{border:1px solid #7A706A;border-radius:999px;padding:2px 10px;color:#ECE6DA}
+.dmA svg text{font-family:Geist,system-ui,sans-serif}
+</style>
+<div class="dmA">
+  <div class="nav"><svg width="14" height="14" viewBox="-500 -500 1000 1000" aria-hidden="true"><path d="M460 0A460 460 0 1 0 -460 0A460 460 0 1 0 460 0ZM460 0A284.3 284.3 0 1 0 -108.59 0A284.3 284.3 0 1 0 460 0Z" fill="#ECE6DA" fill-rule="evenodd"/><circle cx="252.49" cy="-76.79" r="175.7" fill="#BF5567"/></svg><span>Cos'è</span><span>Architettura</span><span>Meccanismi</span><span>Stato</span><span style="margin-left:auto">IT · EN</span><span class="pill">GitHub</span></div>
+  <canvas id="heroA" style="display:block;width:100%;height:300px" role="img" aria-label="I semi all'angolo aureo diventano un vortice, poi una luna, poi l'occhio, che diventa la o di daemon"></canvas>
+</div>
+<div style="display:flex;align-items:center;gap:12px;margin:12px 0 20px">
+  <label for="scrA" style="font-size:13px;color:var(--text-secondary)">Scorri</label>
+  <input id="scrA" type="range" min="0" max="100" step="1" value="30" style="flex:1">
+  <span id="outA" style="font-size:13px;color:var(--text-secondary);min-width:180px">semi all'angolo aureo</span>
+</div>
+<div class="dmA" style="display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr)">
+  <svg viewBox="0 0 380 262" style="display:block;width:100%" role="img" aria-label="Il core al centro, la GUI sopra, i worker sotto, i server MCP e OpenRouter ai lati; un punto bordeaux viaggia sui canali">
+    <g stroke="#655B57" stroke-width="1.5" fill="none">
+      <path d="M190 60V100"/><path d="M190 152V194"/><path d="M122 152L70 194"/><path d="M264 127H280"/>
+    </g>
+    <g font-size="13" fill="#ECE6DA">
+      <rect x="130" y="18" width="120" height="42" rx="8" fill="#241F20" stroke="#655B57"/>
+      <text x="142" y="36">gui</text><text x="142" y="52" font-size="11" fill="#A39A8F">0..1 · effimera</text>
+      <rect x="96" y="100" width="168" height="52" rx="10" fill="#2F1B1D" stroke="#BF5567"/>
+      <text x="108" y="121">core</text><text x="108" y="139" font-size="11" fill="#E59EA1">1 istanza · stato autorevole</text>
+      <rect x="130" y="194" width="120" height="42" rx="8" fill="#241F20" stroke="#655B57"/>
+      <text x="142" y="212">worker</text><text x="142" y="228" font-size="11" fill="#A39A8F">0..N · senza stato</text>
+      <rect x="10" y="194" width="104" height="42" rx="8" fill="none" stroke="#7A706A" stroke-dasharray="4 3"/>
+      <text x="22" y="212">server MCP</text><text x="22" y="228" font-size="11" fill="#A39A8F">col 4</text>
+      <rect x="280" y="106" width="96" height="42" rx="8" fill="none" stroke="#7A706A" stroke-dasharray="4 3"/>
+      <text x="291" y="124">OpenRouter</text><text x="291" y="140" font-size="11" fill="#A39A8F">col 3</text>
+    </g>
+    <circle r="5" fill="#BF5567"><animateMotion dur="5s" repeatCount="indefinite" path="M190 60V100M190 100V152V194V152V100V60" keyPoints="0;0.5;1" keyTimes="0;0.5;1" calcMode="linear"/></circle>
+    <text x="10" y="254" font-size="11" fill="#A39A8F">tratteggio = contenuto non fidato</text>
+  </svg>
+  <div style="padding:22px 20px 18px 6px;display:flex;flex-direction:column;gap:10px">
+    <span class="lab">Fig. 2 · Topologia dei processi</span>
+    <p style="margin:0;font:500 19px/26px Geist,system-ui,sans-serif">La GUI non parla con nessuno tranne il core.</p>
+    <p style="margin:0;font-size:13px;line-height:20px;color:#A39A8F">È ciò che la rende sacrificabile.</p>
+    <div style="display:flex;gap:6px;margin-top:4px" aria-hidden="true"><span style="width:18px;height:3px;border-radius:2px;background:#BF5567"></span><span style="width:18px;height:3px;border-radius:2px;background:#342D2D"></span><span style="width:18px;height:3px;border-radius:2px;background:#342D2D"></span><span style="width:18px;height:3px;border-radius:2px;background:#342D2D"></span></div>
+    <span style="margin-top:auto;font-size:11px;color:#847A73">fonte · docs/design/01-topologia-dei-processi.md</span>
+  </div>
+</div>
+<script>
+(() => {
+  const cv = document.getElementById('heroA'), sl = document.getElementById('scrA'), out = document.getElementById('outA');
+  const PHI = (1 + Math.sqrt(5)) / 2, GOLD = 2 * Math.PI / (PHI * PHI), N = 420;
+  const INK = '#ECE6DA', ACC = '#BF5567', BG = '#151112';
+  let W = 0, H = 0, dpr = 1, px = null, py = null;
+  const cl = (x) => Math.max(0, Math.min(1, x)), lerp = (a, b, t) => a + (b - a) * t;
+  const ease = (t) => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2, seg = (t, a, b) => cl((t - a) / (b - a));
+  function mark(ctx, cx, cy, r1, eyeK, alpha) {
+    const r2 = r1 / PHI, r3 = r2 / PHI, c2x = cx + r1 - r2;
+    ctx.globalAlpha = alpha;
+    ctx.beginPath(); ctx.arc(cx, cy, r1, 0, 2 * Math.PI); ctx.moveTo(c2x + r2, cy); ctx.arc(c2x, cy, r2, 0, 2 * Math.PI);
+    ctx.fillStyle = INK; ctx.fill('evenodd');
+    if (eyeK > 0) {
+      let g = -Math.PI / 4;
+      if (px !== null) g = Math.atan2(py - cy, px - c2x);
+      const d = r2 - r3;
+      ctx.beginPath(); ctx.arc(c2x + d * Math.cos(g), cy + d * Math.sin(g), r3 * eyeK, 0, 2 * Math.PI);
+      ctx.fillStyle = ACC; ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+  function draw() {
+    const ctx = cv.getContext('2d'), t = sl.value / 100;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.fillStyle = BG; ctx.fillRect(0, 0, W, H);
+    const cx = W / 2, cy = H / 2, R = Math.min(W, H) * 0.46, r1big = R * 0.42;
+    const p1 = seg(t, 0, .3), p2 = seg(t, .3, .6), p3 = ease(seg(t, .6, .8)), p4 = ease(seg(t, .8, .9)), p5 = ease(seg(t, .9, 1));
+    if (p3 < 1) {
+      const shown = Math.max(1, Math.round(N * p1));
+      for (let k = 1; k <= shown; k++) {
+        const s = k / N, a = k * GOLD + p2 * 2.4 * (1.25 - s);
+        let r = R * Math.sqrt(s) * (1 - 0.18 * p2 + 0.04 * Math.sin(k * 0.9 + p2 * 7));
+        r = lerp(r, r1big * (0.7 + 0.35 * ((k % 7) / 7)), p3);
+        ctx.globalAlpha = 0.85 * (1 - p3);
+        ctx.beginPath(); ctx.arc(cx + r * Math.cos(a), cy + r * Math.sin(a), 0.8 + 2.2 * s, 0, 2 * Math.PI);
+        ctx.fillStyle = k % 13 === 5 ? ACC : INK; ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+    }
+    if (p3 > 0) {
+      const F = Math.min(W * 0.12, 72);
+      ctx.font = '500 ' + F + 'px Geist, system-ui, sans-serif';
+      const wD = ctx.measureText('daem').width, wN = ctx.measureText('n').width, oW = 0.625 * F;
+      const x0 = cx - (wD + oW + wN) / 2, base = cy + F * 0.27;
+      const ox = x0 + wD + 0.3125 * F, oy = base - 0.2655 * F, r1o = 0.2815 * F;
+      mark(ctx, lerp(cx, ox, p5), lerp(cy, oy, p5), lerp(r1big, r1o, p5), p4, p3);
+      if (p5 > 0) {
+        ctx.globalAlpha = p5; ctx.fillStyle = INK;
+        ctx.fillText('daem', x0, base); ctx.fillText('n', x0 + wD + oW, base);
+        ctx.font = '600 11px Barlow, system-ui, sans-serif'; ctx.letterSpacing = '4.6px'; ctx.fillStyle = '#A39A8F';
+        const tw = ctx.measureText('AGENTIC OS').width; ctx.fillText('AGENTIC OS', cx - tw / 2 + 2.3, base + 34);
+        ctx.letterSpacing = '0px'; ctx.globalAlpha = 1;
+      }
+    }
+    out.textContent = t <= .3 ? "semi all'angolo aureo" : t <= .6 ? 'un vortice che respira' : t <= .8 ? 'si raccoglie in una luna' : t <= .9 ? "si apre l'occhio" : 'diventa la o del nome';
+  }
+  function size() {
+    const r = cv.getBoundingClientRect(); dpr = Math.min(2, window.devicePixelRatio || 1);
+    W = r.width; H = r.height; cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); draw();
+  }
+  sl.addEventListener('input', draw);
+  cv.addEventListener('pointermove', (e) => { const r = cv.getBoundingClientRect(); px = e.clientX - r.left; py = e.clientY - r.top; draw(); });
+  cv.addEventListener('pointerleave', () => { px = null; draw(); });
+  new ResizeObserver(size).observe(cv);
+  if (document.fonts) document.fonts.load('500 72px Geist').then(draw, draw);
+})();
+</script>

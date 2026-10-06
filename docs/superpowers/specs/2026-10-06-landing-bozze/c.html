@@ -1,0 +1,56 @@
+<h2 class="sr-only">Bozza del passaggio fra le due direzioni: l'occhio vivo del racconto diventa la figura zero della tavola tecnica, con griglia e cerchi di costruzione.</h2>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@500;600&family=Geist:wght@300;400;500&display=swap">
+<style>
+.sr-only{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.dmC{position:relative;background:#151112;color:#ECE6DA;border-radius:12px;overflow:hidden;font-family:Geist,system-ui,sans-serif;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);align-items:center;min-height:300px}
+.dmC .lab{font:600 11px/16px Barlow,system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#A39A8F}
+</style>
+<div class="dmC" id="frC">
+  <svg id="gridC" style="position:absolute;inset:0;width:100%;height:100%" aria-hidden="true"><defs><pattern id="pC" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M24 0H0V24" fill="none" stroke="#2F2829" stroke-width="1"/></pattern></defs><rect width="100%" height="100%" fill="url(#pC)"/></svg>
+  <svg id="mkC" viewBox="60 10 360 280" style="position:relative;display:block;width:100%;height:300px" role="img" aria-label="Il marchio di daemon, con i suoi tre cerchi di costruzione">
+    <path d="M340 150A110 110 0 1 0 120 150A110 110 0 1 0 340 150ZM340 150A67.98 67.98 0 1 0 204.04 150A67.98 67.98 0 1 0 340 150Z" fill="#ECE6DA" fill-rule="evenodd"/>
+    <circle id="eyeC" cx="290.38" cy="131.64" r="42.01" fill="#BF5567"/>
+    <g id="consC" fill="none" stroke="#A39A8F" stroke-width="1.2" opacity="0">
+      <circle cx="230" cy="150" r="110" stroke-dasharray="4 4"/><circle cx="272.02" cy="150" r="67.98" stroke-dasharray="4 4"/><circle cx="290.38" cy="131.64" r="42.01" stroke-dasharray="4 4"/>
+      <path d="M230 150L152.22 227.78M272.02 150V217.98M290.38 131.64L320.08 101.94"/>
+      <g fill="#A39A8F" stroke="none"><circle cx="230" cy="150" r="2.6"/><circle cx="272.02" cy="150" r="2.6"/><circle cx="290.38" cy="131.64" r="2.6"/><circle cx="340" cy="150" r="2.6"/><circle cx="320.08" cy="101.94" r="2.6"/></g>
+      <g fill="#A39A8F" stroke="none" style="font:600 12px Barlow,system-ui,sans-serif"><text x="172" y="198">r</text><text x="277" y="196">r/φ</text><text x="324" y="98">r/φ²</text></g>
+    </g>
+  </svg>
+  <div style="position:relative;padding:0 26px 0 4px;display:flex;flex-direction:column;gap:10px">
+    <span class="lab" id="labC" style="opacity:0">Fig. 0 · Il marchio</span>
+    <p style="margin:0;font:500 22px/29px Geist,system-ui,sans-serif">L'attenzione su ciò che sai.</p>
+    <p style="margin:0;font-size:13px;line-height:20px;color:#A39A8F">La mezzaluna è ciò che il sistema conosce; il disco bordeaux è l'attenzione dell'agente, rivolta in avanti.</p>
+    <span id="monoC" style="opacity:0;font:400 12px/16px ui-monospace,Consolas,monospace;color:#A39A8F">r · r/φ · r/φ² · semi a 137,5°</span>
+  </div>
+</div>
+<div style="display:flex;align-items:center;gap:12px;margin:12px 0 0">
+  <span style="font-size:13px;color:var(--text-secondary)">Racconto</span>
+  <input id="sC" type="range" min="0" max="100" step="1" value="0" style="flex:1" aria-label="Dal racconto alla tavola tecnica">
+  <span style="font-size:13px;color:var(--text-secondary)">Tavola</span>
+</div>
+<script>
+(() => {
+  const s = document.getElementById('sC'), eye = document.getElementById('eyeC'), svg = document.getElementById('mkC');
+  const C2 = [272.02, 150], D = 67.98 - 42.01, REST = -Math.PI / 4;
+  let gaze = REST;
+  const place = () => {
+    const k = s.value / 100, g = k > 0.5 ? REST : gaze;
+    eye.setAttribute('cx', (C2[0] + D * Math.cos(g)).toFixed(2));
+    eye.setAttribute('cy', (C2[1] + D * Math.sin(g)).toFixed(2));
+    document.getElementById('gridC').style.opacity = k.toFixed(2);
+    document.getElementById('consC').setAttribute('opacity', k.toFixed(2));
+    document.getElementById('labC').style.opacity = k.toFixed(2);
+    document.getElementById('monoC').style.opacity = k.toFixed(2);
+  };
+  document.getElementById('frC').addEventListener('pointermove', (e) => {
+    const r = svg.getBoundingClientRect(), vb = svg.viewBox.baseVal;
+    const sc = Math.min(r.width / vb.width, r.height / vb.height);
+    const ox = r.left + (r.width - vb.width * sc) / 2, oy = r.top + (r.height - vb.height * sc) / 2;
+    const x = vb.x + (e.clientX - ox) / sc, y = vb.y + (e.clientY - oy) / sc;
+    gaze = Math.atan2(y - C2[1], x - C2[0]); place();
+  });
+  document.getElementById('frC').addEventListener('pointerleave', () => { gaze = REST; place(); });
+  s.addEventListener('input', place); place();
+})();
+</script>
