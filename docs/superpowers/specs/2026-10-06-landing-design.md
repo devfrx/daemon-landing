@@ -14,7 +14,7 @@
 | 2 | La pagina | ✅ approvata il 2026-10-07 |
 | 3 | Le parole e le fonti | ✅ approvata il 2026-10-07 |
 | 4 | Le figure | ✅ approvata il 2026-10-07 |
-| 5 | Com'è fatta dentro | ⏳ da presentare: i token |
+| 5 | Com'è fatta dentro | ✅ approvata il 2026-10-07 |
 | 6 | La porta di qualità | ⏳ da presentare: la CI |
 | 7 | Dove vive | ⏳ da presentare: i fine-riga, dove pubblicare, la riga in daemon |
 | 8 | Verificato, dedotto, assunto | ⏳ |
@@ -188,3 +188,69 @@ contro il codice, nel piano. Lo stesso vale per i contenuti della Fig. 1: i live
 un'approssimazione, da verificare sulla spec del kernel.
 
 **Costo dichiarato:** la pagina è lunga, circa 15–20 schermate; per questo c'è l'indice fisso in alto (§2.2).
+
+---
+
+## 5. Com'è fatta dentro
+
+### 5.1 Gli strumenti
+
+| | La scelta | Perché |
+|---|---|---|
+| lo strumento | **Astro**, che costruisce i file pronti | gestisce le due lingue, controlla i testi con uno schema, usa Vite come la GUI |
+| le animazioni | **nessuna libreria**: un orologio nostro — lo scroll diventa un numero da 0 a 1, ogni scena è una funzione pura di quel numero | uguale su tutti i browser, Firefox compreso; ogni fotogramma si prova in un test; la stessa logica della splash |
+| il 3D | **niente motore 3D**: la profondità con un canvas 2D a prospettiva calcolata, come la splash, e il 3D del CSS per la pila dei livelli | il marchio è piatto; un motore costerebbe peso per nulla — la misura in §8 |
+| i caratteri | Geist e Barlow, ospitati dalla pagina, gli stessi pacchetti della GUI | nessuna richiesta a terzi |
+| la rete | **nessuna richiesta a siti terzi**: niente Google Fonts, niente statistiche | un controllo lo verifica (§6) |
+| il suono | nessuno | una pagina non parte con l'audio |
+
+**Costo dichiarato:** qualche centinaio di righe di codice nostro al posto di una libreria.
+
+**Scartata:** GSAP. È gratuito ma ha una licenza propria, non open source; sarebbe una dipendenza in più, e due modi di
+animare nella stessa pagina.
+
+### 5.2 I pezzi
+
+Ogni pezzo fa una cosa sola, e si prova da solo.
+
+| Pezzo | Che cosa fa | Da che cosa dipende | Come si prova |
+|---|---|---|---|
+| **i testi** | le frasi, un file per lingua, con fonte, citazione ed etichetta (§3.1) | — | lo schema dei testi |
+| **il controllo delle fonti** | confronta i testi con i documenti di daemon e con `brand/`: rosso se una citazione, un nome del codice, un'etichetta o un numero non torna (§3.2) | i testi, daemon accanto | nei due sensi: rosso su un difetto messo apposta, verde sui testi veri |
+| **le misure** | durante la build, i comandi che producono i numeri e il commit di daemon | daemon accanto | ogni misura su un caso di prova dal risultato noto |
+| **la geometria** | le misure del marchio: il blocco `GEOMETRY` della splash, letto durante la build fra i suoi segni `/*GEOMETRY-START*/` e `/*GEOMETRY-END*/` — come fa il kit, che da quel blocco scrive il SVG e lo studio | `brand/` | il marchio disegnato è identico a quello del kit (§6) |
+| **i token** | i colori dei due temi, letti da daemon (§5.4) | daemon accanto | rosso se manca un token che la pagina usa |
+| **l'orologio** | trasforma la posizione dello scroll in un numero da 0 a 1 per ogni scena; con *riduci il movimento* lo tiene fermo sul fotogramma di riposo | il browser | test: posizione dello scroll → numero |
+| **le scene** | una funzione pura per scena: dal numero allo stato del disegno. Stesso numero, stesso disegno, sempre | la geometria, i token | test: lo stesso numero dà lo stesso stato; le foto in punti fissi (§6) |
+| **le figure** | i blocchi della pagina: il disegno, le frasi, i nomi del codice, il link all'ADR, l'etichetta | i testi, le scene | le foto e l'accessibilità (§6) |
+
+### 5.3 Il percorso
+
+```
+documenti di daemon (../) ─┐
+brand/ ────────────────────┼─→ controllo delle fonti ─→ rosso o verde
+testi (en, it) ────────────┘
+          └─→ build di Astro ─→ file pronti:  /  (inglese)   /it/  (italiano)
+
+nel browser:   scroll → orologio → numero 0…1 → scena → disegno
+```
+
+Due conseguenze, che non costano lavoro in più:
+
+1. **Il fotogramma di riposo si disegna durante la build.** Le scene sono funzioni pure, quindi la build calcola il
+   fotogramma di riposo di ogni figura e lo scrive nella pagina. Con *riduci il movimento*, e anche senza JavaScript, la
+   pagina è completa e ferma; senza JavaScript il tema è quello scuro, come nella splash.
+2. **Una geometria sola:** la pagina non ricopia le misure del marchio, le legge dal blocco della splash.
+
+### 5.4 I token
+
+I colori dei due temi si leggono, durante la build, da `gui/src/tokens/themes.css` di daemon, **così com'è**: lì ci sono
+già i colori del marchio. È la regola del design system di daemon, scritta in `gui/src/tokens/readToken.ts`: *«The CSS
+variables are the truth (answer 14): this reads them, it keeps no copy.»* Se la GUI cambia un colore, la pagina lo segue
+alla build dopo; se sparisce un token che la pagina usa, la build è rossa.
+
+Da `gui/src/tokens/base.css` la pagina **non prende niente**: ha regole per l'app — il corpo del testo a 14 px, il focus
+— e la pagina ha le sue. Anche la scala dei caratteri è della pagina: una landing ha titoli più grandi di un'app.
+
+**Costo dichiarato:** la pagina non si costruisce senza daemon accanto — vale già per le fonti — e il suo aspetto cambia
+quando cambia la GUI, senza una decisione apposta per la pagina.
