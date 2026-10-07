@@ -14,7 +14,7 @@
 | 1 | Il perimetro | ✅ approvata il 2026-10-07 |
 | 2 | Gli strumenti e i vincoli | ✅ approvata il 2026-10-07 |
 | 3 | I testi | ✅ approvata il 2026-10-07 |
-| 4 | La mappa dei file | ⏳ da presentare |
+| 4 | La mappa dei file | ✅ approvata il 2026-10-07 |
 | 5 | I compiti | ⏳ da presentare |
 | 6 | Come si riprende | ⏳ da presentare |
 
@@ -208,3 +208,71 @@ citazioni sono letterali, asterischi compresi. La descrizione per i motori di ri
 | `provenance` | Le frasi e i numeri di questa pagina vengono da devfrx/daemon, al commit {commit}. | The sentences and numbers on this page come from devfrx/daemon, at commit {commit}. | la riga in fondo: `{commit}` lo scrive la build |
 
 L'inglese lo rilegge un subagente nuovo, frase per frase, contro l'italiano, nel compito dei testi (§3.2 del disegno).
+
+---
+
+## 4. La mappa dei file
+
+Ogni pezzo fa una cosa sola, e si prova da solo (§5.2 del disegno).
+
+```
+landing/
+├─ .gitattributes                         compito 1: gli a-capo alla Linux
+├─ brand/                                 compito 2: i file del kit, copiati, e la nota delle impronte
+├─ .gitignore  .npmrc  package.json  package-lock.json
+│  tsconfig.json  astro.config.mjs  vitest.config.ts       compito 3: il progetto Node
+├─ src/
+│  ├─ lib/                                il codice che non è pagina, ogni file col suo test accanto (*.test.ts)
+│  │  ├─ daemon.ts                        compito 4: un file e il commit di daemon, a origin/main
+│  │  ├─ texts.ts                         compito 5: gli schemi dei testi
+│  │  ├─ sources.ts                       compito 6: citazioni, numeri, due lingue, commit
+│  │  ├─ words.ts                         compito 7: refusi, tipografia, parole vietate, cifre
+│  │  ├─ tokens.ts                        compito 9: i token che la pagina usa e quelli che daemon definisce
+│  │  └─ brand.ts                         compito 13: le impronte
+│  ├─ texts/it.json  texts/en.json        compito 5: le frasi
+│  ├─ ui/it.json  ui/en.json              compito 5: l'interfaccia
+│  ├─ content.config.ts                   compito 5: le quattro raccolte di Astro
+│  ├─ pages/index.astro  pages/it/index.astro       compito 3, poi 8
+│  └─ layouts/  components/  sections/  styles/     compiti 8 e 9: la pagina
+├─ checks/                                i controlli del cancello, un file per riga della §6.1 del disegno
+│  ├─ sources.test.ts                     compito 6
+│  ├─ words.test.ts                       compito 7
+│  ├─ tokens.test.ts                      compito 9
+│  ├─ support/                            compito 10: il server di dist/ e il browser
+│  ├─ network.page.test.ts  console.page.test.ts  no-javascript.page.test.ts       compito 10
+│  ├─ accessibility.page.test.ts          compito 11
+│  ├─ speed.page.test.ts                  compito 12
+│  └─ brand.test.ts                       compito 13
+├─ scripts/gate.mjs                       compito 13: npm run gate
+└─ .github/workflows/quality-gate.yml     compito 13: la CI
+```
+
+I controlli che non hanno bisogno del browser finiscono in `*.test.ts`; quelli che guardano la pagina costruita, in
+`*.page.test.ts`. Sono due progetti di Vitest, e il cancello li lancia uno per volta, come fa `scripts/gate-gui.sh` in
+daemon.
+
+**Due scelte**, approvate con la mappa (risposta del proprietario: A, il 2026-10-07):
+
+1. **`npm run gate` è un programma Node**, `scripts/gate.mjs`, e non uno script bash come in daemon: su Windows il comando
+   `bash` può aprire quello di WSL invece di Git Bash — la CI di daemon lo scrive accanto a `shell: bash` — mentre Node
+   gira uguale dappertutto.
+2. **Ogni dipendenza arriva col compito che la usa**, non tutte nel compito 3: è la regola del confine (§1) applicata ai
+   pacchetti. Ognuna entra in due passi (vincolo 9).
+
+**I compiti**, uno per sessione, dopo quella del pre-controllo:
+
+| # | Compito | Che cosa consegna |
+|---|---|---|
+| 1 | il `.gitattributes` | ogni file di testo va a capo alla Linux, su ogni macchina |
+| 2 | la copia in `brand/` | i file del kit che la pagina usa, e la nota con provenienza, data e impronta |
+| 3 | il progetto Node e le due pagine vuote | `npm run build` produce `/` in inglese e `/it/` in italiano |
+| 4 | leggere daemon a `origin/main` | un file e il commit, mai dalla cartella di lavoro |
+| 5 | i testi e i loro schemi | le parole della §3.4, controllate da Astro; l'inglese riletto da un subagente nuovo |
+| 6 | il controllo delle fonti | rosso se una citazione, un numero, una lingua o il commit non torna |
+| 7 | il controllo delle parole | rosso su un refuso, una regola della tipografia, una parola vietata, una cifra nell'interfaccia |
+| 8 | la pagina | l'indice, «Cos’è», il segno della fonte, la chiusura, il link all'altra lingua |
+| 9 | i due temi | i colori di daemon, l'interruttore, il tema scuro senza JavaScript; rosso se manca un token |
+| 10 | i controlli nel browser | rosso su una richiesta a terzi, un errore in console, del testo che manca senza JavaScript |
+| 11 | l'accessibilità | zero errori di axe sulle regole WCAG 2.2 AA; tutto si usa da tastiera |
+| 12 | la velocità | LCP, CLS e INP sotto le soglie, col profilo e le interazioni della §2.2 |
+| 13 | le impronte, il cancello e la CI | `npm run gate`, e la CI su Linux e Windows, a ogni push e una volta a settimana |
