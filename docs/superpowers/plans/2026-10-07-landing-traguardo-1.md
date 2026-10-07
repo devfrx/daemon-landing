@@ -13,7 +13,7 @@
 |---|---|---|
 | 1 | Il perimetro | ✅ approvata il 2026-10-07 |
 | 2 | Gli strumenti e i vincoli | ✅ approvata il 2026-10-07 |
-| 3 | I testi | 🔶 in corso: §3.1–§3.3 approvate il 2026-10-07, §3.4 da presentare |
+| 3 | I testi | ✅ approvata il 2026-10-07 |
 | 4 | La mappa dei file | ⏳ da presentare |
 | 5 | I compiti | ⏳ da presentare |
 | 6 | Come si riprende | ⏳ da presentare |
@@ -173,3 +173,38 @@ testo delle frasi e l'interfaccia — e mai per le citazioni, che sono copiate d
 | gli spazi | mai due di fila, mai prima di `, . ; : ! ?` | lo stesso |
 
 **Costo dichiarato:** il controllo della tipografia è codice nostro.
+
+### 3.4 Le parole del traguardo 1
+
+**Le frasi**, nella sezione «Cos’è» (risposta del proprietario: A, tutte e cinque, il 2026-10-07). Il disegno, per
+«Cos’è», nomina i pilastri, il kernel comune e la GPU; la 1 e la 4 dicono che cos'è daemon e che cosa fa il kernel. Le
+citazioni sono state trovate su `origin/main` di daemon, al commit `50cc61f`, con a-capo e spazi doppi ignorati — come
+fa il controllo (§3.2 del disegno).
+
+| Identificatore | Italiano | Inglese | Fonte, in daemon | Citazione |
+|---|---|---|---|---|
+| `what-app` | Un assistente desktop locale, per un utente solo. | A local desktop assistant, for a single user. | `CLAUDE.md` | `Assistente desktop locale, utente singolo` |
+| `what-pillars` | Quattro pilastri paritari, su un kernel comune. | Four equal pillars, on a shared kernel. | `docs/superpowers/specs/2026-08-06-kernel-design.md` | `Piattaforma a quattro pilastri paritari su kernel comune` |
+| `what-pillar-names` | Conversazione e conoscenza, agenti e coding, voce e gesti, generazione di asset 3D. | Conversation and knowledge, agents and coding, voice and gestures, 3D asset generation. | `CLAUDE.md` | `conversazione e conoscenza, agenti e coding, voce e gesti, generazione asset 3D` |
+| `what-kernel` | Il kernel non implementa nessuna funzionalità utente: fornisce i meccanismi. | The kernel implements no user features: it provides the mechanisms. | `docs/tracciabilita.md` | `**Il kernel non implementa nessuna funzionalità utente.** Fornisce i meccanismi` |
+| `what-limit` | I quattro pilastri si contendono una sola GPU da 16 GB. | The four pillars compete for a single 16 GB GPU. | `docs/adr/0005-arbitrato-gpu-su-due-dimensioni.md` | `Quattro pilastri paritari si contendono una sola GPU da 16 GB.` |
+
+In «16 GB», fra il numero e l'unità, c'è lo spazio che non va a capo (§3.3): nei file JSON si scrive `16\u00a0GB`. Le
+citazioni sono letterali, asterischi compresi. La descrizione per i motori di ricerca è la frase `what-app`.
+
+**L'interfaccia:**
+
+| Identificatore | Italiano | Inglese | Dove |
+|---|---|---|---|
+| `site-title` | daemon | daemon | il titolo della pagina |
+| `skip-to-content` | Vai al contenuto | Skip to content | il primo link, per chi usa la tastiera |
+| `contents` | Indice | Contents | il nome dell'indice fisso |
+| `section-what` | Cos’è | What it is | il titolo della sezione, e la sua voce nell'indice |
+| `dark-theme` | Tema scuro | Dark theme | l'interruttore del tema |
+| `other-language` | English | Italiano | il nome del link all'altra lingua, scritto nella lingua di arrivo |
+| `other-language-short` | EN | IT | ciò che quel link mostra |
+| `source` | Fonte | Source | il segno accanto a ogni frase |
+| `code-on-github` | devfrx/daemon su GitHub | devfrx/daemon on GitHub | il link al codice, in fondo |
+| `provenance` | Le frasi e i numeri di questa pagina vengono da devfrx/daemon, al commit {commit}. | The sentences and numbers on this page come from devfrx/daemon, at commit {commit}. | la riga in fondo: `{commit}` lo scrive la build |
+
+L'inglese lo rilegge un subagente nuovo, frase per frase, contro l'italiano, nel compito dei testi (§3.2 del disegno).
