@@ -2,8 +2,8 @@
 
 > 🗄️ **Che cos'è questo file.** Il verbale delle prove fatte il 2026-10-07 per scrivere la §5 del
 > [piano del traguardo 1](../superpowers/plans/2026-10-07-landing-traguardo-1.md) — le §1–§9 nel pomeriggio, la §10 e la
-> §11 nella sessione dopo, la §12 in quella dopo ancora: il proprietario ha scelto di provare il codice prima di scriverlo
-> nel piano (risposta: A). Le prove
+> §11 nella sessione dopo, la §12 e la §13 in quella dopo ancora: il proprietario ha scelto di provare il codice prima
+> di scriverlo nel piano (risposta: A). Le prove
 > sono girate nello scratchpad di ciascuna sessione, poi cancellato. Qui c'è la storia; il piano porta ciò che ne è
 > venuto.
 
@@ -190,3 +190,19 @@ Un inciampo dell'ambiente, non del piano: al passo 9 del compito 6 Git Bash non 
 | 1 | il passo 2 del compito 4, approvato, diceva che il progetto `page` arriva col compito 10: arriva col compito 8, dalla risposta A sul browser | la §4 del piano, col suo richiamo | corretto, col richiamo |
 | 2 | l'interruttore del tema, acceso, si riempiva di `--color-bg-accent`: nel tema scuro sta a 1,84:1 sul fondo della pagina, e un controllo vuole 3:1, WCAG 1.4.11 | `scripts/contrasto.py` della skill `frontend-craft` su `#7A1F2E` e `#151112`; `--color-mark`, `#BF5567`, sta a 4,20:1. In daemon i 3:1 sono di quattro ruoli, *«non-text 3:1   border-strong, focus, mark, border-accent»* in `gui/src/tokens/contrast.test.ts`, e il radio acceso della GUI, `BaseRadioGroup.vue`, usa `--color-mark` | corretto nel compito 9, `--color-mark`; i controlli del 9 e del 10 rilanciati, verdi. Nessun programma lo controlla: axe non misura il contrasto dei controlli |
 | 3 | il segno della fonte, aperto, ha due bersagli alti 19,5 e 20,8 px, a 1,6 px l'uno dall'altro: sotto i 24 px di WCAG 2.5.8 | `getBoundingClientRect()` a 375 px di larghezza. axe-core 4.13.0, nel pannello browser dell'app, con `axe.min.js` servito accanto alla pagina e le regole `wcag2a`, `wcag2aa`, `wcag21a`, `wcag21aa` e `wcag22aa`: coi segni chiusi, 0 violazioni; aperti, `target-size`, *serious*, su due segni. L'unica regola di `wcag22aa` è `target-size`: `axe.getRules(['wcag22aa'])` | lasciato al compito 11, come rosso vero del suo controllo (risposta: A) |
+
+## 13. Il compito 11, provato
+
+Nella stessa sessione della §12, dopo il sì ai compiti 8–10: la landing di prova della §12, con la correzione del compito
+9, e `axe-core` 4.13.0 messo col passo 1.
+
+| Provato | Visto |
+|---|---|
+| dove la pagina scorre | su un computer, 1280 × 720, e sul telefono della §2.2, 412 × 823, sta tutta nello schermo, e un salto dall'indice non la muove; sul telefono girato, 823 × 412, è alta 613 px, e il salto porta `#what` a 64 px dall'alto, i 4rem di `scroll-padding-top`, sotto l'indice alto 44,5 px |
+| il controllo, sulla pagina dei compiti 1–10 | `8 failed \| 12 passed`: axe con le fonti aperte, nei due temi, su computer e telefono, nelle due lingue, con `target-size` sui `<summary>` e sui link dei segni; il percorso da tastiera verde |
+| la correzione: `padding-block: 0.25rem` sul `<summary>`, `display: inline-block` sul link | `20 passed` |
+| l'indice senza `scroll-padding-top`, e il link all'altra lingua con `tabindex="-1"` | `4 failed \| 16 passed`: il Tab salta il quarto controllo e alla fine esce dalla pagina, `[0, 1, 2, 4, …, 10, -1]`; la sezione arriva a 0,375 px dall'alto, sotto l'indice |
+| tutto, alla fine | 58 test nel browser, 70 senza; `npm audit`: 0 vulnerabilità |
+
+**Il testo del piano.** Il codice del compito 11 l'ha messo nel piano un programma, dai file che hanno girato. I comandi
+sono quelli girati, ma il compito non è ancora girato dal testo del piano: si rifà, come i compiti 8–10 nella §12.

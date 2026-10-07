@@ -16,8 +16,8 @@
 | 2 | Gli strumenti e i vincoli | ✅ approvata il 2026-10-07 |
 | 3 | I testi | ✅ approvata il 2026-10-07 |
 | 4 | La mappa dei file | ✅ approvata il 2026-10-07 |
-| 5 | I compiti | 🔶 i compiti 1–10 approvati il 2026-10-07; i compiti 11–13 da scrivere |
-| 6 | Come si riprende | 🔶 oggi è la consegna della terza sessione del 2026-10-07 |
+| 5 | I compiti | 🔶 i compiti 1–10 approvati il 2026-10-07; il compito 11 scritto, da approvare; i compiti 12–13 da scrivere |
+| 6 | Come si riprende | 🔶 oggi è la consegna della quarta sessione del 2026-10-07 |
 
 ---
 
@@ -2973,26 +2973,314 @@ git add src checks && git commit -m "t1(compito 10): i controlli nel browser -- 
 
 - [ ] **Passo 8 —** `git push`.
 
+### Compito 11 — l'accessibilità
+
+**File:** crea `checks/accessibility.page.test.ts`; modifica `src/styles/page.css`, `package.json` e `package-lock.json`.
+
+**Usa:** `openLanding` e `open(language, options)` (compiti 8 e 10), la pagina coi temi (compito 9). **Lascia:**
+
+- `checks/accessibility.page.test.ts`, il controllo del cancello: nessun errore di axe sulle regole WCAG 2.2 AA, in ogni
+  stato in cui un visitatore porta la pagina — i due temi, un computer e un telefono, le fonti chiuse e aperte —; il Tab
+  che raggiunge ogni controllo, nell'ordine della pagina, ciascuno col suo anello; il link «Vai al contenuto» che porta
+  dentro il contenuto, e l'indice che porta la sua sezione sotto di sé;
+- in `src/styles/page.css`, il segno della fonte e il suo link alti almeno 24 px, come vuole WCAG 2.5.8: è il rosso vero
+  del controllo (risposta del proprietario: A, il 2026-10-07);
+- `axe-core` 4.13.0.
+
+**Le regole di axe** sono quelle dei suoi tag `wcag2a`, `wcag2aa`, `wcag21a`, `wcag21aa` e `wcag22aa`: la tabella
+*«Axe-core Tags»* di `doc/API.md` di axe-core, al tag `v4.13.0`, guardata il 2026-10-07. axe entra nella pagina con
+`page.addScriptTag`, che lo scrive dentro senza chiederlo alla rete.
+
+**Il telefono girato.** Su un computer, 1280 × 720, e sul telefono della §2.2, 412 × 823, la pagina del traguardo 1 sta
+tutta nello schermo, e un salto dall'indice non la muove: lì una sonda passerebbe con o senza `scroll-padding-top`. Sul
+telefono girato, 823 × 412, la pagina scorre.
+
+**Non entra** il movimento ridotto della §6.1 del disegno: arriva col primo movimento, l'orologio del traguardo 2.
+**Costo dichiarato:** ciò che axe non prova lo vede chi rilegge, come il contrasto di un controllo (§6.1 del disegno).
+
+- [ ] **Passo 1 — i pacchetti**, fuori dal cancello (vincolo 9):
+
+```bash
+npm install --no-audit --no-fund --save-exact --save-dev axe-core@4.13.0 && npm approve-scripts --allow-scripts-pending
+```
+
+Atteso: `No packages with unreviewed install scripts.`.
+
+- [ ] **Passo 2 — il controllo; il rosso è il segno della fonte.** `checks/accessibility.page.test.ts`:
+
+```ts
+import { createRequire } from 'node:module';
+import type axe from 'axe-core';
+import type { BrowserContextOptions, Page } from 'playwright';
+import { afterAll, beforeAll, describe, expect, test } from 'vitest';
+import { type Landing, openLanding } from './support/landing';
+
+// The gate's check of accessibility (§6.1 of the design): what a program can prove, not the whole conformance. No error
+// of axe on the rules of WCAG 2.2 AA, in every state a visitor can bring the page to; every control within reach of the
+// keyboard. The reduced motion arrives with the first motion, in milestone 2.
+const AXE = createRequire(import.meta.url).resolve('axe-core/axe.min.js');
+const WCAG_22_AA = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
+
+// A computer; the phone of the speed profile (§2.2 of the plan); the same phone held sideways, where the page scrolls.
+const SCREENS = {
+  computer: { width: 1280, height: 720 },
+  phone: { width: 412, height: 823 },
+  sideways: { width: 823, height: 412 },
+};
+
+let landing: Landing;
+beforeAll(async () => {
+  landing = await openLanding();
+});
+afterAll(async () => {
+  await landing?.close();
+});
+
+/** What axe finds broken on `page`, on the rules of WCAG 2.2 AA: `rule: element`. */
+async function violations(page: Page): Promise<string[]> {
+  await page.addScriptTag({ path: AXE });
+  return page.evaluate(async (tags) => {
+    const results = await (window as unknown as { axe: typeof axe }).axe.run(document, { runOnly: tags });
+    return results.violations.flatMap((rule) => rule.nodes.map((node) => `${rule.id}: ${node.target.join(' ')}`));
+  }, WCAG_22_AA);
+}
+
+describe.each(['en', 'it'] as const)('the accessibility of the page in %s', (language) => {
+  const pages: Page[] = [];
+  const open = async (options: BrowserContextOptions): Promise<Page> => {
+    const page = await landing.open(language, options);
+    pages.push(page);
+    return page;
+  };
+  afterAll(async () => {
+    for (const page of pages) await page.context().close();
+  });
+
+  // Each theme, a computer and a phone, the sources closed and open: every state a visitor can bring the page to.
+  const states = (['dark', 'light'] as const).flatMap((theme) =>
+    (['computer', 'phone'] as const).flatMap((screen) => (['closed', 'open'] as const).map((sources) => ({ theme, screen, sources }))),
+  );
+
+  test.each(states)('no error of axe: $theme theme, $screen, sources $sources', async ({ theme, screen, sources }) => {
+    const page = await open({ colorScheme: theme, viewport: SCREENS[screen] });
+    if (sources === 'open') {
+      await page.locator('details').evaluateAll((all) => all.forEach((details) => details.setAttribute('open', '')));
+    }
+    expect(await violations(page)).toEqual([]);
+  });
+
+  test('Tab reaches every control, in the order of the page, each with its ring', async () => {
+    const page = await open({});
+    // The controls a visitor can reach, in the order of the page: a source's link only once the source is open.
+    const controls = await page.evaluateHandle(() =>
+      [...document.querySelectorAll('a[href], summary, input')].filter((control) => control.checkVisibility()),
+    );
+    const count = await controls.evaluate((all) => all.length);
+    const reached: { at: number; ring: string }[] = [];
+    for (let i = 0; i < count; i++) {
+      await page.keyboard.press('Tab');
+      reached.push(
+        await controls.evaluate((all) => {
+          const focused = document.activeElement;
+          return focused ? { at: all.indexOf(focused), ring: getComputedStyle(focused).outlineStyle } : { at: -1, ring: 'none' };
+        }),
+      );
+    }
+    // What the page offers, at least: a page without controls would pass the two probes below.
+    expect(count).toBeGreaterThan(0);
+    expect(reached.map((control) => control.at)).toEqual([...Array(count).keys()]);
+    expect(reached.filter((control) => control.ring === 'none')).toEqual([]);
+  });
+
+  test('the skip link leads into the content, and the index brings its section below itself', async () => {
+    const page = await open({ viewport: SCREENS.sideways });
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Enter');
+    await page.keyboard.press('Tab');
+    expect(await page.evaluate(() => document.activeElement?.closest('main') !== null)).toBe(true);
+    await page.locator('nav a').first().focus();
+    await page.keyboard.press('Enter');
+    const index = await page.locator('header').boundingBox();
+    const section = await page.locator('#what').boundingBox();
+    if (!index || !section) throw new Error('the index or the section is not on the page');
+    expect(section.y).toBeGreaterThanOrEqual(index.y + index.height);
+  });
+});
+```
+
+```bash
+rm -rf dist && npm run build && npx vitest run --project page checks/accessibility.page.test.ts
+```
+
+Atteso: `0 errors`, poi `8 failed | 12 passed`. I rossi sono axe con le fonti aperte, nei due temi, su computer e
+telefono, in tutte e due le lingue: `target-size` sul segno della fonte e sul suo link. È il rosso vero, non uno messo
+apposta (risposta: A).
+
+- [ ] **Passo 3 — il segno della fonte, alto 24 px.** `src/styles/page.css`, al posto di quello del compito 9:
+
+```css
+/* The page's own layout and type (§5.4 of the design); the colours are the roles of daemon's themes.css. */
+html {
+  /* The index stays on top: a jump from it, or from the skip link, must not hide its target underneath. */
+  scroll-padding-top: 4rem;
+}
+
+body {
+  margin: 0;
+  font-family: 'Geist Variable', system-ui, sans-serif;
+  line-height: 1.5;
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+a {
+  color: var(--color-text-accent);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--color-bg-selection);
+}
+
+.skip-link {
+  position: absolute;
+  z-index: 1;
+  inset-inline-start: 1rem;
+  inset-block-start: -10rem;
+  padding: 0.25rem 0.5rem;
+  background: var(--color-bg-raised);
+}
+
+.skip-link:focus {
+  inset-block-start: 0.5rem;
+}
+
+.masthead {
+  position: sticky;
+  inset-block-start: 0;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 1rem;
+  border-block-end: 1px solid var(--color-border);
+  background: var(--color-bg);
+}
+
+.masthead nav {
+  display: flex;
+  flex: 1;
+  gap: 1rem;
+}
+
+.masthead a {
+  padding: 0.25rem 0.5rem;
+}
+
+/* The labels — the index, the switch, the other language, the sign of the source — in Barlow, as in daemon's GUI. */
+.masthead a,
+.theme-switch,
+.source summary {
+  font-family: 'Barlow', system-ui, sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* Checked, the switch fills with a mark, as the checked radio of daemon's GUI does: a mark reads 3:1 on the page, and
+   the accent background does not, in the dark theme. */
+.theme-switch input {
+  inline-size: 1.5rem;
+  block-size: 1.5rem;
+  margin: 0;
+  vertical-align: middle;
+  accent-color: var(--color-mark);
+}
+
+main,
+footer {
+  max-inline-size: 40rem;
+  margin-inline: auto;
+  padding-inline: 1rem;
+}
+
+.sentence {
+  margin-block: 1.5rem;
+}
+
+.sentence p {
+  margin: 0;
+}
+
+/* A source, open, has two targets one above the other: each is 24 px high at least (WCAG 2.5.8). */
+.source summary {
+  padding-block: 0.25rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.source a {
+  display: inline-block;
+}
+```
+
+- [ ] **Passo 4 — verde.** Lo stesso comando del passo 2. Atteso: `0 errors` e `20 passed`.
+
+- [ ] **Passo 5 — l'altro senso.** L'indice senza `scroll-padding-top`, e il link all'altra lingua fuori dal giro del
+Tab; poi i file tornano com'erano, e girano tutti i controlli nel browser:
+
+```bash
+d=$(mktemp -d) && cp src/styles/page.css src/layouts/Page.astro "$d/" && node --input-type=module - <<'EOF'
+import { readFileSync, writeFileSync } from 'node:fs';
+
+const replace = (file, from, to) => writeFileSync(file, readFileSync(file, 'utf8').replace(from, to));
+replace('src/styles/page.css', '  scroll-padding-top: 4rem;\n', '');
+replace('src/layouts/Page.astro', "aria-label={await word('other-language')}>", "aria-label={await word('other-language')} tabindex=\"-1\">");
+EOF
+rm -rf dist && npm run build && npx vitest run --project page checks/accessibility.page.test.ts; cp "$d/page.css" src/styles/ && cp "$d/Page.astro" src/layouts/
+rm -rf dist && npm run build && npx vitest run --project page
+```
+
+Atteso: prima `4 failed | 16 passed`, in tutte e due le lingue: `Tab reaches every control, in the order of the page,
+each with its ring`, perché il Tab salta il link all'altra lingua, e `the skip link leads into the content, and the index
+brings its section below itself`, perché la sezione finisce sotto l'indice; alla fine `58 passed`.
+
+- [ ] **Passo 6 — il resto, e le vulnerabilità.** `npm test -- --project checks`, poi `npm audit`. Atteso: `70 passed`,
+e `found 0 vulnerabilities`.
+
+- [ ] **Passo 7 — il commit.**
+
+```bash
+git add package.json package-lock.json src checks && git commit -m "t1(compito 11): l'accessibilità -- nessun errore di axe sulle regole WCAG 2.2 AA, nei due temi, su computer e telefono, con le fonti chiuse e aperte; il Tab che raggiunge ogni controllo col suo anello, il link al contenuto, l'indice; il segno della fonte alto 24 px, il rosso vero del controllo"
+```
+
+- [ ] **Passo 8 —** `git push`.
+
 ---
 
 ## 6. Come si riprende
 
-> 🔶 Oggi questa sezione è la consegna della terza sessione del 2026-10-07: il piano è a metà. A piano finito, qui ci sarà
-> come si esegue, e questa consegna andrà in archivio. Le consegne di prima sono in archivio, parola per parola:
-> [del mattino](../../archivio/2026-10-07-consegna-piano-landing-mattina.md) e
-> [del pomeriggio](../../archivio/2026-10-07-consegna-piano-landing-pomeriggio.md).
+> 🔶 Oggi questa sezione è la consegna della quarta sessione del 2026-10-07: il piano è a metà. A piano finito, qui ci
+> sarà come si esegue, e questa consegna andrà in archivio. Le consegne di prima sono in archivio, parola per parola:
+> [del mattino](../../archivio/2026-10-07-consegna-piano-landing-mattina.md),
+> [del pomeriggio](../../archivio/2026-10-07-consegna-piano-landing-pomeriggio.md) e
+> [della terza sessione](../../archivio/2026-10-07-consegna-piano-landing-terza-sessione.md).
 
 **Dove siamo:**
 
 | Parte | Stato |
 |---|---|
 | §1–§4 | approvate, coi richiami del 2026-10-07 |
-| §5, compiti 1–7 | ✅ approvati; il 7 con le parole vietate in ogni loro forma (risposta: A) |
-| §5, compiti 8–10 | ✅ approvati il 2026-10-07; nel 9 l'interruttore acceso in `--color-mark`; il segno della fonte aperto, troppo piccolo, è il rosso vero del compito 11 (risposta: A) |
-| §5, compiti 11–13 | da scrivere |
+| §5, compiti 1–10 | ✅ approvati; nel 9 l'interruttore acceso in `--color-mark` |
+| §5, compito 11 | scritto, col codice che ha girato; **da rifare dal testo del piano, poi da approvare** |
+| §5, compiti 12–13 | da scrivere |
 
 Il codice dei compiti si prova prima di scriverlo (risposta del proprietario: A). La storia delle prove è nel
-[verbale](../../archivio/2026-10-07-prove-piano-landing.md), §10 e §11; lo scratchpad delle prove è stato cancellato.
+[verbale](../../archivio/2026-10-07-prove-piano-landing.md), §12 e §13; lo scratchpad delle prove è stato cancellato.
 
 **Il prossimo passo**, in una sessione nuova:
 
@@ -3001,75 +3289,69 @@ Il codice dei compiti si prova prima di scriverlo (risposta del proprietario: A)
 3. le skill: `superpowers:writing-plans`, `anthropic-skills:decision-principles`, `anthropic-skills:dev-communication`,
    `anthropic-skills:frontend-craft`;
 4. rilancia ciò che invecchia, coi comandi della tabella in fondo;
-5. ✅ rifai i compiti 3–10 nello scratchpad dal testo del piano, come nella §10 del verbale: un programma prende il codice
-   dal piano, riga per riga, e i comandi si lanciano come stanno. I comandi del passo 11 del compito 8 non hanno ancora
-   girato così (§11 del verbale). Se qualcosa diverge, si registra e si corregge prima di presentare — fatto nella
-   sessione dopo, coi compiti 1–10 (§12 del verbale);
-6. ✅ presenta al proprietario i compiti 8–10, con le scelte della tabella qui sotto, e chiedi il sì; commit e push —
-   fatto nella sessione dopo;
-7. scrivi i compiti 11–13, ciascuno provato prima nello scratchpad, e presentali;
+5. rifai i compiti 1–11 nello scratchpad dal testo del piano, come nella §12 del verbale: un programma prende il codice
+   dal piano, blocco per blocco, e i comandi si lanciano come stanno. Il compito 11 non è ancora girato così (§13 del
+   verbale). Se qualcosa diverge, si registra e si corregge prima di presentare;
+6. presenta al proprietario il compito 11, con le scelte della tabella qui sotto, e chiedi il sì; commit e push;
+7. scrivi i compiti 12–13, ciascuno provato prima nello scratchpad, e presentali;
 8. la §6 definitiva, cioè come si esegue; lo stato in testa; questa consegna in archivio; commit e push.
 
-**Le scelte dei compiti 8–10**, da dire al proprietario quando li presenti:
+**Le scelte del compito 11**, da dire al proprietario quando lo presenti:
 
 | Scelta | Il perché, o il costo |
 |---|---|
-| il browser arriva col compito 8, con un controllo della pagina (risposta: A) | costo: il compito 8 è il più grande; la §4 porta il richiamo |
-| `LANDING_SITE` obbligatorio e `LANDING_BASE` con una barra a ogni capo; in prova `https://landing.invalid` e `/daemon-landing/` | `hreflang` vuole indirizzi completi; una base non vuota fa diventare un 404 l'indirizzo che la dimentica. Costo: anche in prova la build vuole le due impostazioni |
-| il segno della fonte è un `<details>` | si tocca e mostra il file col link, senza JavaScript e da tastiera. Costo: «Fonte» si ripete accanto a ogni frase |
-| `daemon` è il titolo `<h1>` della pagina | una pagina ha un titolo; con l'apertura del traguardo 2 si rivede |
-| l'interruttore segue il sistema, e ricorda la scelta solo se è diversa dal sistema | tornare al tema del sistema vuol dire seguirlo di nuovo. Costo: lo script del tema non lo controlla `astro check` |
-| Barlow solo al peso 600, in maiuscolo, per le etichette — l'indice, l'interruttore, l'altra lingua, «Fonte» —; Geist per il testo | come le etichette della GUI di daemon |
-| il controllo dei token vieta anche le scale `--ref-*` | è la regola di `themes.css` di daemon: *«No component reads a `--ref-*`»* |
-| l'icona della scheda è `daemon-icon-dark.svg`, dal compito 10 | senza un'icona Chrome scrive un errore in console; ha un fondo suo, e si vede su ogni barra delle schede |
-| senza JavaScript la pagina si confronta, riga per riga, con sé stessa col JavaScript | manca soltanto l'interruttore |
+| axe coi tag `wcag2a`, `wcag2aa`, `wcag21a`, `wcag21aa` e `wcag22aa` | sono le regole WCAG 2.2 AA di axe, secondo la sua documentazione; le sue *best practice* restano fuori, perché non sono WCAG |
+| axe in ogni stato: due temi, computer e telefono, fonti chiuse e aperte, nelle due lingue | un difetto che c'è solo a fonti aperte, come il `target-size` di oggi, lo vede solo chi le apre. Costo: 16 passate di axe, il controllo più lungo |
+| «tutto si usa da tastiera» è: il Tab raggiunge ogni controllo, nell'ordine della pagina, col suo anello; il link al contenuto porta dentro il contenuto; l'indice porta la sua sezione sotto di sé | è la parte della §6.1 del disegno che un programma prova |
+| l'indice si prova sul telefono girato, 823 × 412 | è l'unico schermo dove la pagina del traguardo 1 scorre: altrove la sonda passerebbe a vuoto |
+| il segno della fonte: `padding-block` sul `<summary>`, `inline-block` sul link | così ciascuno è alto almeno 24 px. Costo: la riga del segno è un po' più alta |
+| il movimento ridotto non entra | arriva col primo movimento, nel traguardo 2 |
 
-**Già visto, per i compiti 11–13:**
+**Già visto, per i compiti 12–13:**
 
 | Compito | Che cosa si sa già | Nel verbale |
 |---|---|---|
-| 11 | `openLanding()` e `open()` danno la pagina servita sotto la base, nel Chrome installato, con `before` per ascoltare prima che si carichi | §11 |
-| 11 | il segno della fonte, aperto, è troppo piccolo per WCAG 2.5.8: coi segni aperti axe 4.13.0 dà `target-size`, *serious*. È il rosso vero del controllo, e il compito 11 lo corregge (risposta: A). L'unica regola `wcag22aa` di axe 4.13.0 è `target-size` | §12 |
 | 12 | il profilo si accende con una sessione CDP: `Network.enable`, `Network.emulateNetworkConditions`, `Emulation.setCPUThrottlingRate`; che sia acceso lo prova `responseEnd` della navigazione, non `responseStart`; si interagisce solo dopo che l'LCP è arrivato; la fine della misura si simula come nei test di `web-vitals`; il rosso, su una pagina con 300 ms di lavoro nel clic | §4, §5 |
 | 12 | Vitest lancia in parallelo i file di un progetto: la velocità si misura da sola, in un progetto suo o con `fileParallelism: false` | — |
 | 13 | in CI, `actions/checkout` con `ref: main` lascia `origin/main` nel clone di daemon; daemon usa la v4, e l'ultima è la v7.0.1: si segue daemon e si segnala la differenza | §6 |
 | 13 | la verifica delle impronte di `brand/` è già scritta, come prova a mano, nel passo 2 del compito 2: `src/lib/brand.ts` ne è la versione che resta | — |
 | 13 | il cancello, nell'ordine di `scripts/gate-gui.sh`: `npm ci`, `dist/` tolta, la build con `LANDING_SITE` e `LANDING_BASE`, i progetti `checks` e `page` uno per volta, `npm audit` alla fine | — |
 
-**Ancora da provare**, scrivendo i compiti 11–13: come si mette `axe-core` 4.13.0 nella pagina, e i nomi delle sue
-regole per WCAG 2.2 AA; il percorso da tastiera che il compito 11 prova; `scripts/gate.mjs`; la CI, con la landing
-dentro la copia di daemon.
+**Ancora da provare**, scrivendo i compiti 12–13: `scripts/gate.mjs`; la CI, con la landing dentro la copia di daemon.
 
 **Da sapere subito:**
 
-- ⚠️ daemon si muove mentre si lavora: in questa sessione `origin/main` è passato da `973153f` a `c2de19a`, per le
-  sessioni del lean-docs della R5 su daemon. I suoi lotti toccano `COMPENDIO.md`, `HANDOFF.md`, `roadmap.md`,
-  `README.md`, `AVVIO-CHAT.md`, `porta-di-qualita.md`, `riferimenti.md`, due specifiche, ADR-0015 e i commenti nei
-  sorgenti: non le cinque fonti della §3.4, ma il `README.md` è la fonte futura della legenda. Un commit di daemon non si
-  scrive mai come vero: si rilancia `git -C .. rev-parse --short origin/main`;
-- su questa macchina daemon adesso sta su `main`, con nella cartella il lavoro di un'altra sessione: da qui non si tocca;
+- ⚠️ daemon si muove mentre si lavora: in questa sessione `origin/main` è passato da `c2de19a` a `fc43188`, per
+  un'altra sessione su daemon, quella del lean-docs della R5: documenti, non le cinque fonti della §3.4 né la GUI. Un
+  commit di daemon non si scrive mai come vero: si rilancia `git -C .. rev-parse --short origin/main`;
+- su questa macchina daemon sta su `main`, con nella cartella il lavoro di un'altra sessione: da qui non si tocca;
 - `daemon_kit/` non è nascosta a daemon, `/landing/` sì: `git -C .. check-ignore -v daemon_kit landing/CLAUDE.md`. Il
   `.gitignore` di daemon non ha ancora la riga `landing/`, ed è lavoro di daemon;
 - la prova nello scratchpad: `git clone -q --no-checkout` della cartella di daemon, `origin` rimesso su
-  `https://github.com/devfrx/daemon.git`, `origin/main` scritto con `git update-ref`, e la landing di prova dentro; per
-  il compito 2, accanto, una copia dei SVG e delle due pagine di `daemon_kit/`;
-- in Git Bash, con `MSYS_NO_PATHCONV=1`, un percorso `/c/…` passato a Node diventa `C:\c\…`: a Node si passa
-  `cygpath -w`;
+  `https://github.com/devfrx/daemon.git`, `origin/main` scritto con `git update-ref`; dentro, una copia della landing
+  **senza remoto**, perché nessun `git push` arrivi al repository vero; accanto, una copia dei SVG e delle due pagine di
+  `daemon_kit/`, per il compito 2;
+- in Git Bash, con `MSYS_NO_PATHCONV=1`, un percorso `/c/…` passato a Node o a `git -C` non viene tradotto, e non si
+  trova: si passa `cygpath -w`;
+- Git Bash a volte non riesce a creare un processo, *«fork: retry: Resource temporarily unavailable»*: è l'ambiente, e si
+  rilancia il passo;
 - su Windows `chrome.exe --version` apre il browser invece di scrivere la versione: la versione si legge dal nome della
   cartella, `ls "/c/Program Files/Google/Chrome/Application/"`.
 
-**Verificato il 2026-10-07, nella terza sessione.** Si rilancia, non si crede. I comandi `git` dalla radice di daemon, in
+**Verificato il 2026-10-07, nella quarta sessione.** Si rilancia, non si crede. I comandi `git` dalla radice di daemon, in
 Git Bash, dopo `export MSYS_NO_PATHCONV=1`.
 
 | Fatto | Comando o fonte |
 |---|---|
 | le versioni della §2.1; Node 24.19.0 e npm 11.17.0 su questa macchina | `npm view <pacchetto> version license`; `git show "origin/main:gui/package.json"`; `node --version`; `npm --version` |
-| `origin/main` di daemon era `c2de19a` alla chiusura; l'audit c'è, col segno «(col N)» | `git rev-parse --short origin/main`; `git merge-base --is-ancestor origin/repo-audit/20260930-1510 origin/main`; `git show "origin/main:docs/README.md" \| grep -c 'col N'` |
-| le cinque citazioni della §3.4 si trovano, a `c2de19a` | per ciascuna: `git show "origin/main:<fonte>" \| tr -d '\r' \| tr '\n' ' ' \| tr -s ' ' \| grep -cF -- '<citazione>'` |
-| fra `973153f` e `c2de19a` la GUI non è cambiata: manifesto, token, cancello, CI | `git diff --stat 973153f origin/main -- gui/package.json gui/src/tokens scripts/gate-gui.sh .github` |
+| `origin/main` di daemon era `fc43188` alla chiusura; l'audit c'è, col segno «(col N)» | `git rev-parse --short origin/main`; `git merge-base --is-ancestor origin/repo-audit/20260930-1510 origin/main`; `git show "origin/main:docs/README.md" \| grep -c 'col N'` |
+| le cinque citazioni della §3.4 si trovano, a `fc43188` | per ciascuna: `git show "origin/main:<fonte>" \| tr -d '\r' \| tr '\n' ' ' \| tr -s ' ' \| grep -cF -- '<citazione>'` |
+| fra `973153f` e `fc43188` la GUI non è cambiata: manifesto, token, cancello, CI | `git diff --stat 973153f origin/main -- gui/package.json gui/src/tokens scripts/gate-gui.sh .github` |
 | `themes.css` di daemon: `:root` con le `--ref-*`; `[data-theme="dark"]` e `[data-theme="light"]` coi ruoli `--color-*` e `color-scheme` | `git show "origin/main:gui/src/tokens/themes.css"` |
+| in daemon i ruoli non di testo da 3:1 sono `border-strong`, `focus`, `mark` e `border-accent`; il radio acceso della GUI usa `--color-mark` | `git show "origin/main:gui/src/tokens/contrast.test.ts" \| grep -n 'non-text'`; `git grep -n 'color-mark' origin/main -- gui/src/components` |
 | la GUI: il testo in Geist Variable, le etichette e i numeri in Barlow 300–600, importati da `gui/src/tokens/index.ts` | `git show "origin/main:gui/src/tokens/index.ts"` |
 | la CI di daemon: `actions/checkout@v4`; `actions/setup-node@v7` con `node-version-file` e `package-manager-cache: false`; la matrice con `fail-fast: false`; `shell: bash`; nessuna azione di terzi; verde | `git show "origin/main:.github/workflows/quality-gate.yml"`; `gh run list -R devfrx/daemon -L 4` |
 | il cancello della GUI: `npm ci --no-audit --no-fund`, `dist/` tolta prima della build, i due progetti di Vitest uno per volta, il Chrome installato, `npm audit` alla fine | `git show "origin/main:scripts/gate-gui.sh"` |
 | Chrome 154.0.8037.98 su questa macchina | `ls "/c/Program Files/Google/Chrome/Application/"` |
 | Chrome chiede `/favicon.ico` da solo, e un 404 lì è un errore in console | il passo 2 del compito 10 |
+| i tag WCAG di axe-core 4.13.0 sono `wcag2a`, `wcag2aa`, `wcag21a`, `wcag21aa` e `wcag22aa`; l'unica regola di `wcag22aa` è `target-size` | `gh api "repos/dequelabs/axe-core/contents/doc/API.md?ref=v4.13.0" --jq .content \| base64 -d \| grep -n 'wcag2'`; `node -e "console.log(require('axe-core').getRules(['wcag22aa']).map((rule) => rule.ruleId))"`, dalla landing |
