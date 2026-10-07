@@ -94,3 +94,25 @@ ha scelto di spegnere lo script di esbuild per scritto (risposta: A).
 | 1 | in una copia nuova del repository, 11 file su 11 hanno gli a-capo di Windows (`git ls-files --eol`, `w/crlf`) | col `.gitattributes`, 0; `git add --renormalize .` non cambia nessun file |
 | 2 | senza la nota, la verifica si ferma | 18 file, identici al kit e alla nota; un byte in più in una copia la rende rossa |
 | 3 | senza pagine la build esce con 0, e la verifica dice `dist/index.html: no <html lang="en">` | le due pagine, coi loro `lang`; `npm audit` trova 0 vulnerabilità |
+
+## 9. I compiti 4–7, provati
+
+Le prove dei compiti 4–7 sono girate dentro una copia di daemon clonata nello scratchpad, senza cartella di lavoro e col
+suo `origin` rimesso su `https://github.com/devfrx/daemon.git`: la landing di prova stava dentro, come la vera sta in
+daemon. Durante le prove `origin/main` di daemon è passato da `c42c947` a `973153f`, per un'altra sessione che lavorava
+su daemon; le cinque citazioni si trovano anche lì.
+
+| Compito | Rosso | Verde |
+|---|---|---|
+| 4 | `Cannot find module './daemon'`; senza `@types/node`, `astro check` trova 7 errori, su `node:child_process`, `node:fs`, `node:os`, `node:path` e `process` | 4 test; il file più grande di daemon, 2,3 MB, letto per intero, oltre il limite di 1 MiB di `execFileSync` |
+| 5 | `Cannot find module './texts'`; una frase inglese con `source` ferma la build, `Unrecognized key: "source"`, con l'uscita a 1 | 5 test; la build controlla le quattro raccolte anche se nessuna pagina le usa |
+| 6 | `Cannot find module './sources'`; sui testi veri, una citazione e un numero cambiati, una frase solo in inglese, un `origin` su un altro utente di GitHub | 8 test delle funzioni, 6 di `daemon.ts`, 13 del controllo del cancello |
+| 7 | `Cannot find module './words'`; nell'interfaccia vera un refuso, un apostrofo dritto, «open source» e una cifra: 4 rossi | 11 test delle funzioni, in circa 15 s la prima volta, per caricare i dizionari; 8 del controllo del cancello |
+| tutti | — | `npm run build`: 16 file, 0 errori; `npm test`: 51 test; `npm audit`: 0 vulnerabilità |
+
+**La tipografia.** La §3.3 del piano diceva «un numero e la sua unità». Un programma non sa che cos'è un'unità, se non
+con un elenco, che resterebbe sempre indietro di una parola; e lo spazio che non va a capo, dopo un numero, non è mai
+sbagliato. Il controllo lo vuole dopo ogni numero, e la §3.3 porta il richiamo.
+
+**I comandi dei passi «l'altro senso»** sono stati rilanciati così come stanno nel piano, coi file di riserva in una
+cartella di `mktemp -d`: i rossi e i verdi di sopra, e alla fine i file uguali a prima.
