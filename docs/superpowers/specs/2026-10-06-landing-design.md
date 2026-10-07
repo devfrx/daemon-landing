@@ -16,7 +16,7 @@
 | 4 | Le figure | ✅ approvata il 2026-10-07 |
 | 5 | Com'è fatta dentro | ✅ approvata il 2026-10-07 |
 | 6 | La porta di qualità | ✅ approvata il 2026-10-07 |
-| 7 | Dove vive | ⏳ da presentare: i fine-riga, dove pubblicare, la riga in daemon |
+| 7 | Dove vive | ✅ approvata il 2026-10-07 |
 | 8 | Verificato, dedotto, assunto | ⏳ |
 | 9 | Come si riprende | ⏳ |
 
@@ -303,3 +303,60 @@ Come quella di daemon, in `.github/workflows/quality-gate.yml`:
 platforms due to different rendering, fonts and more»* (§8) — quindi le foto si rifanno su tutti e due i sistemi, e il
 piano fissa dove si fanno gli originali e quanta differenza si tollera. E la CI può diventare rossa anche quando la
 landing non è cambiata, se daemon ha cambiato una frase citata: è lo scopo.
+
+---
+
+## 7. Dove vive
+
+### 7.1 Il repository
+
+| | |
+|---|---|
+| **dove** | la cartella `landing/` nella radice di daemon, con il suo repository git; su GitHub, `devfrx/daemon-landing`, pubblico |
+| **in daemon** | cambia una riga sola: `landing/` entra nel `.gitignore`, con un commento che dice che cos'è (§7.4) |
+| **il compendio di daemon** | non si tocca: la landing non è una decisione del kernel e non cambia il prossimo passo di daemon; e il compendio sta vicino al tetto che gli impone `scripts/check-docs.sh` — il conto è `wc -c docs/COMPENDIO.md` contro la riga `ceiling=` dello script |
+| **la lettura d'apertura** | il `CLAUDE.md` di questo repository: qui si leggono i documenti della landing, non il compendio di daemon, e le fonti di daemon si aprono solo quando una frase le cita. Le altre regole di daemon valgono anche qui |
+| **le sessioni** | una fase per volta: il disegno, il piano, il pre-controllo, poi un compito per sessione |
+
+### 7.2 I file del marchio, in `brand/`
+
+I file del kit che la pagina usa si **copiano** in `brand/`, byte per byte: `daemon_kit/` non sta in nessun repository —
+su questa macchina daemon la ignora con `.git/info/exclude` — e la CI non la vede. Si copiano:
+
+- i SVG del marchio;
+- lo studio del marchio;
+- **la splash**, perché il blocco `GEOMETRY` sta solo lì: il suo commento dice che la build del kit lo usa per scrivere
+  il marchio statico, il SVG e lo studio, *«so there is one geometry»*.
+
+Una nota in `brand/` dice, per ogni file, da dove viene, quando è stato copiato e la sua impronta (sha256). Dove il kit
+c'è accanto, il cancello confronta le impronte; dove non c'è, lo scrive. `daemon_kit/` resta com'è.
+
+### 7.3 I fine-riga
+
+Ogni file di testo va a capo **alla Linux (LF), su ogni macchina**: un `.gitattributes` con `* text=auto eol=lf`, e i
+file binari restano come sono. Lo aggiunge il **primo compito del piano**, prima di qualunque codice.
+
+Il perché, verificato il 2026-10-07: su questa macchina Git converte gli a-capo da solo (`core.autocrlf=true`,
+l'impostazione di Git per Windows), quindi una copia nuova del repository avrebbe gli a-capo di Windows — è così che
+daemon ha i fine-riga misti per file. E le copie in `brand/` devono restare identiche al kit, che va a capo alla Linux:
+con gli a-capo di Windows le loro impronte cambierebbero.
+
+**Costo dichiarato:** un file che un giorno debba andare a capo alla Windows, per esempio un `.bat`, chiede una riga
+d'eccezione.
+
+### 7.4 La riga in daemon
+
+Entra **dopo l'audit, su `main`**: un commit solo, fatto da una sessione di daemon. Serve davvero: `scripts/check-docs.sh`
+legge ogni `.md` sotto la radice che git non ignora — `find . -name '*.md'` e poi `git check-ignore --stdin` — quindi
+leggerebbe anche quelli della landing, e con loro quelli delle librerie (§8).
+
+⏳ **Fino ad allora:** su questa macchina la riga sta in `.git/info/exclude` di daemon, verificato il 2026-10-07. Su ogni
+altra macchina, prima di lanciare i cancelli di daemon con `landing/` presente, va aggiunta la stessa riga.
+
+**Costo dichiarato:** un passo a mano su ogni macchina, fino al commit; chi lo dimentica fa leggere al cancello dei
+documenti di daemon anche i file della landing.
+
+### 7.5 Dove si pubblica
+
+Si decide **quando la pagina è pronta**: è un'azione verso l'esterno, del proprietario. Intanto la build funziona a
+qualunque indirizzo — l'indirizzo base è un'impostazione, mai scritto nel codice — così aspettare non fa perdere niente.
