@@ -1,0 +1,196 @@
+<h2 class="sr-only">Bozza della domanda sul pentagramma: l'apertura della landing guidata da uno slider al posto dello scroll, nella variante A senza il pentagramma e nella variante B con il pentagramma e il ghigno della splash.</h2>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@500;600&family=Geist:wght@300;400;500&display=swap">
+<style>
+.sr-only{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.dmP{position:relative;background:#151112;border-radius:12px;overflow:hidden}
+.dmP canvas{display:block;width:100%;height:380px}
+.dmP .lead{position:absolute;left:16px;right:16px;bottom:22px;margin:0;text-align:center;font:400 15px/22px Geist,system-ui,sans-serif;color:#DCD2C4;pointer-events:none}
+.dmP .skip{position:absolute;top:12px;right:12px;font:500 12px/16px Geist,system-ui,sans-serif;color:#DCD2C4;background:transparent;border:1px solid #655B57;border-radius:999px;padding:4px 12px;cursor:pointer}
+.ctlP{display:flex;align-items:center;gap:12px;margin:12px 0 0;flex-wrap:wrap;font-size:13px;color:var(--text-secondary,#666)}
+.ctlP button[aria-pressed="true"]{background:var(--surface-1,#eee);border-color:var(--border-stronger,#888)}
+</style>
+<div class="dmP">
+  <canvas id="cvP" role="img" aria-label="L'apertura: i semi all'angolo aureo diventano un vortice, poi una luna, poi l'occhio, che diventa la o di daemon. Nella variante B, prima del nome, l'occhio disegna il pentagramma e il ghigno."></canvas>
+  <p class="lead" id="leadP">Assistente desktop locale, utente singolo.</p>
+  <button class="skip" id="skipP" type="button">Salta ↓</button>
+</div>
+<div class="ctlP" role="group" aria-label="Variante">
+  <button type="button" id="bAP" aria-pressed="true">A · senza pentagramma</button>
+  <button type="button" id="bBP" aria-pressed="false">B · con pentagramma</button>
+</div>
+<div class="ctlP">
+  <label for="sP">Scorri</label>
+  <input id="sP" type="range" min="0" max="1000" step="1" value="0" style="flex:1">
+  <span id="oP" style="min-width:200px">semi all'angolo aureo</span>
+</div>
+<script>
+(() => {
+  const cv = document.getElementById('cvP'), sl = document.getElementById('sP'), out = document.getElementById('oP'), lead = document.getElementById('leadP');
+  const bA = document.getElementById('bAP'), bB = document.getElementById('bBP');
+  const PHI = (1 + Math.sqrt(5)) / 2, GOLDEN = 360 / (PHI * PHI), GAZE = -45, N = 420;
+  const rad = (d) => d * Math.PI / 180;
+  const INK = '#ECE6DA', ACC = '#BF5567', BG = '#151112', MUTE = '#A39A8F', THROAT = '#48252C';
+  const UP = [Math.cos(rad(GAZE)), Math.sin(rad(GAZE))], RIGHT = [-UP[1], UP[0]];
+  let W = 0, H = 0, dpr = 1, px = null, py = null, variant = 'A';
+  const cl = (x) => Math.max(0, Math.min(1, x)), lerp = (a, b, t) => a + (b - a) * t;
+  const ease = (t) => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  const seg = (t, ab) => cl((t - ab[0]) / (ab[1] - ab[0]));
+  const pulse = (s, at) => Math.max(0, 1 - Math.abs(s - at) / .035);
+  const BEATS = {
+    A: { seeds: [0, .10], vortex: [.10, .38], moon: [.38, .58], eye: [.58, .70], sigil: null, name: [.72, 1] },
+    B: { seeds: [0, .08], vortex: [.08, .28], moon: [.28, .42], eye: [.42, .50], sigil: [.50, .80], name: [.82, 1] },
+  };
+  function markGeometry(c, r1) {
+    const r2 = r1 / PHI, r3 = r2 / PHI, c2 = [c[0] + r1 - r2, c[1]];
+    return { c, r1, r2, c2, r3 };
+  }
+  function grinAt(s) {
+    if (s <= 0 || s >= 1) return { w: 0, o: 0, bite: 0 };
+    const w = ease(seg(s, [.02, .15])) * (1 - ease(seg(s, [.83, .93])));
+    let o = .62 * ease(seg(s, [.04, .18])) + .2 * (pulse(s, .30) + pulse(s, .38));
+    o = lerp(o, 1, ease(seg(s, [.70, .76])));
+    o *= 1 - ease(seg(s, [.80, .83]));
+    return { w, o, bite: ease(seg(s, [.05, .20])) };
+  }
+  function grinPoints(g, { w, o, bite }) {
+    const r = g.r1, half = r * w;
+    const at = (u, v) => [g.c[0] + UP[0] * u + RIGHT[0] * v, g.c[1] + UP[1] * u + RIGHT[1] * v];
+    const lip = (v) => -0.45 * r + 0.2 * r * (v / r) ** 2 + 0.06 * r * (v / r) ** 4;
+    const gap = (v) => o * 0.42 * r * Math.max(0, 1 - 0.75 * (v / r) ** 2);
+    const top = [[-0.58, 0.07, 0.06, 0.34], [-0.22, 0.12, 0.07, 0.7], [0.22, 0.07, 0.12, 0.7], [0.58, 0.06, 0.07, 0.34]];
+    const bottom = [[-0.4, 0.06, 0.06, 0.3], [0, 0.07, 0.07, 0.42], [0.4, 0.06, 0.06, 0.3]];
+    const reach = (teeth, x) => teeth.reduce((sum, [c, l, rt, d]) => { const q = x < c ? 1 - (c - x) / l : 1 - (x - c) / rt; return sum + (q > 0 ? q ** 1.7 * d : 0); }, 0) * bite;
+    const stops = new Set(Array.from({ length: 33 }, (_, k) => -1 + k / 16));
+    for (const [c, l, rt] of [...top, ...bottom]) { stops.add(c); for (const f of [1, .66, .33]) { stops.add(Math.round((c - l * f) * 1000) / 1000); stops.add(Math.round((c + rt * f) * 1000) / 1000); } }
+    const xs = [...stops].sort((p, q) => p - q);
+    const upper = xs.map((x) => at(lip(x * half) - gap(x * half) * reach(top, x), x * half));
+    const lower = xs.slice().reverse().map((x) => at(lip(x * half) - gap(x * half) * (1 - reach(bottom, x)), x * half));
+    return upper.concat(lower);
+  }
+  const crescent = (ctx, g) => { ctx.beginPath(); ctx.arc(g.c[0], g.c[1], g.r1, 0, 2 * Math.PI); ctx.moveTo(g.c2[0] + g.r2, g.c2[1]); ctx.arc(g.c2[0], g.c2[1], g.r2, 0, 2 * Math.PI); };
+  function sigilPoints(g, s) {
+    const RS = g.r1 * PHI * PHI * (1 + .035 * (pulse(s, .30) + pulse(s, .38)));
+    return Array.from({ length: 5 }, (_, k) => {
+      const a = -Math.PI / 2 + k * 2 * Math.PI / 5;
+      return { a, x: g.c[0] + Math.cos(a) * RS, y: g.c[1] + Math.sin(a) * RS, RS };
+    });
+  }
+  function drawSigil(ctx, g, s) {
+    const bloom = ease(seg(s, [.04, .20])), ring = ease(seg(s, [.12, .27])), fade = 1 - ease(seg(s, [.55, .62]));
+    if (fade <= 0 || bloom <= 0) return;
+    const P = sigilPoints(g, s);
+    ctx.globalAlpha = fade; ctx.strokeStyle = INK; ctx.lineWidth = Math.max(1.6, g.r1 / PHI ** 6); ctx.lineCap = 'round';
+    ctx.beginPath();
+    P.forEach((p) => {
+      for (const side of [-1, 1]) {
+        const b = p.a + side * Math.PI / 5, x0 = g.c[0] + Math.cos(b) * g.r1, y0 = g.c[1] + Math.sin(b) * g.r1;
+        ctx.moveTo(x0, y0); ctx.lineTo(lerp(x0, p.x, bloom), lerp(y0, p.y, bloom));
+      }
+    });
+    ctx.stroke();
+    if (ring > 0) {
+      ctx.beginPath();
+      P.forEach((p) => {
+        const a0 = p.a - ring * Math.PI / 5;
+        ctx.moveTo(g.c[0] + Math.cos(a0) * p.RS, g.c[1] + Math.sin(a0) * p.RS);
+        ctx.arc(g.c[0], g.c[1], p.RS, a0, p.a + ring * Math.PI / 5);
+      });
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+  }
+  function drawDrops(ctx, g, s) {
+    const show = ease(seg(s, [.10, .22]));
+    if (show <= 0 || s >= .78) return;
+    const fly = ease(seg(s, [.62, .76])), P = sigilPoints(g, s);
+    const mouth = [g.c[0] - UP[0] * .64 * g.r1, g.c[1] - UP[1] * .64 * g.r1];
+    P.forEach((p, k) => {
+      const f = cl(fly * 1.15 - k * .03);
+      ctx.beginPath();
+      ctx.arc(lerp(p.x, mouth[0], f), lerp(p.y, mouth[1], f), Math.max(1.5, g.r1 / PHI ** 5) * show * (1 - .6 * f), 0, 2 * Math.PI);
+      ctx.fillStyle = ACC; ctx.globalAlpha = 1 - ease(seg(f, [.85, 1])); ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+  }
+  function drawMark(ctx, g, eyeK, alpha, s) {
+    ctx.globalAlpha = alpha;
+    crescent(ctx, g); ctx.fillStyle = INK; ctx.fill('evenodd');
+    const gr = grinAt(s);
+    if (gr.w > .01 && gr.o > .004) {
+      ctx.save(); crescent(ctx, g); ctx.clip('evenodd');
+      const pts = grinPoints(g, gr);
+      ctx.beginPath(); pts.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.closePath();
+      ctx.fillStyle = THROAT; ctx.fill(); ctx.restore();
+    }
+    if (eyeK > 0) {
+      const look = s > 0 && s < 1 ? ease(seg(s, [0, .12])) * (1 - ease(seg(s, [.86, 1]))) : 0;
+      let gz = rad(GAZE);
+      if (px !== null && look === 0) gz = Math.atan2(py - g.c2[1], px - g.c2[0]);
+      const d = (g.r2 - g.r3) * (1 - look);
+      ctx.beginPath();
+      ctx.ellipse(g.c2[0] + d * Math.cos(gz), g.c2[1] + d * Math.sin(gz), g.r3 * eyeK * (1 - .72 * look), g.r3 * eyeK * (1 + .15 * look), 0, 0, 2 * Math.PI);
+      ctx.fillStyle = ACC; ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+  function label(t, b) {
+    if (t <= b.seeds[1]) return "semi all'angolo aureo";
+    if (t <= b.vortex[1]) return 'un vortice';
+    if (t <= b.moon[1]) return 'si raccoglie in una luna';
+    if (t <= b.eye[1]) return "si apre l'occhio";
+    if (b.sigil && t <= b.sigil[1]) return 'il pentagramma e il ghigno';
+    return 'diventa la o del nome';
+  }
+  function draw() {
+    const ctx = cv.getContext('2d'), t = sl.value / 1000, b = BEATS[variant];
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.fillStyle = BG; ctx.fillRect(0, 0, W, H);
+    const cx = W / 2, cy = H / 2 - 8, R = Math.min(W, H) * .42, r1big = R * .36;
+    const p1 = seg(t, b.seeds), p2 = seg(t, b.vortex), p3 = ease(seg(t, b.moon)), p4 = ease(seg(t, b.eye)), p5 = ease(seg(t, b.name));
+    const s = b.sigil ? seg(t, b.sigil) : 0;
+    if (p3 < 1) {
+      const shown = Math.max(1, Math.round(N * (.2 + .8 * p1)));
+      for (let k = 1; k <= shown; k++) {
+        const share = k / N, a = rad(k * GOLDEN) + p2 * 2.4 * (1.25 - share);
+        let r = R * Math.sqrt(share) * (1 - .18 * p2 + .04 * Math.sin(k * .9 + p2 * 7));
+        r = lerp(r, r1big * (.7 + .35 * ((k % 7) / 7)), p3);
+        ctx.globalAlpha = .85 * (1 - p3);
+        ctx.beginPath(); ctx.arc(cx + r * Math.cos(a), cy + r * Math.sin(a), .8 + 2.2 * share, 0, 2 * Math.PI);
+        ctx.fillStyle = k % 13 === 5 ? ACC : INK; ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+    }
+    if (p3 > 0) {
+      const F = Math.min(W * .12, 72);
+      ctx.font = '500 ' + F + 'px Geist, system-ui, sans-serif';
+      const wD = ctx.measureText('daem').width, wN = ctx.measureText('n').width, oW = .625 * F;
+      const x0 = cx - (wD + oW + wN) / 2, base = cy + F * .27;
+      const g = markGeometry([lerp(cx, x0 + wD + .3125 * F, p5), lerp(cy, base - .2655 * F, p5)], lerp(r1big, .2815 * F, p5));
+      if (s > 0 && s < 1) drawSigil(ctx, g, s);
+      drawMark(ctx, g, p4, p3, s);
+      if (s > 0 && s < 1) drawDrops(ctx, g, s);
+      if (p5 > 0) {
+        ctx.globalAlpha = p5; ctx.fillStyle = INK;
+        ctx.fillText('daem', x0, base); ctx.fillText('n', x0 + wD + oW, base);
+        ctx.font = '600 11px Barlow, system-ui, sans-serif'; ctx.letterSpacing = '4.6px'; ctx.fillStyle = MUTE;
+        const tw = ctx.measureText('AGENTIC OS').width; ctx.fillText('AGENTIC OS', cx - tw / 2 + 2.3, base + 34);
+        ctx.letterSpacing = '0px'; ctx.globalAlpha = 1;
+      }
+    }
+    lead.style.opacity = (1 - seg(t, [.02, .09])).toFixed(2);
+    out.textContent = label(t, b);
+  }
+  function size() {
+    const r = cv.getBoundingClientRect(); dpr = Math.min(2, window.devicePixelRatio || 1);
+    W = r.width; H = r.height; cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); draw();
+  }
+  function pick(v) { variant = v; bA.setAttribute('aria-pressed', String(v === 'A')); bB.setAttribute('aria-pressed', String(v === 'B')); draw(); }
+  bA.addEventListener('click', () => pick('A'));
+  bB.addEventListener('click', () => pick('B'));
+  document.getElementById('skipP').addEventListener('click', () => { sl.value = 1000; draw(); });
+  sl.addEventListener('input', draw);
+  cv.addEventListener('pointermove', (e) => { const r = cv.getBoundingClientRect(); px = e.clientX - r.left; py = e.clientY - r.top; draw(); });
+  cv.addEventListener('pointerleave', () => { px = null; draw(); });
+  new ResizeObserver(size).observe(cv);
+  if (document.fonts) document.fonts.load('500 72px Geist').then(draw, draw);
+})();
+</script>
