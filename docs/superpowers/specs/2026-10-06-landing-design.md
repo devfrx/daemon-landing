@@ -5,9 +5,8 @@
 > diario, in [`docs/archivio/consegna-brainstorming-landing.md`](../../archivio/consegna-brainstorming-landing.md),
 > parola per parola.
 >
-> 📌 **Dove siamo:** il disegno si è scritto una sezione per volta, ciascuna dopo il sì del proprietario. Le §1–§9 sono
-> approvate e scritte, e la rilettura è fatta, il 2026-10-07; manca la rilettura del proprietario. Come si riparte lo
-> dice la §9.
+> 📌 **Dove siamo:** il disegno è finito, il 2026-10-07: scritto una sezione per volta, ciascuna dopo il sì del
+> proprietario, poi riletto dall'agente e dal proprietario. Il prossimo passo è il piano: lo dice la §9.
 
 | § | Sezione | Stato |
 |---|---|---|
@@ -445,9 +444,9 @@ sparire, e i link ai suoi commit si romperebbero.
 
 ## 9. Come si riprende
 
-**Dove siamo:** il disegno è finito, il 2026-10-07: le §1–§9 sono approvate, e la rilettura è fatta — il verbale è in
-[`docs/archivio/2026-10-07-rilettura-disegno-landing.md`](../../archivio/2026-10-07-rilettura-disegno-landing.md). Manca
-solo la rilettura del proprietario, l'ultimo passo di questa sessione. Il prossimo passo è il piano del primo traguardo.
+**Dove siamo:** il disegno è finito, il 2026-10-07: le §1–§9 sono approvate, la rilettura è fatta — il verbale è in
+[`docs/archivio/2026-10-07-rilettura-disegno-landing.md`](../../archivio/2026-10-07-rilettura-disegno-landing.md) — e il
+proprietario l'ha riletto per intero. Il prossimo passo è il piano del primo traguardo.
 
 **I traguardi.** Il piano si scrive un traguardo per volta, come in daemon: ogni piano è corto e si scrive sul codice di
 quel momento — la regola 5 di `CLAUDE.md` di daemon, *«un compito scritto prima si legge contro il codice di ADESSO»*.
