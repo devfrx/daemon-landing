@@ -1,9 +1,10 @@
 # Le prove per scrivere i compiti del piano del traguardo 1 — il verbale
 
-> 🗄️ **Che cos'è questo file.** Il verbale delle prove fatte il 2026-10-07, nel pomeriggio, prima di scrivere la §5 del
-> [piano del traguardo 1](../superpowers/plans/2026-10-07-landing-traguardo-1.md): il proprietario ha scelto di provare
-> il codice prima di scriverlo nel piano (risposta: A). Le prove sono girate nello scratchpad della sessione, che poi è
-> stato cancellato. Qui c'è la storia; il piano porta ciò che ne è venuto.
+> 🗄️ **Che cos'è questo file.** Il verbale delle prove fatte il 2026-10-07 per scrivere la §5 del
+> [piano del traguardo 1](../superpowers/plans/2026-10-07-landing-traguardo-1.md) — le §1–§9 nel pomeriggio, dalla §10
+> nella sessione dopo: il proprietario ha scelto di provare il codice prima di scriverlo nel piano (risposta: A). Le prove
+> sono girate nello scratchpad di ciascuna sessione, poi cancellato. Qui c'è la storia; il piano porta ciò che ne è
+> venuto.
 
 **La macchina:** Windows 11, Git Bash, Node 24.19.0, npm 11.17.0, Chrome 154.0.8037.98. I pacchetti, alle versioni
 esatte della §2.1 del piano.
@@ -116,3 +117,15 @@ sbagliato. Il controllo lo vuole dopo ogni numero, e la §3.3 porta il richiamo.
 
 **I comandi dei passi «l'altro senso»** sono stati rilanciati così come stanno nel piano, coi file di riserva in una
 cartella di `mktemp -d`: i rossi e i verdi di sopra, e alla fine i file uguali a prima.
+
+## 10. I compiti 3–7, rifatti dal testo del piano
+
+Nella sessione dopo, prima di presentare i compiti 4–7 al proprietario. Il codice l'ha preso dal piano un programma, riga
+per riga, senza ricopiarlo a mano; daemon, clonato nello scratchpad come nella §9, era a `84a476a`, e le cinque citazioni
+si trovano anche lì.
+
+| Compito | Visto |
+|---|---|
+| 3–7 | i rossi e i verdi della §8 e della §9, coi passi «l'altro senso»; alla fine `npm test`: 51 test |
+| 4 | `npm test` dà `4 passed`: il passo 5 adesso usa lui, così lo script e la configurazione di Vitest hanno la loro prova |
+| 7 | «open-sourced», «opensource», «Downloads», «downloadable», «scaricare» e «scaricabile» passavano tutti i controlli: solo «opensource» lo fermava, e per caso, il controllo dei refusi. Con le parole vietate in ogni loro forma (risposta: A): il test nuovo rosso sul codice di prima; poi 12 test delle funzioni e 8 del controllo del cancello; e «niente da scaricare» è rosso, il costo dichiarato |

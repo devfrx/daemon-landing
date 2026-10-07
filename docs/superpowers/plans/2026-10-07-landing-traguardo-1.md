@@ -16,7 +16,7 @@
 | 2 | Gli strumenti e i vincoli | ✅ approvata il 2026-10-07 |
 | 3 | I testi | ✅ approvata il 2026-10-07 |
 | 4 | La mappa dei file | ✅ approvata il 2026-10-07 |
-| 5 | I compiti | 🔶 i compiti 1–3 approvati il 2026-10-07; i compiti 4–7 scritti, da approvare; i compiti 8–13 da scrivere |
+| 5 | I compiti | 🔶 i compiti 1–7 approvati il 2026-10-07; i compiti 8–13 da scrivere |
 | 6 | Come si riprende | 🔶 oggi è la consegna della sessione del pomeriggio del 2026-10-07 |
 
 ---
@@ -776,7 +776,8 @@ export function openDaemon(root: string = resolve(process.cwd(), '..')): Daemon 
 Il file più grande di daemon supera il limite di `execFileSync`; il comando che lo mostra, dalla radice di daemon:
 `git ls-tree -r -l origin/main | sort -k4 -n | tail -1`.
 
-- [ ] **Passo 5 — il test, verde.** `npx vitest run src/lib/daemon.test.ts`. Atteso: `4 passed`.
+- [ ] **Passo 5 — il test, verde.** `npm test`, che prova anche lo script del passo 1 e la configurazione del passo 2.
+Atteso: `4 passed`.
 
 - [ ] **Passo 6 — i tipi.** `npm run build`. Atteso: `0 errors` e `2 page(s) built`.
 
@@ -1250,8 +1251,10 @@ git add src/lib checks && git commit -m "t1(compito 6): il controllo delle fonti
 
 **Le parole che i dizionari non conoscono** e che la pagina usa apposta stanno in `words.ts`, con il loro perché:
 `daemon` e `devfrx` nelle due lingue; in italiano `kernel`, la parola inglese che i documenti di daemon usano, e
-`English`; in inglese `Italiano`. **Le parole vietate** sono quelle della §1 del disegno, parola per parola, con «open
-source» scritto anche col trattino.
+`English`; in inglese `Italiano`. **Le parole vietate** sono quelle della §1 del disegno, in ogni loro forma —
+«open-sourced», «opensource», «downloads», «scaricare» —, perché la regola parla di ciò che dicono (risposta del
+proprietario: A, il 2026-10-07). **Costo dichiarato:** anche una frase vera come «niente da scaricare» è rossa, e va
+scritta in un altro modo.
 
 - [ ] **Passo 1 — i pacchetti**, fuori dal cancello (vincolo 9):
 
@@ -1322,6 +1325,13 @@ describe('forbiddenWords', () => {
     expect(forbiddenWords('Download daemon', 'en')).toEqual(['Download']);
   });
 
+  test('refuses them in every form', () => {
+    expect(forbiddenWords('daemon is open-sourced', 'en')).toEqual(['open-sourced']);
+    expect(forbiddenWords('an opensource project', 'en')).toEqual(['opensource']);
+    expect(forbiddenWords('Downloads', 'en')).toEqual(['Downloads']);
+    expect(forbiddenWords('puoi scaricare daemon', 'it')).toEqual(['scaricare']);
+  });
+
   test('accepts a text without them', () => {
     expect(forbiddenWords('Un assistente desktop locale.', 'it')).toEqual([]);
     expect(forbiddenWords('A local desktop assistant.', 'en')).toEqual([]);
@@ -1387,10 +1397,11 @@ export function typographyProblems(text: string, language: Language): string[] {
   return problems;
 }
 
-// The forbidden words, word for word as §1 of the design says them: there is no license, and nothing to download.
+// The forbidden words of §1 of the design, in every form — "open-sourced", "opensource", "downloads", "scaricare" —
+// because the rule is about what they say: there is no license, and nothing to download.
 const FORBIDDEN_WORDS: Record<Language, RegExp[]> = {
-  it: [/\bopen[\s-]source\b/i, /\bscarica\b/i],
-  en: [/\bopen[\s-]source\b/i, /\bdownload\b/i],
+  it: [/\bopen\W?source\w*/i, /\bscaric\w*/i],
+  en: [/\bopen\W?source\w*/i, /\bdownload\w*/i],
 };
 
 /** The forbidden words of `language` that `text` holds. */
@@ -1404,7 +1415,7 @@ export function digits(text: string): string[] {
 }
 ```
 
-- [ ] **Passo 4 — il test, verde.** `npx vitest run src/lib/words.test.ts`. Atteso: `11 passed`. La prima chiamata
+- [ ] **Passo 4 — il test, verde.** `npx vitest run src/lib/words.test.ts`. Atteso: `12 passed`. La prima chiamata
 carica i dizionari: qualche secondo.
 
 - [ ] **Passo 5 — il controllo del cancello.** `checks/words.test.ts`:
@@ -1483,7 +1494,7 @@ git add package.json package-lock.json src/lib checks && git commit -m "t1(compi
 |---|---|
 | §1–§4 | approvate, coi richiami del 2026-10-07 |
 | §5, compiti 1–3 | approvati |
-| §5, compiti 4–7 | scritti e provati, **da approvare** |
+| §5, compiti 4–7 | ✅ approvati il 2026-10-07; il 7 con le parole vietate in ogni loro forma (risposta: A) |
 | §5, compiti 8–13 | da scrivere |
 
 Il codice dei compiti si prova prima di scriverlo (risposta del proprietario: A). La storia delle prove è nel
@@ -1495,7 +1506,8 @@ Il codice dei compiti si prova prima di scriverlo (risposta del proprietario: A)
 2. leggi `CLAUDE.md`, questo piano e il disegno, per intero;
 3. le skill: `superpowers:writing-plans`, `anthropic-skills:decision-principles`, `anthropic-skills:dev-communication`;
 4. rilancia ciò che invecchia, coi comandi della tabella in fondo;
-5. presenta al proprietario i compiti 4–7, con le scelte della tabella qui sotto, e chiedi il sì; commit e push;
+5. ✅ presenta al proprietario i compiti 4–7, con le scelte della tabella qui sotto, e chiedi il sì; commit e push — fatto
+   nella sessione dopo, che li ha rifatti nello scratchpad dal testo del piano (§10 del verbale);
 6. scrivi i compiti 8–13, ciascuno provato prima nello scratchpad come i primi sette, e presentali in due gruppi: 8–10,
    poi 11–13;
 7. la §6 definitiva, cioè come si esegue; lo stato in testa; questa consegna in archivio; commit e push.
