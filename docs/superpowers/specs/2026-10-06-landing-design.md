@@ -6,8 +6,7 @@
 > parola per parola.
 >
 > 📌 **Dove siamo:** il disegno si scrive una sezione per volta, e ciascuna entra qui solo dopo il sì del proprietario.
-> Le §1–§7 sono approvate e scritte, il 2026-10-07; la §8 e la §9 definitiva il proprietario le ha rimandate alla
-> prossima sessione. Come si riparte lo dice la §9.
+> Le §1–§8 sono approvate e scritte, il 2026-10-07; manca la §9 definitiva. Come si riparte lo dice la §9.
 
 | § | Sezione | Stato |
 |---|---|---|
@@ -18,8 +17,8 @@
 | 5 | Com'è fatta dentro | ✅ approvata il 2026-10-07 |
 | 6 | La porta di qualità | ✅ approvata il 2026-10-07 |
 | 7 | Dove vive | ✅ approvata il 2026-10-07 |
-| 8 | Verificato, dedotto, assunto | ⏳ la bozza è nella §9, da presentare |
-| 9 | Come si riprende | ⏳ oggi è la consegna della sessione; la versione definitiva si presenta con la §8 |
+| 8 | Verificato, dedotto, assunto | ✅ approvata il 2026-10-07 |
+| 9 | Come si riprende | ⏳ oggi è la consegna della sessione; la versione definitiva è la prossima da presentare |
 
 ---
 
@@ -187,6 +186,9 @@ Dieci figure numerate. Ognuna ha un disegno, due o tre frasi semplici, i nomi ve
 `crates/kernel/src/lib.rs` e dai «(col N)» di `docs/design/01-topologia-dei-processi.md`; si verifica riga per riga
 contro il codice, nel piano. Lo stesso vale per i contenuti della Fig. 1: i livelli disegnati nella bozza `b` sono
 un'approssimazione, da verificare sulla spec del kernel.
+
+⚠️ **Richiamo del 2026-10-07:** il segno «(col N)» della regola 2 del README di daemon, e i «(col N)» di `design/01`,
+oggi stanno sul ramo dell'audit e non su `main`, che è quello che la pagina legge (§6.2) — §8.
 
 **Costo dichiarato:** la pagina è lunga, circa 15–20 schermate; per questo c'è l'indice fisso in alto (§2.2).
 
@@ -364,6 +366,62 @@ qualunque indirizzo — l'indirizzo base è un'impostazione, mai scritto nel cod
 
 ---
 
+## 8. Verificato, dedotto, assunto
+
+Ogni fatto su cui poggia il disegno, diviso per quanto è sicuro. Un fatto **verificato** porta il comando che lo mostra e
+la data: è vero a quella data, e chi dubita rilancia il comando. È la regola di `CLAUDE.md` di daemon sui numeri —
+*«Un numero misurato non si scrive: si scrive il COMANDO che lo produce»* — estesa a ogni fatto.
+
+### 8.1 Verificato il 2026-10-07
+
+Dalla radice di daemon, in Git Bash, dopo `export MSYS_NO_PATHCONV=1`. Ciò che la pagina legge si legge su `origin/main`
+(§6.2); `daemon_kit/` e lo stato della macchina, dalla cartella.
+
+| Fatto | Sostiene | Comando o fonte |
+|---|---|---|
+| il repository di daemon è pubblico e non ha una licenza | la regola 3 (§1), §6.3 | `gh repo view devfrx/daemon --json visibility,licenseInfo` |
+| il repository della landing è pubblico | §7.1 | `gh repo view devfrx/daemon-landing --json visibility` |
+| `daemon_kit/` e `landing/` sono ignorate da daemon su questa macchina, con `.git/info/exclude` | §7.2, §7.4 | `git check-ignore -v daemon_kit landing/CLAUDE.md` |
+| daemon sta sul ramo `repo-audit/20260930-1510` | §6.2 | `git status -sb` |
+| il blocco `GEOMETRY` sta nella splash, non nello studio | §5.2, §7.2 | `grep -c 'GEOMETRY-START' daemon_kit/*.html` |
+| i file del kit vanno a capo alla Linux | §7.3 | `for f in daemon_kit/*.svg daemon_kit/*.html; do tr -cd '\r' < "$f" \| wc -c; done`: tutti 0 |
+| Git converte gli a-capo da solo su questa macchina | §7.3 | `git config --show-origin --get-all core.autocrlf` |
+| `themes.css` contiene i colori del marchio; `base.css` ha regole per l'app | §5.4 | `git show "origin/main:gui/src/tokens/themes.css" \| grep -c '#151112'`; `git show "origin/main:gui/src/tokens/base.css" \| grep -n '^body\|focus-visible'` |
+| la CI di daemon: Linux e Windows, lo stesso cancello | §6.3 | `git show "origin/main:.github/workflows/quality-gate.yml"` |
+| `check-docs.sh` trova i `.md` con `find` e `git check-ignore --stdin` | §7.4 | `git show "origin/main:scripts/check-docs.sh" \| grep -n 'check-ignore'` |
+| daemon non ignora una `node_modules/` fuori da `gui/`: le sue righe hanno la `/` davanti | §7.4 | `git check-ignore -v --no-index foo/node_modules/x/README.md`: nessuna uscita |
+| ⚠️ **il segno «(col N)» della regola 2 del README, e i «(col N)» di `design/01`, non sono su `main`**: stanno sul ramo dell'audit, dal commit `3d318ec` | §4 | `git show "origin/main:docs/README.md" \| grep -c 'col N'` e `git show "origin/main:docs/design/01-topologia-dei-processi.md" \| grep -c '(col '`: 0; con `origin/repo-audit/20260930-1510` al posto di `origin/main`, più di 0 |
+| Astro mette la lingua principale su `/` e le altre sotto il loro prefisso, come `/it/`: lo fa `prefixDefaultLocale`, che vale `false` se non lo si scrive | §2.4, §5.1 | https://docs.astro.build/en/guides/internationalization/ |
+| Astro controlla i testi con uno schema, anche in file JSON o YAML | §3.1, §5.1 | https://docs.astro.build/en/guides/content-collections/ |
+| le soglie dei Core Web Vitals: LCP 2,5 s, INP 200 ms, CLS 0,1, sul 75° percentile | §6.1 | https://web.dev/articles/vitals, aggiornata il 2024-10-31 |
+| Playwright tiene una foto originale per browser e sistema | §6.3 | https://playwright.dev/docs/test-snapshots |
+
+### 8.2 Verificato il 2026-10-06
+
+Coi comandi, nel diario in archivio (§10): le versioni dei pacchetti, il peso di three.js, il supporto di
+`animation-timeline`. Le versioni si riverificano il giorno in cui si scrive il piano.
+
+### 8.3 Dedotto, da verificare nel piano
+
+| Che cosa | Da che cosa è dedotto | Come si verifica |
+|---|---|---|
+| l'etichetta di ogni figura | i `pub mod` di `crates/kernel/src/lib.rs` e i «(col N)» di `design/01` (§4) | riga per riga, contro il codice e i documenti di `origin/main` |
+| i livelli della Fig. 1 | la bozza `b` (§4) | sulla spec del kernel |
+
+### 8.4 Assunto
+
+| Assunto | Se è falso |
+|---|---|
+| l'audit arriva su `main` col segno «(col N)», nella regola 2 del README e in `design/01`, come sta oggi sul suo ramo | il controllo delle fonti è rosso sulla legenda e sulle etichette — è il suo scopo — e la legenda si decide di nuovo, col proprietario |
+
+**Costo dichiarato:** nel piano, i compiti della legenda e delle etichette vengono dopo l'arrivo dell'audit su `main`. I
+primi compiti, il `.gitattributes` e la copia in `brand/`, non ne dipendono.
+
+**Scartata:** leggere il ramo dell'audit finché non arriva su `main`. Romperebbe la §6.2: quel ramo può cambiare o
+sparire, e i link ai suoi commit si romperebbero.
+
+---
+
 ## 9. Come si riprende
 
 > ⏳ **La consegna della sessione del 2026-10-07.** Il proprietario ha rimandato alla prossima sessione la §8 e la §9
@@ -386,27 +444,7 @@ tree è pulito.
 6. chiedi al proprietario di rileggere il disegno intero; commit e push;
 7. il piano, con `superpowers:writing-plans`, nella sessione dopo.
 
-**La bozza della §8**, mostrata al proprietario e non ancora approvata. Verificato il 2026-10-07; i comandi si
-rieseguono, dalla radice di daemon, prima di scriverla:
-
-| Fatto | Comando |
-|---|---|
-| `daemon_kit/` e `landing/` sono ignorate da daemon su questa macchina, con `.git/info/exclude` | `git check-ignore -v daemon_kit landing/CLAUDE.md` |
-| daemon sta sul ramo `repo-audit/20260930-1510` | `git status -sb` |
-| il blocco `GEOMETRY` sta nella splash, non nello studio | `grep -c 'GEOMETRY-START' daemon_kit/*.html` |
-| i file del kit vanno a capo alla Linux | `for f in daemon_kit/*.svg daemon_kit/*.html; do tr -cd '\r' < "$f" \| wc -c; done`: tutti 0 |
-| Git converte gli a-capo da solo su questa macchina | `git config --show-origin --get-all core.autocrlf` |
-| `themes.css` contiene i colori del marchio; `base.css` ha regole per l'app | `grep -c '#151112' gui/src/tokens/themes.css`; `grep -n '^body\|focus-visible' gui/src/tokens/base.css` |
-| «(col N)»: N è il sotto-progetto della roadmap che costruisce il pezzo | `grep -n 'col N' docs/README.md` |
-| la CI di daemon: Linux e Windows, lo stesso cancello | `MSYS_NO_PATHCONV=1 git show "origin/main:.github/workflows/quality-gate.yml"` |
-| `check-docs.sh` trova i `.md` con `find` e `git check-ignore --stdin` | `MSYS_NO_PATHCONV=1 git show "origin/main:scripts/check-docs.sh" \| grep -n 'check-ignore'` |
-| le soglie dei Core Web Vitals: LCP 2,5 s, INP 200 ms, CLS 0,1, sul 75° percentile | https://web.dev/articles/vitals, aggiornata il 2024-10-31 |
-| Playwright tiene una foto originale per browser e sistema | https://playwright.dev/docs/test-snapshots |
-
-Verificato il 2026-10-06, coi comandi, nel diario in archivio (§10): le versioni dei pacchetti, il peso di three.js, il
-supporto di `animation-timeline`; le versioni si riverificano il giorno in cui si scrive il piano. **Dedotto**, da
-verificare nel piano: l'etichetta di ogni figura e i livelli della Fig. 1 (§4); che `check-docs.sh` leggerebbe anche i
-`.md` delle librerie della landing (§7.4).
+✅ **La §8 è approvata e scritta**, il 2026-10-07 (risposta: A): la sua bozza, che stava qui, è diventata la §8.
 
 **La bozza della §9 definitiva:** il prossimo passo è il piano, con `superpowers:writing-plans`, in una sessione nuova;
 il suo primo compito è il `.gitattributes` (§7.3), il secondo la copia in `brand/` (§7.2); quando il piano esiste, il
