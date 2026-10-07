@@ -2,7 +2,7 @@
 
 > 🗄️ **Che cos'è questo file.** Il verbale delle prove fatte il 2026-10-07 per scrivere la §5 del
 > [piano del traguardo 1](../superpowers/plans/2026-10-07-landing-traguardo-1.md) — le §1–§9 nel pomeriggio, la §10 e la
-> §11 nella sessione dopo, la §12 e la §13 in quella dopo ancora: il proprietario ha scelto di provare il codice prima
+> §11 nella sessione dopo, la §12 e la §13 in quella dopo ancora, la §14 nella quinta: il proprietario ha scelto di provare il codice prima
 > di scriverlo nel piano (risposta: A). Le prove
 > sono girate nello scratchpad di ciascuna sessione, poi cancellato. Qui c'è la storia; il piano porta ciò che ne è
 > venuto.
@@ -206,3 +206,70 @@ Nella stessa sessione della §12, dopo il sì ai compiti 8–10: la landing di p
 
 **Il testo del piano.** Il codice del compito 11 l'ha messo nel piano un programma, dai file che hanno girato. I comandi
 sono quelli girati, ma il compito non è ancora girato dal testo del piano: si rifà, come i compiti 8–10 nella §12.
+
+## 14. La quinta sessione: i compiti 1–11 rifatti, e il compito 11 corretto
+
+Nella quinta sessione del 2026-10-07, prima di presentare il compito 11 al proprietario. Il banco come nella §12, con una
+differenza: la copia della landing ha per remoto un repository nudo nello scratchpad, così `git push` gira e non arriva a
+niente di vero. Il programma che prende il codice dal piano è uno solo per tutti i compiti: dà un blocco così com'è; scrive
+un file solo se il suo passo lo nomina, fra apici inversi, prima del blocco; lancia un comando scritto nel testo solo se lo
+trova, lettera per lettera, nel suo passo, e così per «Lo stesso comando del passo N»; innesta i frammenti dei compiti 4 e 6
+dove il testo dice. daemon era a `427c760` all'inizio e a `8bdbde8` quando si è clonato, e a `82d121d` alla chiusura: commit
+di documenti dell'altra sessione, che non toccano né le cinque fonti né la GUI.
+
+| Compito | Visto |
+|---|---|
+| 1–10 | ogni rosso e ogni verde del piano, come nella §12 |
+| 11 | tutto come scritto, tranne l'ultimo comando del passo 5: `2 failed \| 56 passed` invece di `58 passed` — il controllo della console, nelle due lingue, con `locator.click: Timeout 2000ms exceeded` sull'interruttore del tema |
+
+**Le attese scadute.** Rilanciati i controlli nel browser, sulla pagina del compito 11 e su quella del 10:
+
+| Pagina | File | Giri | Rossi |
+|---|---|---|---|
+| compito 11 | insieme | 19 | 9, da 2 a 19 test per giro, con le attese di 2 s di Playwright e di 5 s di Vitest |
+| compito 11 | uno per volta: `--no-file-parallelism`, poi `fileParallelism: false` | 4 | nessuno |
+| compito 10 | insieme | 6 | nessuno |
+
+I giri rossi sono venuti a ondate, e nelle stesse ondate i giri uno per volta erano verdi. Nei giri rossi l'importazione dei
+moduli era tre volte più lenta, 16–20 s invece di 6: la macchina rallentava tutta. Col processore occupato apposta — 14
+processi che girano a vuoto — i giri sono rimasti verdi: non è il processore. È, con ogni probabilità, la memoria: 16 GB,
+e impegnati circa 52 GB con otto altre sessioni di Claude aperte, poi 55 alla chiusura; ogni file nel browser apre il suo
+Chrome. Vitest lancia i file di un progetto insieme, fino a un processore meno uno: 27, su questa macchina
+(`resolveMaxWorkers`, in `node_modules/vitest/dist/chunks/cli-api.*.js`).
+
+| Provato | Visto |
+|---|---|
+| `fileParallelism: false` dentro il progetto `page` | vale: Vitest mette quei file in un gruppo a sé, uno per volta, dopo gli altri progetti (`groupSpecs`, nello stesso file). `npm test`, tutti i progetti: 128 test, verdi |
+| quanto costa, a macchina quieta | i controlli del compito 11 nel browser in 38 s uno per volta, in 20 s insieme |
+| la guardia in `openLanding()`, `VITEST_POOL_ID` diverso da 1 | coi file insieme `Test Files  5 failed \| 1 passed (6)`, e i test dei file fermati risultano saltati; uno per volta, verde; `--fileParallelism` da riga di comando scavalca la configurazione, e la guardia lo vede |
+
+**Le sonde mai viste rosse.** Rileggendo il compito 11: il Tab, l'anello, il link al contenuto e l'indice erano quattro
+sonde in due test, e il passo dell'altro senso ne faceva diventare rosse due, l'ordine del Tab e l'indice. L'anello e il
+link al contenuto non erano mai visti rossi. Diventano quattro test, e il passo dell'altro senso ha un difetto per
+ciascuno. Il test dell'anello guarda solo i controlli: quando il Tab esce dalla pagina, a diventare rosso è il test
+dell'ordine. E il link al contenuto si giudica con `Boolean(…)`: con `!== null`, un `activeElement` assente sarebbe
+passato.
+
+**Il compito 11 corretto, rifatto dal testo**, dalla pagina del compito 10:
+
+| Passo | Visto |
+|---|---|
+| 2 | `Test Files  4 failed \| 1 passed (5)`, e `two checks in the browser at once` nei quattro file accanto al primo |
+| 3 | `38 passed` |
+| 4 | `8 failed \| 16 passed`: `target-size` con le fonti aperte |
+| 6 | `24 passed` |
+| 7 | `8 failed \| 16 passed`, ciascuno per il suo difetto: l'ordine `[0, 1, 2, 4, …, 10, -1]`; senza anello i link 0, 1, 9 e 10; il link al contenuto `false`; la sezione a 0,375 px dall'alto, sotto un indice alto 44,5. Poi `62 passed` |
+| 8 | `70 passed`; `npm audit`: 0 vulnerabilità |
+
+Il `git push` del passo 10 è caduto per il banco — la copia era su un ramo che non si chiamava `main` —, non per il piano.
+
+**Per i compiti 12 e 13**, guardato alla fonte il 2026-10-07:
+
+| Che cosa | Fonte |
+|---|---|
+| Lighthouse emula il telefono con `Emulation.setDeviceMetricsOverride`, `mobile: true`, e accende il tocco con `Emulation.setTouchEmulationEnabled`; la rete in byte al secondo, `Math.floor(kbps * 1024 / 8)`; il processore con `Emulation.setCPUThrottlingRate` | `core/lib/emulation.js` e `core/config/constants.js` di `GoogleChrome/lighthouse` |
+| in `web-vitals` la voce `first-input` si osserva sempre, a qualunque durata, perché l'INP abbia sempre un valore | il README di `GoogleChrome/web-vitals` al tag `v6.2.3` |
+| come i test di `web-vitals` nascondono la pagina: `__stubVisibilityChange` | `test/views/layout.njk` di `GoogleChrome/web-vitals` al tag `v6.2.3` |
+| `sequence.groupOrder`: i progetti con lo stesso numero girano insieme, e i gruppi dal più basso | https://vitest.dev/config/sequence |
+| `actions/checkout` v4 mette `origin` a `https://github.com/devfrx/daemon`, senza `.git`; con `ref: main` scrive `refs/remotes/origin/main` | `src/url-helper.ts` e `src/ref-helper.ts` di `actions/checkout` al tag `v4` |
+| l'evento `schedule` gira sull'ultimo commit del ramo predefinito; può tardare, soprattutto all'inizio di ogni ora; in un repository pubblico si spegne dopo 60 giorni senza attività | https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows |
