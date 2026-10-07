@@ -16,8 +16,8 @@
 | 2 | Gli strumenti e i vincoli | ✅ approvata il 2026-10-07 |
 | 3 | I testi | ✅ approvata il 2026-10-07 |
 | 4 | La mappa dei file | ✅ approvata il 2026-10-07 |
-| 5 | I compiti | 🔶 i compiti 1–7 approvati il 2026-10-07; i compiti 8–13 da scrivere |
-| 6 | Come si riprende | 🔶 oggi è la consegna della sessione del pomeriggio del 2026-10-07 |
+| 5 | I compiti | 🔶 i compiti 1–7 approvati il 2026-10-07; i compiti 8–10 scritti, da approvare; i compiti 11–13 da scrivere |
+| 6 | Come si riprende | 🔶 oggi è la consegna della terza sessione del 2026-10-07 |
 
 ---
 
@@ -255,18 +255,21 @@ landing/
 │  │  ├─ texts.ts                         compito 5: gli schemi dei testi
 │  │  ├─ sources.ts                       compito 6: citazioni, numeri, due lingue, commit
 │  │  ├─ words.ts                         compito 7: refusi, tipografia, parole vietate, cifre
+│  │  ├─ address.ts  links.ts             compito 8: il sito e la base; i link a daemon, sempre a un commit
+│  │  ├─ content.ts                       compito 8: frasi, parole e commit per le pagine; lo prova il controllo della pagina
 │  │  ├─ tokens.ts                        compito 9: i token che la pagina usa e quelli che daemon definisce
 │  │  └─ brand.ts                         compito 13: le impronte
 │  ├─ texts/it.json  texts/en.json        compito 5: le frasi
 │  ├─ ui/it.json  ui/en.json              compito 5: l'interfaccia
 │  ├─ content.config.ts                   compito 5: le quattro raccolte di Astro
 │  ├─ pages/index.astro  pages/it/index.astro       compito 3, poi 8
-│  └─ layouts/  components/  sections/  styles/     compiti 8 e 9: la pagina
+│  └─ layouts/  components/  sections/  styles/     compiti 8, 9 e 10: la pagina
 ├─ checks/                                i controlli del cancello, un file per riga della §6.1 del disegno
 │  ├─ sources.test.ts                     compito 6
 │  ├─ words.test.ts                       compito 7
-│  ├─ tokens.test.ts                      compito 9
-│  ├─ support/                            compito 10: il server di dist/ e il browser
+│  ├─ support/                            compito 8: il server di dist/ e il browser
+│  ├─ page.page.test.ts                   compito 8
+│  ├─ tokens.test.ts  themes.page.test.ts compito 9
 │  ├─ network.page.test.ts  console.page.test.ts  no-javascript.page.test.ts       compito 10
 │  ├─ accessibility.page.test.ts          compito 11
 │  ├─ speed.page.test.ts                  compito 12
@@ -300,12 +303,16 @@ daemon.
 | 5 | i testi e i loro schemi | le parole della §3.4, controllate da Astro; l'inglese riletto da un subagente nuovo |
 | 6 | il controllo delle fonti | rosso se una citazione, un numero, una lingua o il commit non torna |
 | 7 | il controllo delle parole | rosso su un refuso, una regola della tipografia, una parola vietata, una cifra nell'interfaccia |
-| 8 | la pagina | l'indice, «Cos’è», il segno della fonte, la chiusura, il link all'altra lingua |
-| 9 | i due temi | i colori di daemon, l'interruttore, il tema scuro senza JavaScript; rosso se manca un token |
-| 10 | i controlli nel browser | rosso su una richiesta a terzi, un errore in console, del testo che manca senza JavaScript |
+| 8 | la pagina, e il browser per guardarla | l'indice, «Cos’è», il segno della fonte, la chiusura, il link all'altra lingua, il sito e la base dalle impostazioni; il server di `dist/` e Chrome; rosso se una frase manca, o non porta il link alla sua fonte al commit |
+| 9 | i due temi e i caratteri | i colori di daemon, l'interruttore, il tema scuro senza JavaScript, Geist e Barlow ospitati dalla pagina; rosso se manca un token |
+| 10 | i controlli nel browser | rosso su una richiesta a terzi, un errore in console, del testo che manca senza JavaScript; l'icona del kit, che la console chiede |
 | 11 | l'accessibilità | zero errori di axe sulle regole WCAG 2.2 AA; tutto si usa da tastiera |
 | 12 | la velocità | LCP, CLS e INP sotto le soglie, col profilo e le interazioni della §2.2 |
 | 13 | le impronte, il cancello e la CI | `npm run gate`, e la CI su Linux e Windows, a ogni push e una volta a settimana |
+
+⚠️ **Richiamo del 2026-10-07:** il browser — il server di `dist/` e Chrome — arriva col compito 8, con un controllo della
+pagina (risposta del proprietario: A); i caratteri col 9; l'icona del kit col 10, perché senza Chrome scrive un errore
+in console — la storia nella §11 del [verbale delle prove](../../archivio/2026-10-07-prove-piano-landing.md).
 
 ---
 
@@ -321,6 +328,7 @@ A, §6): la storia delle prove è nel [verbale](../../archivio/2026-10-07-prove-
 | **le prove a mano** | i programmi che servono solo a provare stanno fuori dal repository: nello scratchpad della sessione, o in una cartella di `mktemp -d` |
 | **«Atteso»** | ciò che il comando deve scrivere. Se scrive altro ci si ferma e lo si dice: la divergenza si registra, il piano non si corregge in silenzio |
 | **il commit** | alla fine del compito, in italiano, senza co-autore, nella forma `t1(compito N): …` — `t1` è questo traguardo; poi `git push` |
+| **l'indirizzo** | dal compito 8 la build e i controlli nel browser leggono `LANDING_SITE` e `LANDING_BASE`. In prova si danno una volta, all'inizio della sessione: `export LANDING_SITE=https://landing.invalid LANDING_BASE=/daemon-landing/ MSYS_NO_PATHCONV=1`. Dove si pubblica lo decide il proprietario (§7.5 del disegno) |
 
 ### Compito 1 — il `.gitattributes`
 
@@ -1480,85 +1488,1580 @@ git add package.json package-lock.json src/lib checks && git commit -m "t1(compi
 
 - [ ] **Passo 9 —** `git push`.
 
+### Compito 8 — la pagina, e il browser per guardarla
+
+**File:** crea `src/lib/address.ts`, `src/lib/address.test.ts`, `src/lib/links.ts`, `src/lib/links.test.ts`,
+`src/lib/content.ts`, `src/layouts/Page.astro`, `src/sections/What.astro`, `src/components/Sentence.astro`,
+`src/styles/page.css`, `checks/support/server.ts`, `checks/support/server.test.ts`, `checks/support/landing.ts`,
+`checks/page.page.test.ts`; modifica `astro.config.mjs`, `vitest.config.ts`, `src/pages/index.astro`,
+`src/pages/it/index.astro`, `package.json` e `package-lock.json`.
+
+**Usa:** `openDaemon` (compito 4), le raccolte e `readTexts` (compito 5), `type Language` (compito 7). **Lascia:**
+
+- in `src/lib/address.ts` `readAddress(env): Address`, con `Address` = `{ readonly site: string; readonly base: string }`:
+  il sito da `LANDING_SITE`, un'origine, obbligatorio, perché `hreflang` vuole indirizzi completi; la base da
+  `LANDING_BASE`, `/` se manca, con una barra a ogni capo. La leggono la build e i controlli;
+- in `src/lib/links.ts` `repositoryUrl`, `sourceUrl(commit, path)` e `treeUrl(commit)`: i link a daemon su GitHub,
+  sempre a un commit;
+- in `src/lib/content.ts` `daemon`, aperto una volta per tutta la build, così le due pagine citano lo stesso commit;
+  `languageOf(locale)`, `interfaceText(language, id)` e `sentence(language, id)`. Legge le raccolte di Astro, che
+  esistono solo dentro la build: per questo non ha un test accanto, e lo prova il controllo della pagina;
+- la pagina, nella tabella qui sotto;
+- in `checks/support/` il server di `dist/` sotto la base, col suo test, e `openLanding()`: la pagina servita e il
+  Chrome installato, da cui parte ogni controllo nel browser;
+- il progetto di Vitest `page`, per i `*.page.test.ts`, e il controllo della pagina, `checks/page.page.test.ts`;
+- `playwright` 1.63.0.
+
+| La pagina | Che cos'è |
+|---|---|
+| `<html lang>`, il titolo, la descrizione | la lingua della pagina, `site-title` e la frase `what-app` |
+| `hreflang` | le due lingue, con l'indirizzo completo: sito, base e lingua |
+| «Vai al contenuto» | il primo link, verso `<main id="content">` |
+| l'indice | in alto e fisso: «Cos’è» porta a `#what` |
+| l'altra lingua | mostra «EN» o «IT»; il nome intero, «English» o «Italiano», è per chi non vede |
+| «Cos’è» | il titolo `daemon`, poi la sezione con le cinque frasi della §3.4, nel loro ordine |
+| il segno della fonte | un `<details>`: si tocca, e mostra il file di daemon col link al commit. Funziona senza JavaScript e da tastiera |
+| la chiusura | la riga col commit, che porta ai file di daemon a quel commit, e il link a `devfrx/daemon` |
+
+**L'indirizzo, in prova.** Dal passo 8 la build e i controlli nel browser vogliono `LANDING_SITE` e `LANDING_BASE`
+(§5, *«Come si leggono»*). I valori di prova sono `https://landing.invalid`, che per costruzione non esiste, e
+`/daemon-landing/`: una base non vuota, perché un indirizzo che dimentica la base diventi un 404. **Costo dichiarato:**
+anche in prova la build si ferma senza `LANDING_SITE`.
+
+- [ ] **Passo 1 — i pacchetti**, fuori dal cancello (vincolo 9):
+
+```bash
+npm install --no-audit --no-fund --save-exact --save-dev playwright@1.63.0 && npm approve-scripts --allow-scripts-pending
+```
+
+Atteso: `No packages with unreviewed install scripts.`. Nessun browser si scarica: i controlli usano il Chrome
+installato.
+
+- [ ] **Passo 2 — l'indirizzo e i link, i test rossi.** `src/lib/address.test.ts`:
+
+```ts
+import { describe, expect, test } from 'vitest';
+import { readAddress } from './address';
+
+describe('readAddress', () => {
+  test('reads the site and the base', () => {
+    expect(readAddress({ LANDING_SITE: 'https://example.org', LANDING_BASE: '/daemon-landing/' })).toEqual({
+      site: 'https://example.org',
+      base: '/daemon-landing/',
+    });
+  });
+
+  test('puts the page at the root when there is no base', () => {
+    expect(readAddress({ LANDING_SITE: 'https://example.org/' })).toEqual({ site: 'https://example.org', base: '/' });
+  });
+
+  test('refuses to go without the site: hreflang wants full addresses', () => {
+    expect(() => readAddress({})).toThrow(/LANDING_SITE is missing/);
+  });
+
+  test('refuses a site that is not an origin', () => {
+    expect(() => readAddress({ LANDING_SITE: 'example.org' })).toThrow(/LANDING_SITE/);
+    expect(() => readAddress({ LANDING_SITE: 'https://example.org/daemon-landing/' })).toThrow(/LANDING_BASE/);
+  });
+
+  test('refuses a base without a slash at each end, as Git Bash rewrites it', () => {
+    expect(() => readAddress({ LANDING_SITE: 'https://example.org', LANDING_BASE: 'C:/Program Files/Git/daemon-landing/' })).toThrow(/LANDING_BASE/);
+    expect(() => readAddress({ LANDING_SITE: 'https://example.org', LANDING_BASE: '/daemon-landing' })).toThrow(/LANDING_BASE/);
+  });
+});
+```
+
+`src/lib/links.test.ts`:
+
+```ts
+import { describe, expect, test } from 'vitest';
+import { repositoryUrl, sourceUrl, treeUrl } from './links';
+
+describe('the links to daemon on GitHub', () => {
+  test('point at a file as it was at a commit, never at a branch', () => {
+    expect(sourceUrl('50cc61f', 'docs/adr/0005-arbitrato-gpu-su-due-dimensioni.md')).toBe(
+      'https://github.com/devfrx/daemon/blob/50cc61f/docs/adr/0005-arbitrato-gpu-su-due-dimensioni.md',
+    );
+  });
+
+  test('encode every part of the path, and keep its slashes', () => {
+    expect(sourceUrl('50cc61f', 'docs/a file.md')).toBe('https://github.com/devfrx/daemon/blob/50cc61f/docs/a%20file.md');
+  });
+
+  test('point at the files of a commit, and at the repository', () => {
+    expect(treeUrl('50cc61f')).toBe('https://github.com/devfrx/daemon/tree/50cc61f');
+    expect(repositoryUrl).toBe('https://github.com/devfrx/daemon');
+  });
+});
+```
+
+Lancia `npx vitest run src/lib/address.test.ts src/lib/links.test.ts`. Atteso: `Cannot find module './address'` e
+`Cannot find module './links'`.
+
+- [ ] **Passo 3 — il codice.** `src/lib/address.ts`:
+
+```ts
+/** Where the page is published: settings, never code (§7.5 of the design). */
+export interface Address {
+  /** The origin the page is served from, for the full addresses that hreflang wants: `https://example.org`. */
+  readonly site: string;
+  /** The path of the page under the site, with a slash at each end: `/`, or `/daemon-landing/`. */
+  readonly base: string;
+}
+
+/** Reads the address from `LANDING_SITE` and `LANDING_BASE`; the build and the checks read the same two. */
+export function readAddress(env: Record<string, string | undefined>): Address {
+  const site = env.LANDING_SITE;
+  if (!site) {
+    throw new Error('LANDING_SITE is missing: hreflang wants full addresses, so the build needs the site, as in LANDING_SITE=https://example.org');
+  }
+  let url: URL;
+  try {
+    url = new URL(site);
+  } catch {
+    throw new Error(`LANDING_SITE is not a full address: ${site}`);
+  }
+  if (url.pathname !== '/') {
+    throw new Error(`LANDING_SITE is an origin, and the path goes in LANDING_BASE: ${site}`);
+  }
+  const base = env.LANDING_BASE ?? '/';
+  // Git Bash rewrites a value that starts with a slash into a Windows path, unless MSYS_NO_PATHCONV=1 is set.
+  if (!base.startsWith('/') || !base.endsWith('/')) {
+    throw new Error(`LANDING_BASE wants a slash at each end, as in /daemon-landing/: ${base}; in Git Bash, set MSYS_NO_PATHCONV=1`);
+  }
+  return { site: url.origin, base };
+}
+```
+
+`src/lib/links.ts`:
+
+```ts
+/** daemon on GitHub. The links of the page point at one commit, never at a branch (§3.3 of the design). */
+export const repositoryUrl = 'https://github.com/devfrx/daemon';
+
+/** The file at `path`, relative to daemon's root, as it was at `commit`. */
+export function sourceUrl(commit: string, path: string): string {
+  return `${repositoryUrl}/blob/${commit}/${path.split('/').map(encodeURIComponent).join('/')}`;
+}
+
+/** daemon's files as they were at `commit`. */
+export function treeUrl(commit: string): string {
+  return `${repositoryUrl}/tree/${commit}`;
+}
+```
+
+- [ ] **Passo 4 — i test, verdi.** Lo stesso comando del passo 2. Atteso: `8 passed`.
+
+- [ ] **Passo 5 — il server, il test rosso.** Se servisse anche fuori dalla base, i controlli dopo non vedrebbero un
+indirizzo che la dimentica. `checks/support/server.test.ts`:
+
+```ts
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { afterEach, describe, expect, test } from 'vitest';
+import { serveDist } from './server';
+
+const folders: string[] = [];
+afterEach(() => {
+  for (const folder of folders.splice(0)) rmSync(folder, { recursive: true, force: true });
+});
+
+// A build in miniature: the two pages and one asset.
+function dist(): string {
+  const folder = mkdtempSync(join(tmpdir(), 'landing-dist-'));
+  folders.push(folder);
+  mkdirSync(join(folder, 'it'));
+  mkdirSync(join(folder, '_astro'));
+  writeFileSync(join(folder, 'index.html'), '<p>en</p>');
+  writeFileSync(join(folder, 'it', 'index.html'), '<p>it</p>');
+  writeFileSync(join(folder, '_astro', 'page.css'), 'p {}');
+  return folder;
+}
+
+async function get(url: string): Promise<{ status: number; type: string | null; body: string }> {
+  const response = await fetch(url);
+  return { status: response.status, type: response.headers.get('content-type'), body: await response.text() };
+}
+
+describe('serveDist', () => {
+  test('serves the pages and their assets under the base', async () => {
+    const served = await serveDist('/daemon-landing/', dist());
+    try {
+      expect(await get(`${served.origin}/daemon-landing/`)).toEqual({ status: 200, type: 'text/html; charset=utf-8', body: '<p>en</p>' });
+      expect((await get(`${served.origin}/daemon-landing/it/`)).body).toBe('<p>it</p>');
+      expect((await get(`${served.origin}/daemon-landing/_astro/page.css`)).type).toBe('text/css; charset=utf-8');
+    } finally {
+      await served.close();
+    }
+  });
+
+  test('serves nothing outside the base, so an address that forgets the base is a 404', async () => {
+    const served = await serveDist('/daemon-landing/', dist());
+    try {
+      expect((await get(`${served.origin}/`)).status).toBe(404);
+      expect((await get(`${served.origin}/_astro/page.css`)).status).toBe(404);
+      expect((await get(`${served.origin}/daemon-landing/missing.css`)).status).toBe(404);
+    } finally {
+      await served.close();
+    }
+  });
+});
+```
+
+Lancia `npx vitest run checks/support/server.test.ts`. Atteso: `Cannot find module './server'`.
+
+- [ ] **Passo 6 — il server.** `checks/support/server.ts`:
+
+```ts
+import { readFile } from 'node:fs/promises';
+import { createServer } from 'node:http';
+import type { AddressInfo } from 'node:net';
+import { extname, resolve } from 'node:path';
+
+// The types of the files the build writes; anything else goes out as bytes.
+const TYPES: Record<string, string> = {
+  '.html': 'text/html; charset=utf-8',
+  '.css': 'text/css; charset=utf-8',
+  '.js': 'text/javascript; charset=utf-8',
+  '.json': 'application/json',
+  '.svg': 'image/svg+xml',
+  '.woff2': 'font/woff2',
+};
+
+export interface Served {
+  /** `http://127.0.0.1:<port>`: the page is at this origin, under its base. */
+  readonly origin: string;
+  close(): Promise<void>;
+}
+
+/**
+ * Serves `root` under `base`, on 127.0.0.1 and a free port: the page as a visitor gets it. Nothing outside the base is
+ * served, so an address that forgets the base fails here as it would once published (§7.5 of the design).
+ */
+export async function serveDist(base: string, root = 'dist'): Promise<Served> {
+  const folder = resolve(root);
+  const server = createServer(async (request, response) => {
+    const path = decodeURIComponent(new URL(request.url ?? '/', 'http://127.0.0.1').pathname);
+    const file = resolve(folder, path.slice(base.length), path.endsWith('/') ? 'index.html' : '');
+    try {
+      if (!path.startsWith(base)) throw new Error('outside the base');
+      const body = await readFile(file);
+      response.writeHead(200, { 'content-type': TYPES[extname(file)] ?? 'application/octet-stream' }).end(body);
+    } catch {
+      response.writeHead(404).end();
+    }
+  });
+  await new Promise<void>((listening) => server.listen(0, '127.0.0.1', listening));
+  const { port } = server.address() as AddressInfo;
+  return {
+    origin: `http://127.0.0.1:${port}`,
+    close: () =>
+      new Promise((closed) => {
+        server.closeAllConnections();
+        server.close(() => closed());
+      }),
+  };
+}
+```
+
+Lo stesso comando del passo 5. Atteso: `2 passed`.
+
+- [ ] **Passo 7 — i due progetti di Vitest, e la pagina nel browser.** `vitest.config.ts`, al posto di quello del
+compito 4:
+
+```ts
+import { configDefaults, defineConfig } from 'vitest/config';
+
+export default defineConfig({
+  test: {
+    projects: [
+      { test: { name: 'checks', include: ['src/**/*.test.ts', 'checks/**/*.test.ts'], exclude: [...configDefaults.exclude, '**/*.page.test.ts'] } },
+      { test: { name: 'page', include: ['checks/**/*.page.test.ts'] } },
+    ],
+  },
+});
+```
+
+`checks/support/landing.ts`:
+
+```ts
+import { type Browser, type BrowserContextOptions, chromium, type Page } from 'playwright';
+import { readAddress } from '../../src/lib/address';
+import type { Language } from '../../src/lib/words';
+import { serveDist } from './server';
+
+/** The built page, served under its base, and the installed Chrome: where every check in the browser starts. */
+export interface Landing {
+  readonly browser: Browser;
+  /** The path of the page in `language`, under the base: `/` is English, `/it/` Italian (§2.4 of the design). */
+  path(language: Language): string;
+  /** The full address the page in `language` will have once published: what hreflang declares. */
+  address(language: Language): string;
+  /** Where the page in `language` is served now. */
+  url(language: Language): string;
+  /** The page in `language`, loaded in a context of its own; close it with `page.context().close()`. */
+  open(language: Language, options?: BrowserContextOptions): Promise<Page>;
+  close(): Promise<void>;
+}
+
+export async function openLanding(): Promise<Landing> {
+  const { site, base } = readAddress(process.env);
+  const served = await serveDist(base);
+  const path = (language: Language): string => (language === 'en' ? base : `${base}it/`);
+  const url = (language: Language): string => served.origin + path(language);
+  // The installed Chrome, as the GUI of daemon uses it: no browser is downloaded (§2.1 of the plan).
+  const browser = await chromium.launch({ channel: 'chrome' });
+  return {
+    browser,
+    path,
+    address: (language) => new URL(path(language), site).href,
+    url,
+    async open(language, options = {}) {
+      const page = await (await browser.newContext(options)).newPage();
+      // The page is built and loaded: what is not there at once is missing, and a red should not wait.
+      page.setDefaultTimeout(2_000);
+      await page.goto(url(language));
+      return page;
+    },
+    async close() {
+      await browser.close();
+      await served.close();
+    },
+  };
+}
+```
+
+- [ ] **Passo 8 — il controllo della pagina, rosso.** `checks/page.page.test.ts`:
+
+```ts
+import type { Page } from 'playwright';
+import { afterAll, beforeAll, describe, expect, test } from 'vitest';
+import { openDaemon } from '../src/lib/daemon';
+import { repositoryUrl, sourceUrl, treeUrl } from '../src/lib/links';
+import { englishSentence, interfaceWord, italianSentence, readTexts } from '../src/lib/texts';
+import { type Landing, openLanding } from './support/landing';
+
+// The gate's check of the page (§2.4 and §3.3 of the design): every sentence with the link to its source at the commit,
+// the two languages declared and linked, an index that leads somewhere, and the commit at the bottom.
+const commit = openDaemon().commit;
+const italian = readTexts('src/texts/it.json', italianSentence);
+const sentences = { it: italian, en: readTexts('src/texts/en.json', englishSentence) };
+const words = { it: readTexts('src/ui/it.json', interfaceWord), en: readTexts('src/ui/en.json', interfaceWord) };
+
+let landing: Landing;
+beforeAll(async () => {
+  landing = await openLanding();
+});
+afterAll(async () => {
+  await landing?.close();
+});
+
+describe.each(['en', 'it'] as const)('the page in %s', (language) => {
+  const other = language === 'en' ? 'it' : 'en';
+  let page: Page;
+  beforeAll(async () => {
+    page = await landing.open(language);
+  });
+  afterAll(async () => {
+    await page?.context().close();
+  });
+
+  test('says its language, its title and what daemon is', async () => {
+    expect(await page.getAttribute('html', 'lang')).toBe(language);
+    expect(await page.title()).toBe(words[language]['site-title'].text);
+    expect(await page.getAttribute('meta[name="description"]', 'content')).toBe(sentences[language]['what-app'].text);
+  });
+
+  test('declares both languages to search engines, with full addresses', async () => {
+    for (const each of ['en', 'it'] as const) {
+      expect(await page.getAttribute(`link[rel="alternate"][hreflang="${each}"]`, 'href')).toBe(landing.address(each));
+    }
+  });
+
+  test('starts with a link that skips to the content', async () => {
+    await page.keyboard.press('Tab');
+    const focused = page.locator(':focus');
+    expect(await focused.innerText()).toBe(words[language]['skip-to-content'].text);
+    expect(await focused.getAttribute('href')).toBe('#content');
+    expect(await page.locator('main#content').count()).toBe(1);
+  });
+
+  test('links to the other language', async () => {
+    const link = page.locator(`header a[hreflang="${other}"]`);
+    expect(await link.getAttribute('href')).toBe(landing.path(other));
+    expect(await link.getAttribute('aria-label')).toBe(words[language]['other-language'].text);
+    expect(await link.innerText()).toBe(words[language]['other-language-short'].text);
+  });
+
+  test('has an index whose entries lead to the page', async () => {
+    const targets = await page.locator('nav a').evaluateAll((links) => links.map((link) => link.getAttribute('href') ?? ''));
+    expect(targets.length).toBeGreaterThan(0);
+    for (const target of targets) {
+      expect(target).toMatch(/^#./);
+      expect(await page.locator(`[id="${target.slice(1)}"]`).count()).toBe(1);
+    }
+  });
+
+  test.each(Object.keys(italian))('shows %s, with the link to its source at the commit', async (id) => {
+    const sentence = page.locator(`[id="${id}"]`);
+    expect(await sentence.innerText()).toContain(sentences[language][id]?.text);
+    expect(await sentence.locator(`a[href="${sourceUrl(commit, italian[id].source)}"]`).count()).toBe(1);
+  });
+
+  test('closes with the commit the sentences come from, and the code', async () => {
+    const footer = page.locator('footer');
+    expect(await footer.innerText()).toContain(words[language].provenance.text.replace('{commit}', commit.slice(0, 7)));
+    expect(await footer.locator(`a[href="${treeUrl(commit)}"]`).count()).toBe(1);
+    expect(await footer.locator(`a[href="${repositoryUrl}"]`).innerText()).toBe(words[language]['code-on-github'].text);
+  });
+});
+```
+
+Da qui l'indirizzo di prova sta nell'ambiente; poi la build delle pagine vuote del compito 3, e il controllo:
+
+```bash
+export LANDING_SITE=https://landing.invalid LANDING_BASE=/daemon-landing/ MSYS_NO_PATHCONV=1
+rm -rf dist && npm run build && npx vitest run --project page
+```
+
+Atteso: `0 errors`, poi `22 failed`.
+
+- [ ] **Passo 9 — la pagina.** `astro.config.mjs`, al posto di quello del compito 3:
+
+```js
+import { defineConfig } from 'astro/config';
+import { readAddress } from './src/lib/address.ts';
+
+// The site and the base are settings, never code (§7.5 of the design): LANDING_SITE and LANDING_BASE.
+const { site, base } = readAddress(process.env);
+
+export default defineConfig({
+  site,
+  base,
+  i18n: { locales: ['en', 'it'], defaultLocale: 'en' },
+});
+```
+
+`src/lib/content.ts`:
+
+```ts
+import { getEntry } from 'astro:content';
+import { openDaemon } from './daemon';
+import type { Language } from './words';
+
+/** daemon at origin/main, opened once for the whole build: both pages cite the same commit (§6.2 of the design). */
+export const daemon = openDaemon();
+
+/** The language of the page being built, from Astro's locale: `/` is English, `/it/` Italian (§2.4 of the design). */
+export function languageOf(locale: string | undefined): Language {
+  if (locale === 'en' || locale === 'it') return locale;
+  throw new Error(`the page has no language: Astro gives the locale ${locale}`);
+}
+
+/** A word of the interface, in `language` (§3.1 of the plan). */
+export async function interfaceText(language: Language, id: string): Promise<string> {
+  const entry = await getEntry(language === 'it' ? 'uiIt' : 'uiEn', id);
+  if (!entry) throw new Error(`the word ${id} of the interface is missing in ${language}`);
+  return entry.data.text;
+}
+
+/** A sentence about daemon, in `language`, and the file of daemon it comes from: the Italian sentence's (§3.1 of the design). */
+export async function sentence(language: Language, id: string): Promise<{ text: string; source: string }> {
+  const italian = await getEntry('textsIt', id);
+  const shown = language === 'it' ? italian : await getEntry('textsEn', id);
+  if (!italian || !shown) throw new Error(`the sentence ${id} is missing in ${language}`);
+  return { text: shown.data.text, source: italian.data.source };
+}
+```
+
+`src/layouts/Page.astro`:
+
+```astro
+---
+import { getAbsoluteLocaleUrl, getRelativeLocaleUrl } from 'astro:i18n';
+import { daemon, interfaceText, languageOf, sentence } from '../lib/content';
+import { repositoryUrl, treeUrl } from '../lib/links';
+import What from '../sections/What.astro';
+import '../styles/page.css';
+
+const language = languageOf(Astro.currentLocale);
+const other = language === 'en' ? 'it' : 'en';
+const word = (id: string) => interfaceText(language, id);
+const title = await word('site-title');
+// The line at the bottom: the build writes the commit where the word says {commit} (§3.4 of the plan).
+const provenance = (await word('provenance')).split('{commit}');
+if (provenance.length !== 2) throw new Error(`the word provenance wants {commit} once, in ${language}`);
+---
+
+<!doctype html>
+<html lang={language}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={(await sentence(language, 'what-app')).text} />
+    <link rel="alternate" hreflang="en" href={getAbsoluteLocaleUrl('en')} />
+    <link rel="alternate" hreflang="it" href={getAbsoluteLocaleUrl('it')} />
+  </head>
+  <body>
+    <a class="skip-link" href="#content">{await word('skip-to-content')}</a>
+    <header class="masthead">
+      <nav aria-label={await word('contents')}>
+        <a href="#what">{await word('section-what')}</a>
+      </nav>
+      <a href={getRelativeLocaleUrl(other)} hreflang={other} lang={other} aria-label={await word('other-language')}>
+        {await word('other-language-short')}
+      </a>
+    </header>
+    <main id="content">
+      <h1 translate="no">{title}</h1>
+      <What language={language} />
+    </main>
+    <footer>
+      <p>
+        {provenance[0]}<a href={treeUrl(daemon.commit)}><code translate="no">{daemon.commit.slice(0, 7)}</code></a>{provenance[1]}
+      </p>
+      <p><a href={repositoryUrl}>{await word('code-on-github')}</a></p>
+    </footer>
+  </body>
+</html>
+```
+
+`src/sections/What.astro`:
+
+```astro
+---
+import Sentence from '../components/Sentence.astro';
+import { interfaceText } from '../lib/content';
+import type { Language } from '../lib/words';
+
+interface Props {
+  language: Language;
+}
+
+const { language } = Astro.props;
+// The sentences of «Cos’è», in their order (§3.4 of the plan).
+const ids = ['what-app', 'what-pillars', 'what-pillar-names', 'what-kernel', 'what-limit'];
+---
+
+<section id="what" aria-labelledby="what-title">
+  <h2 id="what-title">{await interfaceText(language, 'section-what')}</h2>
+  {ids.map((id) => <Sentence id={id} language={language} />)}
+</section>
+```
+
+`src/components/Sentence.astro`:
+
+```astro
+---
+import { daemon, interfaceText, sentence } from '../lib/content';
+import { sourceUrl } from '../lib/links';
+import type { Language } from '../lib/words';
+
+interface Props {
+  id: string;
+  language: Language;
+}
+
+// A sentence and the sign of its source: touched, the sign shows the file of daemon, linked at the commit (§3.3 of the
+// design).
+const { id, language } = Astro.props;
+const { text, source } = await sentence(language, id);
+---
+
+<div class="sentence" id={id}>
+  <p>{text}</p>
+  <details class="source">
+    <summary>{await interfaceText(language, 'source')}</summary>
+    <a href={sourceUrl(daemon.commit, source)} translate="no">{source}</a>
+  </details>
+</div>
+```
+
+`src/styles/page.css`, la struttura soltanto: i colori e i caratteri arrivano col compito 9.
+
+```css
+/* The page's own layout (§5.4 of the design); the colours and the fonts arrive with the themes. */
+html {
+  /* The index stays on top: a jump from it, or from the skip link, must not hide its target underneath. */
+  scroll-padding-top: 4rem;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  line-height: 1.5;
+}
+
+.skip-link {
+  position: absolute;
+  z-index: 1;
+  inset-inline-start: 1rem;
+  inset-block-start: -10rem;
+  padding: 0.25rem 0.5rem;
+  background: Canvas;
+}
+
+.skip-link:focus {
+  inset-block-start: 0.5rem;
+}
+
+.masthead {
+  position: sticky;
+  inset-block-start: 0;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 1rem;
+  background: Canvas;
+}
+
+.masthead nav {
+  display: flex;
+  flex: 1;
+  gap: 1rem;
+}
+
+.masthead a {
+  padding: 0.25rem 0.5rem;
+}
+
+main,
+footer {
+  max-inline-size: 40rem;
+  margin-inline: auto;
+  padding-inline: 1rem;
+}
+
+.sentence {
+  margin-block: 1.5rem;
+}
+
+.sentence p {
+  margin: 0;
+}
+```
+
+`src/pages/index.astro`:
+
+```astro
+---
+import Page from '../layouts/Page.astro';
+---
+
+<Page />
+```
+
+`src/pages/it/index.astro`:
+
+```astro
+---
+import Page from '../../layouts/Page.astro';
+---
+
+<Page />
+```
+
+- [ ] **Passo 10 — il controllo, verde.** Lo stesso comando del passo 8. Atteso: `0 errors`, `2 page(s) built` e
+`22 passed`.
+
+- [ ] **Passo 11 — l'altro senso.** Una frase tolta dalla sezione, e il link all'altra lingua scritto senza la base;
+poi i file tornano com'erano, e la build si prova senza `LANDING_SITE`:
+
+```bash
+d=$(mktemp -d) && cp src/sections/What.astro src/layouts/Page.astro "$d/" && node --input-type=module - <<'EOF'
+import { readFileSync, writeFileSync } from 'node:fs';
+
+const replace = (file, from, to) => writeFileSync(file, readFileSync(file, 'utf8').replace(from, to));
+replace('src/sections/What.astro', ", 'what-limit']", ']');
+replace('src/layouts/Page.astro', 'href={getRelativeLocaleUrl(other)}', "href={other === 'it' ? '/it/' : '/'}");
+EOF
+rm -rf dist && npm run build && npx vitest run --project page; cp "$d/What.astro" src/sections/ && cp "$d/Page.astro" src/layouts/
+env -u LANDING_SITE npm run build; rm -rf dist && npm run build && npx vitest run --project page
+```
+
+Atteso: prima `4 failed | 18 passed`, coi rossi `links to the other language` e `shows what-limit, with the link to its
+source at the commit` in tutte e due le lingue; poi la build senza il sito si ferma, `LANDING_SITE is missing: hreflang
+wants full addresses`, con l'uscita a 1; alla fine di nuovo `22 passed`.
+
+- [ ] **Passo 12 — il resto, e le vulnerabilità.** `npm test -- --project checks`, poi `npm audit`. Atteso: `62 passed`,
+e `found 0 vulnerabilities`.
+
+- [ ] **Passo 13 — il commit.**
+
+```bash
+git add astro.config.mjs vitest.config.ts package.json package-lock.json src checks && git commit -m "t1(compito 8): la pagina, e il browser per guardarla -- l'indice, «Cos’è» con le cinque frasi e il segno della fonte, la chiusura col commit, l'altra lingua e hreflang; il sito e la base dalle impostazioni; il server di dist/ sotto la base e il Chrome installato; il controllo della pagina, coi rossi provati"
+```
+
+- [ ] **Passo 14 —** `git push`.
+
+### Compito 9 — i due temi e i caratteri
+
+**File:** crea `src/lib/tokens.ts`, `src/lib/tokens.test.ts`, `src/components/Theme.astro`, `checks/tokens.test.ts`,
+`checks/themes.page.test.ts`; modifica `src/layouts/Page.astro`, `src/styles/page.css`, `package.json` e
+`package-lock.json`.
+
+**Usa:** `openDaemon` (compito 4), `daemon` e la pagina (compito 8), `openLanding` (compito 8). **Lascia:**
+
+- in `src/lib/tokens.ts` `declaredTokens(css)`, `readTokens(css)` e `block(css, selector)`;
+- in `src/components/Theme.astro` i colori dei due temi, cioè `gui/src/tokens/themes.css` di daemon a `origin/main`
+  così com'è (§5.4 del disegno), e lo script del tema, che gira prima che la pagina si disegni;
+- nella pagina `<html data-theme="dark">`, il tema senza JavaScript; l'interruttore, nascosto finché lo script non lo
+  mostra; Geist per il testo e Barlow 600 per le etichette, ospitati dalla pagina; lo stile che legge solo i ruoli dei
+  token, `--color-*`;
+- `checks/tokens.test.ts`: rosso se la pagina legge un token che daemon non definisce in uno dei due temi, o una scala
+  `--ref-*`, che la regola di `themes.css` vieta a chi la usa;
+- `checks/themes.page.test.ts`: il tema del sistema; l'interruttore, col mouse e con la tastiera; la scelta che resta; il
+  tema scuro senza JavaScript; i due caratteri;
+- `@fontsource-variable/geist` 5.3.0 e `@fontsource/barlow` 5.3.0, i pacchetti della GUI.
+
+**L'interruttore** segue il sistema finché il visitatore non sceglie; la scelta resta nel `localStorage`, ma solo se è
+diversa dal tema del sistema: tornare al tema del sistema vuol dire seguirlo di nuovo. **Costo dichiarato:** lo script
+del tema sta nella pagina così com'è (`is:inline`), perché deve girare prima che la pagina si disegni; quindi
+`astro check` non lo controlla, e lo provano soltanto i controlli nel browser.
+
+- [ ] **Passo 1 — i pacchetti**, fuori dal cancello (vincolo 9):
+
+```bash
+npm install --no-audit --no-fund --save-exact --save-dev @fontsource-variable/geist@5.3.0 @fontsource/barlow@5.3.0 && npm approve-scripts --allow-scripts-pending
+```
+
+Atteso: `No packages with unreviewed install scripts.`.
+
+- [ ] **Passo 2 — i token, il test rosso.** `src/lib/tokens.test.ts`:
+
+```ts
+import { describe, expect, test } from 'vitest';
+import { block, declaredTokens, readTokens } from './tokens';
+
+// A themes.css in miniature: a scale on :root, and the roles of two themes.
+const THEMES = `:root { --ref-neutral-5: #151112; }
+[data-theme="dark"] {
+  color-scheme: dark;
+  --color-bg: var(--ref-neutral-5);
+  --color-text: #ece6da;
+}
+[data-theme="light"] {
+  color-scheme: light;
+  --color-bg: #f3eee6;
+}`;
+
+describe('declaredTokens', () => {
+  test('finds the custom properties a sheet declares', () => {
+    expect([...declaredTokens(THEMES)].sort()).toEqual(['--color-bg', '--color-text', '--ref-neutral-5']);
+  });
+});
+
+describe('readTokens', () => {
+  test('finds the custom properties a sheet reads, and not those it only declares', () => {
+    const css = 'a { color: var(--color-text); border: 1px solid var( --color-border ); --gap: 1rem; }';
+    expect([...readTokens(css)].sort()).toEqual(['--color-border', '--color-text']);
+  });
+});
+
+describe('block', () => {
+  test('gives the declarations of one theme', () => {
+    expect([...declaredTokens(block(THEMES, '[data-theme="light"]'))]).toEqual(['--color-bg']);
+  });
+
+  test('refuses a theme that is not there', () => {
+    expect(() => block(THEMES, '[data-theme="sepia"]')).toThrow(/sepia/);
+  });
+});
+```
+
+Lancia `npx vitest run src/lib/tokens.test.ts`. Atteso: `Cannot find module './tokens'`.
+
+- [ ] **Passo 3 — il codice.** `src/lib/tokens.ts`:
+
+```ts
+/** The custom properties that `css` declares: `--name: value`. */
+export function declaredTokens(css: string): Set<string> {
+  return new Set([...css.matchAll(/(--[\w-]+)\s*:/g)].map((match) => match[1]));
+}
+
+/** The custom properties that `css` reads: `var(--name)`. */
+export function readTokens(css: string): Set<string> {
+  return new Set([...css.matchAll(/var\(\s*(--[\w-]+)/g)].map((match) => match[1]));
+}
+
+/** The declarations of the rule for `selector` in `css`: one theme of daemon's themes.css (§5.4 of the design). */
+export function block(css: string, selector: string): string {
+  const start = css.indexOf(`${selector} {`);
+  if (start === -1) throw new Error(`no rule for ${selector}`);
+  const open = css.indexOf('{', start);
+  return css.slice(open + 1, css.indexOf('}', open));
+}
+```
+
+Lo stesso comando del passo 2. Atteso: `4 passed`.
+
+- [ ] **Passo 4 — i due controlli, rossi.** `checks/tokens.test.ts`:
+
+```ts
+import { readdirSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { describe, expect, test } from 'vitest';
+import { openDaemon } from '../src/lib/daemon';
+import { block, declaredTokens, readTokens } from '../src/lib/tokens';
+
+// The gate's check of the tokens (§5.4 of the design): the colours are the roles of daemon's themes.css at origin/main,
+// and a token the page reads that daemon no longer defines is a red.
+const themes = openDaemon().read('gui/src/tokens/themes.css');
+
+// Every stylesheet and component of the page: wherever a token can be read.
+const sources = readdirSync('src', { recursive: true, encoding: 'utf8' })
+  .filter((file) => file.endsWith('.css') || file.endsWith('.astro'))
+  .map((file) => readFileSync(join('src', file), 'utf8'))
+  .join('\n');
+const read = readTokens(sources);
+const own = declaredTokens(sources);
+
+describe('the tokens of the page', () => {
+  test('sees what it judges', () => {
+    // A walk that found nothing would pass the two probes below.
+    expect(read.has('--color-bg')).toBe(true);
+  });
+
+  test.each(['dark', 'light'])('every token the page reads is defined, in the %s theme', (theme) => {
+    const defined = declaredTokens(block(themes, `[data-theme="${theme}"]`));
+    expect([...read].filter((name) => !own.has(name) && !defined.has(name))).toEqual([]);
+  });
+
+  test('the page reads roles, never a scale, so that no theme can be bypassed', () => {
+    // The rule of daemon's themes.css: "No component reads a `--ref-*`".
+    expect([...read].filter((name) => name.startsWith('--ref-'))).toEqual([]);
+  });
+});
+```
+
+`checks/themes.page.test.ts`:
+
+```ts
+import type { BrowserContextOptions, Page } from 'playwright';
+import { afterAll, beforeAll, describe, expect, test } from 'vitest';
+import { interfaceWord, readTexts } from '../src/lib/texts';
+import { type Landing, openLanding } from './support/landing';
+
+// The gate's check of the themes (§2.2 and §5.3 of the design): the system's theme, a switch that changes it by mouse
+// and by keyboard and keeps the choice, the dark theme without JavaScript, and the page's own fonts.
+const words = { it: readTexts('src/ui/it.json', interfaceWord), en: readTexts('src/ui/en.json', interfaceWord) };
+
+let landing: Landing;
+beforeAll(async () => {
+  landing = await openLanding();
+});
+afterAll(async () => {
+  await landing?.close();
+});
+
+const theme = (page: Page) => page.getAttribute('html', 'data-theme');
+const background = (page: Page) => page.evaluate(() => getComputedStyle(document.body).backgroundColor);
+
+describe.each(['en', 'it'] as const)('the themes of the page in %s', (language) => {
+  const pages: Page[] = [];
+  const open = async (options: BrowserContextOptions): Promise<Page> => {
+    const page = await landing.open(language, options);
+    pages.push(page);
+    return page;
+  };
+  const toggle = (page: Page) => page.getByRole('switch', { name: words[language]['dark-theme'].text });
+  afterAll(async () => {
+    for (const page of pages) await page.context().close();
+  });
+
+  test.each(['dark', 'light'] as const)('follows the system when it is %s', async (scheme) => {
+    const page = await open({ colorScheme: scheme });
+    expect(await theme(page)).toBe(scheme);
+    expect(await toggle(page).isChecked()).toBe(scheme === 'dark');
+  });
+
+  test('is dark without JavaScript, and has no switch, which needs it', async () => {
+    const dark = await open({ colorScheme: 'dark' });
+    const still = await open({ colorScheme: 'light', javaScriptEnabled: false });
+    expect(await theme(still)).toBe('dark');
+    expect(await background(still)).toBe(await background(dark));
+    expect(await still.getByRole('switch').count()).toBe(0);
+  });
+
+  test('changes with the switch, by mouse and by keyboard, and keeps the choice', async () => {
+    const page = await open({ colorScheme: 'light' });
+    const light = await background(page);
+    await toggle(page).click();
+    expect(await theme(page)).toBe('dark');
+    expect(await background(page)).not.toBe(light);
+    await page.reload();
+    expect(await theme(page)).toBe('dark');
+    await toggle(page).focus();
+    await page.keyboard.press('Space');
+    expect(await theme(page)).toBe('light');
+    // Back on the system's theme there is no choice left to keep: the page follows the system again.
+    await page.reload();
+    expect(await theme(page)).toBe('light');
+    expect(await page.evaluate(() => localStorage.length)).toBe(0);
+  });
+
+  test('writes with its own fonts, Geist and Barlow', async () => {
+    const page = await open({});
+    const loaded = await page.evaluate(async () => {
+      await document.fonts.ready;
+      return [...document.fonts].filter((font) => font.status === 'loaded').map((font) => font.family);
+    });
+    expect(loaded).toContain('Geist Variable');
+    expect(loaded).toContain('Barlow');
+  });
+});
+```
+
+```bash
+npx vitest run checks/tokens.test.ts; rm -rf dist && npm run build && npx vitest run --project page checks/themes.page.test.ts
+```
+
+Atteso: `1 failed | 3 passed`, il rosso su `sees what it judges` — la pagina non legge ancora nessun token, e senza
+quella guardia gli altri tre passerebbero a vuoto —; poi `10 failed`.
+
+- [ ] **Passo 5 — i temi e i caratteri.** `src/components/Theme.astro`:
+
+```astro
+---
+import { daemon } from '../lib/content';
+
+// The colours of the two themes: daemon's themes.css as it is at origin/main. The CSS variables are the truth, and the
+// page keeps no copy (§5.4 of the design).
+const themes = daemon.read('gui/src/tokens/themes.css');
+---
+
+<style is:inline set:html={themes}></style>
+<script is:inline>
+  // The theme before the first paint (§2.2 of the design): the visitor's choice if there is one, else the system's.
+  // Without JavaScript the page keeps <html data-theme="dark"> and the switch stays hidden (§5.3 of the design).
+  (() => {
+    const root = document.documentElement;
+    const system = matchMedia('(prefers-color-scheme: dark)');
+    const systemTheme = () => (system.matches ? 'dark' : 'light');
+    // A browser that refuses the storage still gets the switch: the choice then lasts as long as the page.
+    const chosen = () => {
+      try {
+        const theme = localStorage.getItem('theme');
+        return theme === 'dark' || theme === 'light' ? theme : null;
+      } catch {
+        return null;
+      }
+    };
+    root.dataset.theme = chosen() ?? systemTheme();
+    addEventListener('DOMContentLoaded', () => {
+      const box = document.querySelector('.theme-switch input');
+      const show = () => {
+        box.checked = root.dataset.theme === 'dark';
+      };
+      show();
+      box.closest('.theme-switch').hidden = false;
+      box.addEventListener('change', () => {
+        root.dataset.theme = box.checked ? 'dark' : 'light';
+        // A choice equal to the system's theme is no choice: the page goes back to following the system.
+        try {
+          if (root.dataset.theme === systemTheme()) localStorage.removeItem('theme');
+          else localStorage.setItem('theme', root.dataset.theme);
+        } catch {}
+      });
+      system.addEventListener('change', () => {
+        if (chosen() === null) {
+          root.dataset.theme = systemTheme();
+          show();
+        }
+      });
+    });
+  })();
+</script>
+```
+
+`src/layouts/Page.astro`, al posto di quello del compito 8: i caratteri, `Theme`, `data-theme="dark"` e l'interruttore.
+
+```astro
+---
+import '@fontsource-variable/geist';
+import '@fontsource/barlow/600.css';
+import { getAbsoluteLocaleUrl, getRelativeLocaleUrl } from 'astro:i18n';
+import Theme from '../components/Theme.astro';
+import { daemon, interfaceText, languageOf, sentence } from '../lib/content';
+import { repositoryUrl, treeUrl } from '../lib/links';
+import What from '../sections/What.astro';
+import '../styles/page.css';
+
+const language = languageOf(Astro.currentLocale);
+const other = language === 'en' ? 'it' : 'en';
+const word = (id: string) => interfaceText(language, id);
+const title = await word('site-title');
+// The line at the bottom: the build writes the commit where the word says {commit} (§3.4 of the plan).
+const provenance = (await word('provenance')).split('{commit}');
+if (provenance.length !== 2) throw new Error(`the word provenance wants {commit} once, in ${language}`);
+---
+
+<!doctype html>
+<html lang={language} data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={(await sentence(language, 'what-app')).text} />
+    <link rel="alternate" hreflang="en" href={getAbsoluteLocaleUrl('en')} />
+    <link rel="alternate" hreflang="it" href={getAbsoluteLocaleUrl('it')} />
+    <Theme />
+  </head>
+  <body>
+    <a class="skip-link" href="#content">{await word('skip-to-content')}</a>
+    <header class="masthead">
+      <nav aria-label={await word('contents')}>
+        <a href="#what">{await word('section-what')}</a>
+      </nav>
+      <label class="theme-switch" hidden><input type="checkbox" role="switch" /> {await word('dark-theme')}</label>
+      <a href={getRelativeLocaleUrl(other)} hreflang={other} lang={other} aria-label={await word('other-language')}>
+        {await word('other-language-short')}
+      </a>
+    </header>
+    <main id="content">
+      <h1 translate="no">{title}</h1>
+      <What language={language} />
+    </main>
+    <footer>
+      <p>
+        {provenance[0]}<a href={treeUrl(daemon.commit)}><code translate="no">{daemon.commit.slice(0, 7)}</code></a>{provenance[1]}
+      </p>
+      <p><a href={repositoryUrl}>{await word('code-on-github')}</a></p>
+    </footer>
+  </body>
+</html>
+```
+
+`src/styles/page.css`, al posto di quello del compito 8:
+
+```css
+/* The page's own layout and type (§5.4 of the design); the colours are the roles of daemon's themes.css. */
+html {
+  /* The index stays on top: a jump from it, or from the skip link, must not hide its target underneath. */
+  scroll-padding-top: 4rem;
+}
+
+body {
+  margin: 0;
+  font-family: 'Geist Variable', system-ui, sans-serif;
+  line-height: 1.5;
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+a {
+  color: var(--color-text-accent);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--color-bg-selection);
+}
+
+.skip-link {
+  position: absolute;
+  z-index: 1;
+  inset-inline-start: 1rem;
+  inset-block-start: -10rem;
+  padding: 0.25rem 0.5rem;
+  background: var(--color-bg-raised);
+}
+
+.skip-link:focus {
+  inset-block-start: 0.5rem;
+}
+
+.masthead {
+  position: sticky;
+  inset-block-start: 0;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 1rem;
+  border-block-end: 1px solid var(--color-border);
+  background: var(--color-bg);
+}
+
+.masthead nav {
+  display: flex;
+  flex: 1;
+  gap: 1rem;
+}
+
+.masthead a {
+  padding: 0.25rem 0.5rem;
+}
+
+/* The labels — the index, the switch, the other language, the sign of the source — in Barlow, as in daemon's GUI. */
+.masthead a,
+.theme-switch,
+.source summary {
+  font-family: 'Barlow', system-ui, sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.theme-switch input {
+  inline-size: 1.5rem;
+  block-size: 1.5rem;
+  margin: 0;
+  vertical-align: middle;
+  accent-color: var(--color-bg-accent);
+}
+
+main,
+footer {
+  max-inline-size: 40rem;
+  margin-inline: auto;
+  padding-inline: 1rem;
+}
+
+.sentence {
+  margin-block: 1.5rem;
+}
+
+.sentence p {
+  margin: 0;
+}
+
+.source summary {
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+```
+
+- [ ] **Passo 6 — i controlli, verdi.**
+
+```bash
+rm -rf dist && npm run build && npx vitest run checks/tokens.test.ts && npx vitest run --project page
+```
+
+Atteso: `0 errors`; `4 passed`; `32 passed`, i 22 della pagina e i 10 dei temi. I caratteri sono in `dist/_astro/`.
+
+- [ ] **Passo 7 — l'altro senso.** Un token che daemon non definisce, una scala `--ref-*` e la pagina senza
+`data-theme="dark"`; poi i file tornano com'erano:
+
+```bash
+d=$(mktemp -d) && cp src/styles/page.css src/layouts/Page.astro "$d/" && node --input-type=module - <<'EOF'
+import { readFileSync, writeFileSync } from 'node:fs';
+
+const replace = (file, from, to) => writeFileSync(file, readFileSync(file, 'utf8').replace(from, to));
+replace('src/styles/page.css', 'color: var(--color-text-muted);', 'color: var(--color-text-faint);\n  border-color: var(--ref-neutral-48);');
+replace('src/layouts/Page.astro', ' data-theme="dark"', '');
+EOF
+npx vitest run checks/tokens.test.ts; rm -rf dist && npm run build && npx vitest run --project page checks/themes.page.test.ts
+cp "$d/page.css" src/styles/ && cp "$d/Page.astro" src/layouts/ && rm -rf dist && npm run build && npx vitest run checks/tokens.test.ts && npx vitest run --project page
+```
+
+Atteso: prima `3 failed | 1 passed`, con `--color-text-faint` e `--ref-neutral-48` nei rossi; poi `2 failed | 8
+passed`, i rossi su `is dark without JavaScript, and has no switch, which needs it`; alla fine `4 passed` e `32 passed`.
+
+- [ ] **Passo 8 — il resto, e le vulnerabilità.** `npm test -- --project checks`, poi `npm audit`. Atteso: `70 passed`,
+e `found 0 vulnerabilities`.
+
+- [ ] **Passo 9 — il commit.**
+
+```bash
+git add package.json package-lock.json src checks && git commit -m "t1(compito 9): i due temi e i caratteri -- i colori di themes.css di daemon a origin/main così com'è, il tema del sistema, l'interruttore che ricorda la scelta, il tema scuro senza JavaScript; Geist e Barlow ospitati dalla pagina; il controllo dei token e quello dei temi, coi rossi provati"
+```
+
+- [ ] **Passo 10 —** `git push`.
+
+### Compito 10 — i controlli nel browser
+
+**File:** crea `checks/network.page.test.ts`, `checks/console.page.test.ts`, `checks/no-javascript.page.test.ts`;
+modifica `checks/support/landing.ts` e `src/layouts/Page.astro`.
+
+**Usa:** `openLanding` (compito 8), la pagina coi temi (compito 9), `brand/` (compito 2). **Lascia:**
+
+- `open(language, options, before)`: `before` gira sulla pagina prima che si carichi, ed è lì che un controllo comincia
+  ad ascoltare;
+- `checks/network.page.test.ts`: ogni richiesta va al sito della pagina. Una richiesta altrove si registra e si ferma
+  prima che esca dalla macchina;
+- `checks/console.page.test.ts`: nessun errore in console, mentre la pagina si carica e mentre si usa — l'interruttore,
+  l'indice, il segno di una fonte. Un file che non si trova è un errore anche qui, perché Chrome lo scrive in console;
+- `checks/no-javascript.page.test.ts`: senza JavaScript la pagina si legge uguale; manca solo l'interruttore, che senza
+  non potrebbe funzionare;
+- l'icona della scheda: `brand/daemon-icon-dark.svg`, la copia del kit, che la build serve byte per byte.
+
+**L'icona** entra qui perché il controllo della console la chiede: senza, Chrome chiede `/favicon.ico` e scrive il 404 in
+console. Era una delle domande aperte della consegna; il rosso del passo 2 è quello vero, non uno messo apposta.
+
+- [ ] **Passo 1 — dove un controllo comincia ad ascoltare.** `checks/support/landing.ts`, al posto di quello del
+compito 8:
+
+```ts
+import { type Browser, type BrowserContextOptions, chromium, type Page } from 'playwright';
+import { readAddress } from '../../src/lib/address';
+import type { Language } from '../../src/lib/words';
+import { serveDist } from './server';
+
+/** The built page, served under its base, and the installed Chrome: where every check in the browser starts. */
+export interface Landing {
+  readonly browser: Browser;
+  /** The path of the page in `language`, under the base: `/` is English, `/it/` Italian (§2.4 of the design). */
+  path(language: Language): string;
+  /** The full address the page in `language` will have once published: what hreflang declares. */
+  address(language: Language): string;
+  /** Where the page in `language` is served now. */
+  url(language: Language): string;
+  /**
+   * The page in `language`, loaded in a context of its own; close it with `page.context().close()`. `before` runs on the
+   * page before it loads: where a check starts to listen.
+   */
+  open(language: Language, options?: BrowserContextOptions, before?: (page: Page) => Promise<void> | void): Promise<Page>;
+  close(): Promise<void>;
+}
+
+export async function openLanding(): Promise<Landing> {
+  const { site, base } = readAddress(process.env);
+  const served = await serveDist(base);
+  const path = (language: Language): string => (language === 'en' ? base : `${base}it/`);
+  const url = (language: Language): string => served.origin + path(language);
+  // The installed Chrome, as the GUI of daemon uses it: no browser is downloaded (§2.1 of the plan).
+  const browser = await chromium.launch({ channel: 'chrome' });
+  return {
+    browser,
+    path,
+    address: (language) => new URL(path(language), site).href,
+    url,
+    async open(language, options = {}, before = () => {}) {
+      const page = await (await browser.newContext(options)).newPage();
+      // The page is built and loaded: what is not there at once is missing, and a red should not wait.
+      page.setDefaultTimeout(2_000);
+      await before(page);
+      await page.goto(url(language));
+      return page;
+    },
+    async close() {
+      await browser.close();
+      await served.close();
+    },
+  };
+}
+```
+
+- [ ] **Passo 2 — i tre controlli; il rosso è l'icona che manca.** `checks/network.page.test.ts`:
+
+```ts
+import { afterAll, beforeAll, describe, expect, test } from 'vitest';
+import { type Landing, openLanding } from './support/landing';
+
+// The gate's check of the network (§1, rule 4, and §5.1 of the design): the page asks nothing of a third-party site —
+// no fonts, no statistics, nothing. Every request is recorded, and one bound elsewhere is stopped before it leaves.
+let landing: Landing;
+beforeAll(async () => {
+  landing = await openLanding();
+});
+afterAll(async () => {
+  await landing?.close();
+});
+
+describe.each(['en', 'it'] as const)('the requests of the page in %s', (language) => {
+  test('all go to the page’s own site', async () => {
+    const own = new URL(landing.url(language)).origin;
+    const requests: string[] = [];
+    const page = await landing.open(language, {}, async (page) => {
+      await page.route('**/*', (route) => {
+        requests.push(route.request().url());
+        return new URL(route.request().url()).origin === own ? route.continue() : route.abort();
+      });
+    });
+    await page.evaluate(() => document.fonts.ready);
+    await page.context().close();
+    // The page and its fonts at least: a page that asked for nothing would pass the probe below.
+    expect(requests.filter((url) => url.endsWith('.woff2')).length).toBeGreaterThan(0);
+    expect(requests.filter((url) => new URL(url).origin !== own)).toEqual([]);
+  });
+});
+```
+
+`checks/console.page.test.ts`:
+
+```ts
+import { afterAll, beforeAll, describe, expect, test } from 'vitest';
+import { interfaceWord, readTexts } from '../src/lib/texts';
+import { type Landing, openLanding } from './support/landing';
+
+// The gate's check of the console (§6.1 of the design): no error while the page loads, and none while it is used. A file
+// the page cannot find is an error here too: Chrome writes it in the console.
+const words = { it: readTexts('src/ui/it.json', interfaceWord), en: readTexts('src/ui/en.json', interfaceWord) };
+
+let landing: Landing;
+beforeAll(async () => {
+  landing = await openLanding();
+});
+afterAll(async () => {
+  await landing?.close();
+});
+
+describe.each(['en', 'it'] as const)('the console of the page in %s', (language) => {
+  test('has no error, while the page loads and while it is used', async () => {
+    const errors: string[] = [];
+    const page = await landing.open(language, {}, (page) => {
+      page.on('console', (message) => {
+        if (message.type() === 'error') errors.push(message.text());
+      });
+      page.on('pageerror', (error) => errors.push(error.message));
+    });
+    await page.getByRole('switch', { name: words[language]['dark-theme'].text }).click();
+    await page.locator('nav a').first().click();
+    await page.locator('.source summary').first().click();
+    await page.evaluate(() => document.fonts.ready);
+    await page.context().close();
+    expect(errors).toEqual([]);
+  });
+});
+```
+
+`checks/no-javascript.page.test.ts`:
+
+```ts
+import { afterAll, beforeAll, describe, expect, test } from 'vitest';
+import { englishSentence, italianSentence, readTexts } from '../src/lib/texts';
+import { type Landing, openLanding } from './support/landing';
+
+// The gate's check of the page without JavaScript (§5.3 of the design): it reads the same, all of it. Only the theme
+// switch is missing, because without JavaScript it could not work.
+const sentences = { it: readTexts('src/texts/it.json', italianSentence), en: readTexts('src/texts/en.json', englishSentence) };
+
+let landing: Landing;
+beforeAll(async () => {
+  landing = await openLanding();
+});
+afterAll(async () => {
+  await landing?.close();
+});
+
+describe.each(['en', 'it'] as const)('the page in %s, without JavaScript', (language) => {
+  test('reads the same as with it, but for the theme switch', async () => {
+    const withScript = await landing.open(language);
+    const switchLine = (await withScript.locator('.theme-switch').innerText()).trim();
+    const lines = async (page: typeof withScript) => {
+      const text = await page.locator('body').innerText();
+      await page.context().close();
+      return text.split('\n').map((line) => line.trim()).filter((line) => line !== '');
+    };
+    const read = (await lines(withScript)).filter((line) => line !== switchLine);
+    const without = await lines(await landing.open(language, { javaScriptEnabled: false }));
+    // What the page says, at least: an empty page would read the same both ways.
+    expect(without).toContain(sentences[language]['what-app'].text);
+    expect(without).toEqual(read);
+  });
+});
+```
+
+```bash
+rm -rf dist && npm run build && npx vitest run --project page checks/network.page.test.ts checks/console.page.test.ts checks/no-javascript.page.test.ts
+```
+
+Atteso: `0 errors`, poi `1 failed | 5 passed`: il rosso è la console, con `Failed to load resource: the server responded
+with a status of 404 (Not Found)` — Chrome chiede `/favicon.ico` una volta per browser, quindi in una lingua sola.
+
+- [ ] **Passo 3 — l'icona.** `src/layouts/Page.astro`, al posto di quello del compito 9:
+
+```astro
+---
+import '@fontsource-variable/geist';
+import '@fontsource/barlow/600.css';
+import { getAbsoluteLocaleUrl, getRelativeLocaleUrl } from 'astro:i18n';
+// The icon of the tab: the kit's, from its copy in brand/ (§7.2 of the design). Without it Chrome asks for
+// /favicon.ico, and the missing file is an error in the console.
+import icon from '../../brand/daemon-icon-dark.svg?url';
+import Theme from '../components/Theme.astro';
+import { daemon, interfaceText, languageOf, sentence } from '../lib/content';
+import { repositoryUrl, treeUrl } from '../lib/links';
+import What from '../sections/What.astro';
+import '../styles/page.css';
+
+const language = languageOf(Astro.currentLocale);
+const other = language === 'en' ? 'it' : 'en';
+const word = (id: string) => interfaceText(language, id);
+const title = await word('site-title');
+// The line at the bottom: the build writes the commit where the word says {commit} (§3.4 of the plan).
+const provenance = (await word('provenance')).split('{commit}');
+if (provenance.length !== 2) throw new Error(`the word provenance wants {commit} once, in ${language}`);
+---
+
+<!doctype html>
+<html lang={language} data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <link rel="icon" type="image/svg+xml" href={icon} />
+    <meta name="description" content={(await sentence(language, 'what-app')).text} />
+    <link rel="alternate" hreflang="en" href={getAbsoluteLocaleUrl('en')} />
+    <link rel="alternate" hreflang="it" href={getAbsoluteLocaleUrl('it')} />
+    <Theme />
+  </head>
+  <body>
+    <a class="skip-link" href="#content">{await word('skip-to-content')}</a>
+    <header class="masthead">
+      <nav aria-label={await word('contents')}>
+        <a href="#what">{await word('section-what')}</a>
+      </nav>
+      <label class="theme-switch" hidden><input type="checkbox" role="switch" /> {await word('dark-theme')}</label>
+      <a href={getRelativeLocaleUrl(other)} hreflang={other} lang={other} aria-label={await word('other-language')}>
+        {await word('other-language-short')}
+      </a>
+    </header>
+    <main id="content">
+      <h1 translate="no">{title}</h1>
+      <What language={language} />
+    </main>
+    <footer>
+      <p>
+        {provenance[0]}<a href={treeUrl(daemon.commit)}><code translate="no">{daemon.commit.slice(0, 7)}</code></a>{provenance[1]}
+      </p>
+      <p><a href={repositoryUrl}>{await word('code-on-github')}</a></p>
+    </footer>
+  </body>
+</html>
+```
+
+- [ ] **Passo 4 — verde, e l'icona è quella del kit.**
+
+```bash
+rm -rf dist && npm run build && npx vitest run --project page && cmp dist/_astro/daemon-icon-dark.*.svg brand/daemon-icon-dark.svg && echo 'the icon is the kit’s'
+```
+
+Atteso: `0 errors`; `38 passed`; `the icon is the kit’s`.
+
+- [ ] **Passo 5 — l'altro senso.** Un foglio di stile chiesto a un sito di terzi, che non esiste per costruzione, e uno
+script che aggiunge del testo e poi sbaglia; poi la pagina torna com'era:
+
+```bash
+d=$(mktemp -d) && cp src/layouts/Page.astro "$d/" && node --input-type=module - <<'EOF'
+import { readFileSync, writeFileSync } from 'node:fs';
+
+const replace = (file, from, to) => writeFileSync(file, readFileSync(file, 'utf8').replace(from, to));
+replace('src/layouts/Page.astro', '    <Theme />\n', '    <Theme />\n    <link rel="stylesheet" href="https://third-party.invalid/style.css" />\n');
+replace(
+  'src/layouts/Page.astro',
+  '  </body>',
+  '    <script is:inline>document.querySelector("main").append("only with JavaScript"); window.missing();</script>\n  </body>',
+);
+EOF
+rm -rf dist && npm run build && npx vitest run --project page checks/network.page.test.ts checks/console.page.test.ts checks/no-javascript.page.test.ts
+cp "$d/Page.astro" src/layouts/ && rm -rf dist && npm run build && npx vitest run --project page
+```
+
+Atteso: prima `6 failed`, i tre controlli in tutte e due le lingue; poi di nuovo `38 passed`.
+
+- [ ] **Passo 6 — il resto, e le vulnerabilità.** `npm test -- --project checks`, poi `npm audit`. Atteso: `70 passed`,
+e `found 0 vulnerabilities`.
+
+- [ ] **Passo 7 — il commit.**
+
+```bash
+git add src checks && git commit -m "t1(compito 10): i controlli nel browser -- nessuna richiesta a terzi, nessun errore in console, la pagina che si legge uguale senza JavaScript; l'icona del kit da brand/, che il controllo della console chiedeva, coi rossi provati"
+```
+
+- [ ] **Passo 8 —** `git push`.
+
 ---
 
 ## 6. Come si riprende
 
-> 🔶 Oggi questa sezione è la consegna della sessione del pomeriggio del 2026-10-07: il piano è a metà. A piano finito,
-> qui ci sarà come si esegue, e questa consegna andrà in archivio. Quella del mattino è in archivio, parola per parola:
-> [`2026-10-07-consegna-piano-landing-mattina.md`](../../archivio/2026-10-07-consegna-piano-landing-mattina.md).
+> 🔶 Oggi questa sezione è la consegna della terza sessione del 2026-10-07: il piano è a metà. A piano finito, qui ci sarà
+> come si esegue, e questa consegna andrà in archivio. Le consegne di prima sono in archivio, parola per parola:
+> [del mattino](../../archivio/2026-10-07-consegna-piano-landing-mattina.md) e
+> [del pomeriggio](../../archivio/2026-10-07-consegna-piano-landing-pomeriggio.md).
 
 **Dove siamo:**
 
 | Parte | Stato |
 |---|---|
 | §1–§4 | approvate, coi richiami del 2026-10-07 |
-| §5, compiti 1–3 | approvati |
-| §5, compiti 4–7 | ✅ approvati il 2026-10-07; il 7 con le parole vietate in ogni loro forma (risposta: A) |
-| §5, compiti 8–13 | da scrivere |
+| §5, compiti 1–7 | ✅ approvati; il 7 con le parole vietate in ogni loro forma (risposta: A) |
+| §5, compiti 8–10 | scritti, col codice che ha girato; **da rifare dal testo del piano, poi da approvare** |
+| §5, compiti 11–13 | da scrivere |
 
 Il codice dei compiti si prova prima di scriverlo (risposta del proprietario: A). La storia delle prove è nel
-[verbale](../../archivio/2026-10-07-prove-piano-landing.md); lo scratchpad delle prove è stato cancellato.
+[verbale](../../archivio/2026-10-07-prove-piano-landing.md), §10 e §11; lo scratchpad delle prove è stato cancellato.
 
 **Il prossimo passo**, in una sessione nuova:
 
 1. dentro `landing/`: `git fetch --all --prune`, `git status -sb`, e il fast-forward se serve;
 2. leggi `CLAUDE.md`, questo piano e il disegno, per intero;
-3. le skill: `superpowers:writing-plans`, `anthropic-skills:decision-principles`, `anthropic-skills:dev-communication`;
+3. le skill: `superpowers:writing-plans`, `anthropic-skills:decision-principles`, `anthropic-skills:dev-communication`,
+   `anthropic-skills:frontend-craft`;
 4. rilancia ciò che invecchia, coi comandi della tabella in fondo;
-5. ✅ presenta al proprietario i compiti 4–7, con le scelte della tabella qui sotto, e chiedi il sì; commit e push — fatto
-   nella sessione dopo, che li ha rifatti nello scratchpad dal testo del piano (§10 del verbale);
-6. scrivi i compiti 8–13, ciascuno provato prima nello scratchpad come i primi sette, e presentali in due gruppi: 8–10,
-   poi 11–13;
-7. la §6 definitiva, cioè come si esegue; lo stato in testa; questa consegna in archivio; commit e push.
+5. rifai i compiti 3–10 nello scratchpad dal testo del piano, come nella §10 del verbale: un programma prende il codice
+   dal piano, riga per riga, e i comandi si lanciano come stanno. I comandi del passo 11 del compito 8 non hanno ancora
+   girato così (§11 del verbale). Se qualcosa diverge, si registra e si corregge prima di presentare;
+6. presenta al proprietario i compiti 8–10, con le scelte della tabella qui sotto, e chiedi il sì; commit e push;
+7. scrivi i compiti 11–13, ciascuno provato prima nello scratchpad, e presentali;
+8. la §6 definitiva, cioè come si esegue; lo stato in testa; questa consegna in archivio; commit e push.
 
-**Le scelte dei compiti 4–7**, da dire al proprietario quando li presenti:
+**Le scelte dei compiti 8–10**, da dire al proprietario quando li presenti:
 
 | Scelta | Il perché, o il costo |
 |---|---|
-| il commit si controlla senza chiedere niente a GitHub: daemon si legge a `origin/main`, e `origin` dev'essere `devfrx/daemon` su GitHub (compito 6) | costo: in locale vale l'ultimo `git fetch`; in CI il clone è nuovo, e il controllo è esatto |
-| lo spazio che non va a capo vale dopo ogni numero, non solo prima dell'unità (§3.3, col richiamo) | un programma non sa che cos'è un'unità, e quello spazio non è mai sbagliato |
-| `@types/node` 24.13.5, la versione della GUI (§2.1, col richiamo) | senza, `astro check` si ferma sui file `.ts` |
-| l'inglese lo rilegge un subagente nuovo lanciato dal coordinatore, non dal subagente del compito (compito 5) | i subagenti li lancia chi coordina, dopo averne detto il costo (`CLAUDE.md` di daemon) |
-| le parole che i dizionari non conoscono: `daemon` e `devfrx`; in italiano `kernel` e `English`; in inglese `Italiano` (compito 7) | sono le sole che le frasi e l'interfaccia della §3.4 usano apposta |
+| il browser arriva col compito 8, con un controllo della pagina (risposta: A) | costo: il compito 8 è il più grande; la §4 porta il richiamo |
+| `LANDING_SITE` obbligatorio e `LANDING_BASE` con una barra a ogni capo; in prova `https://landing.invalid` e `/daemon-landing/` | `hreflang` vuole indirizzi completi; una base non vuota fa diventare un 404 l'indirizzo che la dimentica. Costo: anche in prova la build vuole le due impostazioni |
+| il segno della fonte è un `<details>` | si tocca e mostra il file col link, senza JavaScript e da tastiera. Costo: «Fonte» si ripete accanto a ogni frase |
+| `daemon` è il titolo `<h1>` della pagina | una pagina ha un titolo; con l'apertura del traguardo 2 si rivede |
+| l'interruttore segue il sistema, e ricorda la scelta solo se è diversa dal sistema | tornare al tema del sistema vuol dire seguirlo di nuovo. Costo: lo script del tema non lo controlla `astro check` |
+| Barlow solo al peso 600, in maiuscolo, per le etichette — l'indice, l'interruttore, l'altra lingua, «Fonte» —; Geist per il testo | come le etichette della GUI di daemon |
+| il controllo dei token vieta anche le scale `--ref-*` | è la regola di `themes.css` di daemon: *«No component reads a `--ref-*`»* |
+| l'icona della scheda è `daemon-icon-dark.svg`, dal compito 10 | senza un'icona Chrome scrive un errore in console; ha un fondo suo, e si vede su ogni barra delle schede |
+| senza JavaScript la pagina si confronta, riga per riga, con sé stessa col JavaScript | manca soltanto l'interruttore |
 
-**Già visto, per i compiti 8–13:**
+**Già visto, per i compiti 11–13:**
 
 | Compito | Che cosa si sa già | Nel verbale |
 |---|---|---|
-| 8 | `hreflang` vuole indirizzi completi, e ogni versione elenca se stessa e l'altra: serve l'indirizzo del sito, `site`, da un'impostazione come la base. Senza `site`, `getAbsoluteLocaleUrl` dà `/it/`: la build deve fermarsi se manca. In Git Bash un valore che comincia con `/`, come `LANDING_BASE=/daemon/`, va dato con `MSYS_NO_PATHCONV=1` | §1, §6 |
-| 10 | Playwright apre il Chrome installato con `channel: 'chrome'`; un server di `dist/` scritto con `node:http`, senza pacchetti, basta — e deve servire la pagina sotto la base | §4 |
+| 11 | `openLanding()` e `open()` danno la pagina servita sotto la base, nel Chrome installato, con `before` per ascoltare prima che si carichi | §11 |
 | 12 | il profilo si accende con una sessione CDP: `Network.enable`, `Network.emulateNetworkConditions`, `Emulation.setCPUThrottlingRate`; che sia acceso lo prova `responseEnd` della navigazione, non `responseStart`; si interagisce solo dopo che l'LCP è arrivato; la fine della misura si simula come nei test di `web-vitals`; il rosso, su una pagina con 300 ms di lavoro nel clic | §4, §5 |
+| 12 | Vitest lancia in parallelo i file di un progetto: la velocità si misura da sola, in un progetto suo o con `fileParallelism: false` | — |
 | 13 | in CI, `actions/checkout` con `ref: main` lascia `origin/main` nel clone di daemon; daemon usa la v4, e l'ultima è la v7.0.1: si segue daemon e si segnala la differenza | §6 |
 | 13 | la verifica delle impronte di `brand/` è già scritta, come prova a mano, nel passo 2 del compito 2: `src/lib/brand.ts` ne è la versione che resta | — |
+| 13 | il cancello, nell'ordine di `scripts/gate-gui.sh`: `npm ci`, `dist/` tolta, la build con `LANDING_SITE` e `LANDING_BASE`, i progetti `checks` e `page` uno per volta, `npm audit` alla fine | — |
 
-**Ancora da provare**, scrivendo i compiti 8–13: se Chrome chiede `/favicon.ico`, e se la sua mancanza è un errore nella
-console — in quel caso l'icona di `brand/` entra prima; come si mette `axe-core` 4.13.0 nella pagina, e i nomi delle sue
-regole per WCAG 2.2 AA; quali token di `themes.css` usa la pagina; come Astro importa i caratteri di `@fontsource`;
-`scripts/gate.mjs`, con l'ambiente della build: `LANDING_SITE` e `LANDING_BASE`.
+**Ancora da provare**, scrivendo i compiti 11–13: come si mette `axe-core` 4.13.0 nella pagina, e i nomi delle sue
+regole per WCAG 2.2 AA; il percorso da tastiera che il compito 11 prova; `scripts/gate.mjs`; la CI, con la landing
+dentro la copia di daemon.
 
 **Da sapere subito:**
 
-- ⚠️ daemon si muove mentre si lavora: in questa sessione `origin/main` è passato da `c42c947` a `973153f`, per
-  un'altra sessione su daemon. Un commit di daemon non si scrive mai come vero: si rilancia
-  `git -C .. rev-parse --short origin/main`;
+- ⚠️ daemon si muove mentre si lavora: in questa sessione `origin/main` è passato da `973153f` a `c2de19a`, per le
+  sessioni del lean-docs della R5 su daemon. I suoi lotti toccano `COMPENDIO.md`, `HANDOFF.md`, `roadmap.md`,
+  `README.md`, `AVVIO-CHAT.md`, `porta-di-qualita.md`, `riferimenti.md`, due specifiche, ADR-0015 e i commenti nei
+  sorgenti: non le cinque fonti della §3.4, ma il `README.md` è la fonte futura della legenda. Un commit di daemon non si
+  scrive mai come vero: si rilancia `git -C .. rev-parse --short origin/main`;
+- su questa macchina daemon adesso sta su `main`, con nella cartella il lavoro di un'altra sessione: da qui non si tocca;
 - `daemon_kit/` non è nascosta a daemon, `/landing/` sì: `git -C .. check-ignore -v daemon_kit landing/CLAUDE.md`. Il
-  `.gitignore` di daemon non ha ancora la riga `landing/`: ora che l'audit è su `main` si può fare, ed è lavoro di daemon;
-- su questa macchina `du` su una `node_modules` nella cartella temporanea non finisce in due minuti: non serve;
+  `.gitignore` di daemon non ha ancora la riga `landing/`, ed è lavoro di daemon;
+- la prova nello scratchpad: `git clone -q --no-checkout` della cartella di daemon, `origin` rimesso su
+  `https://github.com/devfrx/daemon.git`, `origin/main` scritto con `git update-ref`, e la landing di prova dentro; per
+  il compito 2, accanto, una copia dei SVG e delle due pagine di `daemon_kit/`;
+- in Git Bash, con `MSYS_NO_PATHCONV=1`, un percorso `/c/…` passato a Node diventa `C:\c\…`: a Node si passa
+  `cygpath -w`;
 - su Windows `chrome.exe --version` apre il browser invece di scrivere la versione: la versione si legge dal nome della
   cartella, `ls "/c/Program Files/Google/Chrome/Application/"`.
 
-**Verificato il 2026-10-07, nel pomeriggio.** Si rilancia, non si crede. I comandi `git` dalla radice di daemon, in Git
-Bash, dopo `export MSYS_NO_PATHCONV=1`.
+**Verificato il 2026-10-07, nella terza sessione.** Si rilancia, non si crede. I comandi `git` dalla radice di daemon, in
+Git Bash, dopo `export MSYS_NO_PATHCONV=1`.
 
 | Fatto | Comando o fonte |
 |---|---|
 | le versioni della §2.1; Node 24.19.0 e npm 11.17.0 su questa macchina | `npm view <pacchetto> version license`; `git show "origin/main:gui/package.json"`; `node --version`; `npm --version` |
-| `origin/main` di daemon era `973153f` alla chiusura; l'audit c'è, col segno «(col N)» | `git rev-parse --short origin/main`; `git merge-base --is-ancestor origin/repo-audit/20260930-1510 origin/main`; `git show "origin/main:docs/README.md" \| grep -c 'col N'` |
-| le cinque citazioni della §3.4 si trovano, a `973153f` | per ciascuna: `git show "origin/main:<fonte>" \| tr '\n' ' ' \| tr -s ' ' \| grep -cF -- '<citazione>'` |
-| fra `c42c947` e `973153f` la GUI non è cambiata: manifesto, token, cancello, CI | `git diff --stat c42c947 origin/main -- gui/package.json gui/src/tokens scripts/gate-gui.sh .github` |
+| `origin/main` di daemon era `c2de19a` alla chiusura; l'audit c'è, col segno «(col N)» | `git rev-parse --short origin/main`; `git merge-base --is-ancestor origin/repo-audit/20260930-1510 origin/main`; `git show "origin/main:docs/README.md" \| grep -c 'col N'` |
+| le cinque citazioni della §3.4 si trovano, a `c2de19a` | per ciascuna: `git show "origin/main:<fonte>" \| tr -d '\r' \| tr '\n' ' ' \| tr -s ' ' \| grep -cF -- '<citazione>'` |
+| fra `973153f` e `c2de19a` la GUI non è cambiata: manifesto, token, cancello, CI | `git diff --stat 973153f origin/main -- gui/package.json gui/src/tokens scripts/gate-gui.sh .github` |
 | `themes.css` di daemon: `:root` con le `--ref-*`; `[data-theme="dark"]` e `[data-theme="light"]` coi ruoli `--color-*` e `color-scheme` | `git show "origin/main:gui/src/tokens/themes.css"` |
-| la GUI: il testo in Geist Variable, le etichette e i numeri in Barlow 300–600, importati da `gui/src/tokens/index.ts` | `git show "origin/main:gui/src/tokens/index.ts"`; `git grep -n -- '--font-family' origin/main -- gui/src/tokens/base.css` |
+| la GUI: il testo in Geist Variable, le etichette e i numeri in Barlow 300–600, importati da `gui/src/tokens/index.ts` | `git show "origin/main:gui/src/tokens/index.ts"` |
 | la CI di daemon: `actions/checkout@v4`; `actions/setup-node@v7` con `node-version-file` e `package-manager-cache: false`; la matrice con `fail-fast: false`; `shell: bash`; nessuna azione di terzi; verde | `git show "origin/main:.github/workflows/quality-gate.yml"`; `gh run list -R devfrx/daemon -L 4` |
 | il cancello della GUI: `npm ci --no-audit --no-fund`, `dist/` tolta prima della build, i due progetti di Vitest uno per volta, il Chrome installato, `npm audit` alla fine | `git show "origin/main:scripts/gate-gui.sh"` |
 | Chrome 154.0.8037.98 su questa macchina | `ls "/c/Program Files/Google/Chrome/Application/"` |
+| Chrome chiede `/favicon.ico` da solo, e un 404 lì è un errore in console | il passo 2 del compito 10 |

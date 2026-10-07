@@ -129,3 +129,34 @@ si trovano anche lì.
 | 3–7 | i rossi e i verdi della §8 e della §9, coi passi «l'altro senso»; alla fine `npm test`: 51 test |
 | 4 | `npm test` dà `4 passed`: il passo 5 adesso usa lui, così lo script e la configurazione di Vitest hanno la loro prova |
 | 7 | «open-sourced», «opensource», «Downloads», «downloadable», «scaricare» e «scaricabile» passavano tutti i controlli: solo «opensource» lo fermava, e per caso, il controllo dei refusi. Con le parole vietate in ogni loro forma (risposta: A): il test nuovo rosso sul codice di prima; poi 12 test delle funzioni e 8 del controllo del cancello; e «niente da scaricare» è rosso, il costo dichiarato |
+
+## 11. I compiti 8–10, provati
+
+Nella stessa sessione della §10, dopo la risposta A sul browser col compito 8. La landing di prova stava dentro la copia
+di daemon della §10, a `84a476a`; `brand/` l'hanno scritta i passi 4 e 5 del compito 2, da una copia dei SVG e delle due
+pagine del kit messa accanto.
+
+| Compito | Rosso | Verde |
+|---|---|---|
+| 8 | `Cannot find module` per l'indirizzo, i link e il server; 22 rossi sulle pagine vuote; una frase tolta e il link all'altra lingua senza la base, 4 rossi; senza `LANDING_SITE` la build si ferma | 8 test dell'indirizzo e dei link, 2 del server, 22 della pagina; `npm test -- --project checks`: 62 |
+| 9 | `Cannot find module './tokens'`; il controllo dei token rosso sulla sola guardia `sees what it judges`; 10 rossi sui temi; un token che daemon non definisce, una scala `--ref-*` e la pagina senza `data-theme="dark"`: 3 rossi e 2 | 4 test dei token, 4 del loro controllo, 32 nel browser; 70 senza browser |
+| 10 | la console, prima dell'icona: `Failed to load resource`, un 404 su `/favicon.ico`, in una lingua sola; un foglio di stile su `third-party.invalid` e uno script che aggiunge testo e poi sbaglia: 6 rossi | 38 nel browser; l'icona servita è byte per byte quella di `brand/` |
+| tutti | — | `npm audit`: 0 vulnerabilità |
+
+**Che cosa hanno insegnato:**
+
+- Chrome chiede `/favicon.ico` da solo, alla radice del sito e quindi fuori dalla base, e se manca scrive il 404 nella
+  console: la domanda della consegna del pomeriggio ha la sua risposta, e l'icona del kit entra col compito 10. La chiede
+  una volta per browser, per questo il rosso arriva in una lingua sola;
+- `astro check`, dentro `npm run build`, controlla anche i file di `checks/`: ha trovato un errore di tipo in un controllo
+  che Vitest faceva girare senza dire niente — `page.route` di Playwright 1.63 restituisce un valore che l'aiuto `open`
+  non accettava;
+- una richiesta a un sito di terzi messa apposta partirebbe davvero, negli altri controlli: il difetto usa un indirizzo
+  `.invalid`, che non esce dalla macchina;
+- un elemento che manca, Playwright lo aspetta fino al limite del test, 5 secondi per rosso: `open` mette l'attesa a 2
+  secondi, perché la pagina è già costruita e caricata.
+
+**Il testo del piano.** Il codice dei compiti 8–10 l'ha messo nel piano un programma, dai file che hanno girato;
+`checks/support/landing.ts` del compito 8 ha una riga più in alto di quella provata, con lo stesso effetto. I comandi
+del passo 11 del compito 8 sono stati riscritti dopo le prove, con `node` al posto di `sed -i`; quelli dei compiti 9 e
+10 sono quelli girati. Prima di presentarli, i compiti 8–10 si rifanno dal testo del piano, come i 3–7 nella §10.
