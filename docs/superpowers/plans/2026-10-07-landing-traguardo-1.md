@@ -16,7 +16,7 @@
 | 2 | Gli strumenti e i vincoli | ✅ approvata il 2026-10-07 |
 | 3 | I testi | ✅ approvata il 2026-10-07 |
 | 4 | La mappa dei file | ✅ approvata il 2026-10-07 |
-| 5 | I compiti | 🔶 i compiti 1–10 approvati il 2026-10-07; il compito 11 riscritto e rifatto dal testo, da approvare; i compiti 12–13 da scrivere |
+| 5 | I compiti | 🔶 i compiti 1–11 approvati il 2026-10-07; i compiti 12–13 da scrivere |
 | 6 | Come si riprende | 🔶 oggi è la consegna della quinta sessione del 2026-10-07 |
 
 ---
@@ -306,13 +306,17 @@ daemon.
 | 8 | la pagina, e il browser per guardarla | l'indice, «Cos’è», il segno della fonte, la chiusura, il link all'altra lingua, il sito e la base dalle impostazioni; il server di `dist/` e Chrome; rosso se una frase manca, o non porta il link alla sua fonte al commit |
 | 9 | i due temi e i caratteri | i colori di daemon, l'interruttore, il tema scuro senza JavaScript, Geist e Barlow ospitati dalla pagina; rosso se manca un token |
 | 10 | i controlli nel browser | rosso su una richiesta a terzi, un errore in console, del testo che manca senza JavaScript; l'icona del kit, che la console chiede |
-| 11 | l'accessibilità | zero errori di axe sulle regole WCAG 2.2 AA; tutto si usa da tastiera |
+| 11 | l'accessibilità | i controlli nel browser uno per volta; zero errori di axe sulle regole WCAG 2.2 AA; tutto si usa da tastiera |
 | 12 | la velocità | LCP, CLS e INP sotto le soglie, col profilo e le interazioni della §2.2 |
 | 13 | le impronte, il cancello e la CI | `npm run gate`, e la CI su Linux e Windows, a ogni push e una volta a settimana |
 
 ⚠️ **Richiamo del 2026-10-07:** il browser — il server di `dist/` e Chrome — arriva col compito 8, con un controllo della
 pagina (risposta del proprietario: A); i caratteri col 9; l'icona del kit col 10, perché senza Chrome scrive un errore
 in console — la storia nella §11 del [verbale delle prove](../../archivio/2026-10-07-prove-piano-landing.md).
+
+⚠️ **Richiamo del 2026-10-07:** dal compito 11 i controlli nel browser girano uno per volta, con la guardia in
+`openLanding()` (risposta del proprietario: A) — la storia nella §14 del
+[verbale delle prove](../../archivio/2026-10-07-prove-piano-landing.md).
 
 ---
 
@@ -3397,7 +3401,7 @@ git add package.json package-lock.json vitest.config.ts src checks && git commit
 |---|---|
 | §1–§4 | approvate, coi richiami del 2026-10-07 |
 | §5, compiti 1–10 | ✅ approvati; rifatti dal testo nella quinta sessione, tutto come scritto |
-| §5, compito 11 | riscritto con due correzioni e rifatto dal testo, tutto come scritto; **da presentare e approvare** |
+| §5, compito 11 | ✅ approvato il 2026-10-07, com'è: i controlli nel browser uno per volta, con la guardia, e una prova per ciascuna sonda della tastiera (risposta: A) |
 | §5, compiti 12–13 | da scrivere |
 
 Il codice dei compiti si prova prima di scriverlo (risposta del proprietario: A). La storia delle prove è nel
@@ -3409,10 +3413,11 @@ Il codice dei compiti si prova prima di scriverlo (risposta del proprietario: A)
 2. leggi `CLAUDE.md`, questo piano e il disegno, per intero;
 3. le skill: `superpowers:writing-plans`, `anthropic-skills:decision-principles`, `anthropic-skills:dev-communication`,
    `anthropic-skills:frontend-craft`;
-4. rilancia ciò che invecchia, coi comandi della tabella in fondo;
-5. presenta al proprietario il compito 11, con le scelte della tabella qui sotto, e chiedi il sì: A, com'è adesso; B, com'era
-   nella quarta sessione, senza le due correzioni — è nel commit `1f44b2a`. Col sì, nella tabella della §4 la riga del
-   compito 11 prende anche «i controlli nel browser uno per volta», col richiamo datato; commit e push;
+4. ✅ rilancia ciò che invecchia, coi comandi della tabella in fondo — fatto nella sessione dopo: tutto come nella tabella;
+5. ✅ presenta al proprietario il compito 11, con le scelte della tabella qui sotto, e chiedi il sì: A, com'è adesso; B,
+   com'era nella quarta sessione, senza le due correzioni — è nel commit `1f44b2a`. Col sì, nella tabella della §4 la riga
+   del compito 11 prende anche «i controlli nel browser uno per volta», col richiamo datato; commit e push — fatto nella
+   sessione dopo (risposta: A);
 6. scrivi i compiti 12–13, ciascuno provato prima nello scratchpad dal testo del piano, e presentali. Il banco e il
    programma che prende i blocchi dal piano sono nella §14 del verbale: per il 12 e il 13 si rifanno anche i compiti 1–11,
    che ne sono la base;
