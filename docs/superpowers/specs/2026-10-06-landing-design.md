@@ -438,6 +438,10 @@ Coi comandi, nel diario in archivio (§10): le versioni dei pacchetti, il peso d
 |---|---|
 | l'audit arriva su `main` col segno «(col N)», nella regola 2 del README e in `design/01`, come sta oggi sul suo ramo | il controllo delle fonti è rosso sulla legenda e sulle etichette — è il suo scopo — e la legenda si decide di nuovo, col proprietario |
 
+⚠️ **Richiamo del 2026-10-07:** l'assunto è vero — l'audit è su `main`, e i due file sono identici a quelli del suo ramo:
+`git merge-base --is-ancestor origin/repo-audit/20260930-1510 origin/main`, e `git diff --stat
+origin/repo-audit/20260930-1510 origin/main -- docs/README.md docs/design/01-topologia-dei-processi.md`, vuoto.
+
 **Costo dichiarato:** nel piano, i compiti della legenda e delle etichette vengono dopo l'arrivo dell'audit su `main`. I
 primi compiti, il `.gitattributes` e la copia in `brand/`, non ne dipendono.
 

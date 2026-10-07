@@ -52,9 +52,12 @@ due sensi su un caso vero: rosso su un difetto messo apposta, verde sulla pagina
 | le interazioni con cui si misura l'INP | **la chiude questo piano**, nella §2 |
 | dove si fanno le foto originali delle scene, e quanta differenza si tollera | il piano del traguardo 2 |
 | l'etichetta di ogni figura, e i livelli della Fig. 1 | i piani delle figure |
-| l'audit arriva su `main` col segno «(col N)» | daemon |
+| l'audit arriva su `main` col segno «(col N)» | ✅ arrivato, il 2026-10-07 |
 | la riga `landing/` nel `.gitignore` di daemon | una sessione di daemon, dopo l'audit, su `main` |
 | dove si pubblica | il proprietario, quando la pagina è pronta |
+
+⚠️ **Richiamo del 2026-10-07:** l'audit è su `main`, col segno «(col N)»: le etichette aspettano ormai solo le figure —
+il comando nel richiamo della §8.4 del disegno.
 
 **Costo dichiarato:** il cancello è completo solo dopo il traguardo 2, che per questo è più pesante.
 
@@ -88,6 +91,10 @@ con `npm view <pacchetto> version license`, il 2026-10-07.
 
 **Costo dichiarato:** Vitest resta indietro di una versione grande — la 5.0.0 è del 2026-09-03 — e `axe-core` di una
 piccola — la 4.14.0 è del 2026-10-05. Si aggiornano con un atto apposta, come ogni dipendenza.
+
+⚠️ **Richiamo del 2026-10-07:** resta indietro anche TypeScript, di due versioni grandi — la 7.0.2 è del 2026-07-08 — e
+`@astrojs/check` 0.9.10 accetta solo la 5 e la 6: `npm view typescript time`, `npm view @astrojs/check@0.9.10
+peerDependencies`.
 
 ### 2.2 La velocità
 
@@ -287,13 +294,13 @@ daemon.
 
 **Dove siamo:** le §1–§4 sono approvate dal proprietario e scritte. La §5, i compiti col loro codice, non è cominciata.
 
-**La domanda aperta**, da fare per prima: il proprietario ha chiuso la sessione invece di rispondere.
+**La domanda** che il proprietario aveva lasciato aperta ha la risposta, nella sessione del pomeriggio del 2026-10-07:
 
 > Prima di scrivere il codice dei compiti, lo provo?
 
 | | La scelta | Il costo |
 |---|---|---|
-| **A** (consigliata) | piccole prove dei punti incerti in una cartella temporanea, lo scratchpad; nel piano solo codice visto girare; alla fine si cancella tutto | più tempo nella sessione; i pacchetti della §2 scaricati da npm, alcune centinaia di MB — una stima, non una misura; Chrome si apre nascosto |
+| **A** ✅ scelta | piccole prove dei punti incerti in una cartella temporanea, lo scratchpad; nel piano solo codice visto girare; alla fine si cancella tutto | più tempo nella sessione; i pacchetti della §2 scaricati da npm, alcune centinaia di MB — una stima, non una misura; Chrome si apre nascosto |
 | **B** | il codice scritto dalla documentazione ufficiale, senza provarlo | più difetti, trovati più tardi: dal pre-controllo e dai test di ogni compito |
 
 I punti incerti: come Astro 7 costruisce le due lingue; come Vitest 4 tiene separati i due progetti; come si chiama
@@ -318,7 +325,7 @@ cspell da un programma; come Playwright rallenta Chrome per misurare la velocit�
   `?? daemon_kit/` — mentre `/landing/` lo è ancora. La riga della §8.1 del disegno su `daemon_kit/` era vera quando fu
   verificata, e oggi non lo è più. Per il traguardo 1 non cambia niente: il compito 2 legge il kit dalla cartella. Il
   perché non lo sappiamo, è di daemon. Il comando: `git -C .. check-ignore -v daemon_kit landing/CLAUDE.md`;
-- l'audit non è ancora su `main`, e quindi nemmeno il segno «(col N)» (§8.4 del disegno);
+- l'audit è su `main`, col segno «(col N)», e daemon sta su `main` (richiamo della §8.4 del disegno);
 - su Windows `chrome.exe --version` apre il browser invece di scrivere la versione: la versione si legge dal nome della
   cartella, `ls "/c/Program Files/Google/Chrome/Application/"`.
 
@@ -328,8 +335,8 @@ daemon, in Git Bash, dopo `export MSYS_NO_PATHCONV=1`.
 | Fatto | Comando o fonte |
 |---|---|
 | le versioni della §2.1; Node 24.19.0 su questa macchina | `npm view <pacchetto> version license`; `git show "origin/main:gui/package.json"`; `node --version` |
-| `origin/main` di daemon è `50cc61f`; l'audit non c'è; il segno «(col N)» nemmeno | `git rev-parse --short origin/main`; `git merge-base --is-ancestor origin/repo-audit/20260930-1510 origin/main`; `git show "origin/main:docs/README.md" \| grep -c 'col N'` |
-| le cinque citazioni della §3.4 si trovano | per ciascuna: `git show "origin/main:<fonte>" \| tr '\n' ' ' \| tr -s ' ' \| grep -cF -- '<citazione>'` |
+| `origin/main` di daemon è `c42c947`; l'audit c'è, e il segno «(col N)» con lui | `git rev-parse --short origin/main`; `git merge-base --is-ancestor origin/repo-audit/20260930-1510 origin/main`; `git show "origin/main:docs/README.md" \| grep -c 'col N'` |
+| le cinque citazioni della §3.4 si trovano, a `c42c947` | per ciascuna: `git show "origin/main:<fonte>" \| tr '\n' ' ' \| tr -s ' ' \| grep -cF -- '<citazione>'` |
 | Astro 7.3.6 porta Vite `^8.3.1`, Zod `^4.6.5` e smol-toml | `npm view astro@7.3.6 dependencies` |
 | il caricatore `file()` di Astro legge JSON, YAML e TOML, e accetta l'oggetto con l'identificatore come chiave; Zod da `astro/zod`; la configurazione in `src/content.config.ts` | https://docs.astro.build/en/guides/content-collections/ |
 | Vitest 4.1.11 accetta Vite 8; `@astrojs/check` 0.9.10 vuole TypeScript `^5` o `^6` | `npm view vitest@4.1.11 peerDependencies`; `npm view @astrojs/check@0.9.10 peerDependencies` |
