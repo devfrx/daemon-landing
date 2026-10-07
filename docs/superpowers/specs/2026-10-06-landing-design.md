@@ -5,8 +5,8 @@
 > diario, in [`docs/archivio/consegna-brainstorming-landing.md`](../../archivio/consegna-brainstorming-landing.md),
 > parola per parola.
 >
-> 📌 **Dove siamo:** il disegno si scrive una sezione per volta, e ciascuna entra qui solo dopo il sì del proprietario.
-> Le §1–§8 sono approvate e scritte, e la rilettura è fatta, il 2026-10-07; manca la §9 definitiva. Come si riparte lo
+> 📌 **Dove siamo:** il disegno si è scritto una sezione per volta, ciascuna dopo il sì del proprietario. Le §1–§9 sono
+> approvate e scritte, e la rilettura è fatta, il 2026-10-07; manca la rilettura del proprietario. Come si riparte lo
 > dice la §9.
 
 | § | Sezione | Stato |
@@ -19,7 +19,7 @@
 | 6 | La porta di qualità | ✅ approvata il 2026-10-07 |
 | 7 | Dove vive | ✅ approvata il 2026-10-07 |
 | 8 | Verificato, dedotto, assunto | ✅ approvata il 2026-10-07 |
-| 9 | Come si riprende | ⏳ oggi è la consegna della sessione; la versione definitiva è la prossima da presentare |
+| 9 | Come si riprende | ✅ approvata il 2026-10-07 |
 
 ---
 
@@ -445,38 +445,51 @@ sparire, e i link ai suoi commit si romperebbero.
 
 ## 9. Come si riprende
 
-> ⏳ **La consegna della sessione del 2026-10-07.** Il proprietario ha rimandato alla prossima sessione la §8 e la §9
-> definitiva, cioè la consegna per la sessione che scrive il piano. Oggi questa sezione è solo la consegna; quella
-> definitiva la sostituisce quando il disegno è finito.
+**Dove siamo:** il disegno è finito, il 2026-10-07: le §1–§9 sono approvate, e la rilettura è fatta — il verbale è in
+[`docs/archivio/2026-10-07-rilettura-disegno-landing.md`](../../archivio/2026-10-07-rilettura-disegno-landing.md). Manca
+solo la rilettura del proprietario, l'ultimo passo di questa sessione. Il prossimo passo è il piano del primo traguardo.
 
-**Dove siamo:** le §1–§7 sono approvate e scritte, e con loro le risposte alle otto domande del brainstorming (la §11 del
-diario in archivio) più una nuova, la lingua all'indirizzo principale (§2.4). `main` è allineato a GitHub, il working
-tree è pulito.
+**I traguardi.** Il piano si scrive un traguardo per volta, come in daemon: ogni piano è corto e si scrive sul codice di
+quel momento — la regola 5 di `CLAUDE.md` di daemon, *«un compito scritto prima si legge contro il codice di ADESSO»*.
+Il primo traguardo porta lo scheletro e il cancello, prima delle figure; le figure arrivano quando l'orologio e il
+cancello esistono. Il perimetro di ciascuno lo fissa il suo piano.
 
-**Il prossimo passo:**
+**Costo dichiarato:** più sessioni di piano, una per traguardo.
+
+**Il prossimo passo**, in una sessione nuova:
 
 1. apri la sessione dentro `landing/`; `git fetch --all --prune`, `git status -sb`, e il fast-forward se serve;
 2. leggi `CLAUDE.md` e questo file, per intero;
-3. le skill: `superpowers:brainstorming` (la parte «dopo il disegno»), `anthropic-skills:decision-principles`,
-   `anthropic-skills:dev-communication`;
-4. presenta al proprietario la §8 e la §9 definitiva — le bozze sono qui sotto — e scrivile dopo il sì;
-5. rileggi da solo il disegno intero con la lista di `superpowers:brainstorming` — segnaposto, contraddizioni,
-   ambiguità, ambito — partendo dai due punti già trovati qui sotto;
-6. chiedi al proprietario di rileggere il disegno intero; commit e push;
-7. il piano, con `superpowers:writing-plans`, nella sessione dopo.
+3. le skill: `superpowers:writing-plans`, `anthropic-skills:decision-principles`, `anthropic-skills:dev-communication`;
+4. prima di scrivere, rilancia ciò che invecchia: le versioni dei pacchetti (§8.2), e la riga ⚠️ della §8.1 — se
+   l'audit è arrivato su `main`;
+5. scrivi il piano del primo traguardo in `docs/superpowers/plans/`: il primo compito è il `.gitattributes` (§7.3), il
+   secondo la copia in `brand/` (§7.2);
+6. quando il piano esiste, il `CLAUDE.md` di questo repository rimanda al piano, non più a questo file; commit e push.
 
-✅ **La §8 è approvata e scritta**, il 2026-10-07 (risposta: A): la sua bozza, che stava qui, è diventata la §8.
+Dopo il piano, una fase per sessione (§7.1): il pre-controllo, poi un compito per sessione.
 
-**La bozza della §9 definitiva:** il prossimo passo è il piano, con `superpowers:writing-plans`, in una sessione nuova;
-il suo primo compito è il `.gitattributes` (§7.3), il secondo la copia in `brand/` (§7.2); quando il piano esiste, il
-`CLAUDE.md` di questo repository rimanda al piano; su ogni altra macchina, la riga in `.git/info/exclude` di daemon
-(§7.4).
+**Le voci aperte**, ciascuna con chi la chiude:
 
-✅ **La rilettura è fatta**, il 2026-10-07: sette correzioni, approvate dal proprietario (risposta: A), ciascuna col
-suo richiamo; il verbale è in [`docs/archivio/2026-10-07-rilettura-disegno-landing.md`](../../archivio/2026-10-07-rilettura-disegno-landing.md).
+| Voce | Dove | Chi la chiude |
+|---|---|---|
+| il formato dei file dei testi | §3.1 | il piano che porta i testi |
+| le interazioni con cui si misura l'INP | §6.1 | il piano che porta il controllo della velocità |
+| dove si fanno le foto originali delle scene, e quanta differenza si tollera | §6.3 | il piano che porta le foto |
+| l'etichetta di ogni figura, e i livelli della Fig. 1 | §4, §8.3 | il piano che porta le figure |
+| l'audit arriva su `main` col segno «(col N)» | §8.4 | daemon; i compiti che ne dipendono vengono dopo |
+| la riga `landing/` nel `.gitignore` di daemon | §7.4 | una sessione di daemon, dopo l'audit, su `main` |
+| dove si pubblica | §7.5 | il proprietario, quando la pagina è pronta |
 
 **Da sapere subito:**
 
-- ⏳ `/landing/` è nascosta a daemon solo su questa macchina (§7.4);
-- daemon sta sul ramo dell'audit, con il worktree di un'altra sessione: da qui non si tocca;
-- la bozza `d` del pentagramma sta in [`2026-10-07-landing-bozze/`](2026-10-07-landing-bozze/).
+- ⏳ `landing/` è nascosta a daemon solo su questa macchina (§7.4): su ogni altra, prima di lanciare i cancelli di
+  daemon con `landing/` presente, la riga `/landing/` va in `.git/info/exclude` di daemon;
+- daemon sta sul ramo dell'audit (§8.1): da qui non si tocca, e la pagina legge solo `origin/main` (§6.2);
+- fino al `.gitattributes`, su questa macchina Git avvisa *«LF will be replaced by CRLF»* a ogni commit: è atteso
+  (§7.3), e nel repository i file restano LF;
+- la bozza `d` del pentagramma sta in [`2026-10-07-landing-bozze/`](2026-10-07-landing-bozze/); le bozze `a`, `b`, `c`
+  in archivio (§2.1).
+
+La consegna della sessione del mattino, che stava qui, è in archivio, parola per parola:
+[`docs/archivio/2026-10-07-consegna-disegno-landing.md`](../../archivio/2026-10-07-consegna-disegno-landing.md).
