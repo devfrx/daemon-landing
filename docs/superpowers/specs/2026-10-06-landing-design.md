@@ -15,7 +15,7 @@
 | 3 | Le parole e le fonti | ✅ approvata il 2026-10-07 |
 | 4 | Le figure | ✅ approvata il 2026-10-07 |
 | 5 | Com'è fatta dentro | ✅ approvata il 2026-10-07 |
-| 6 | La porta di qualità | ⏳ da presentare: la CI |
+| 6 | La porta di qualità | ✅ approvata il 2026-10-07 |
 | 7 | Dove vive | ⏳ da presentare: i fine-riga, dove pubblicare, la riga in daemon |
 | 8 | Verificato, dedotto, assunto | ⏳ |
 | 9 | Come si riprende | ⏳ |
@@ -254,3 +254,52 @@ Da `gui/src/tokens/base.css` la pagina **non prende niente**: ha regole per l'ap
 
 **Costo dichiarato:** la pagina non si costruisce senza daemon accanto — vale già per le fonti — e il suo aspetto cambia
 quando cambia la GUI, senza una decisione apposta per la pagina.
+
+---
+
+## 6. La porta di qualità
+
+### 6.1 Il cancello
+
+Un comando solo, `npm run gate`, come `scripts/gate.sh` in daemon. Diventa rosso se:
+
+| Controllo | Che cosa guarda |
+|---|---|
+| fonti | le citazioni, i nomi del codice, le etichette, i numeri, le due lingue, il commit (§3.2) |
+| parole | refusi in italiano e in inglese; apostrofi, virgolette, spazi e trattini; nessuna parola vietata (§3.2) |
+| scene | ogni scena fotografata in punti fissi dello scroll: chiaro e scuro, computer e telefono; col movimento ridotto, il fotogramma di riposo |
+| accessibilità | zero errori WCAG 2.2 AA; tutto si usa da tastiera; il movimento ridotto funziona |
+| rete | nessuna richiesta a siti terzi |
+| velocità | le soglie «buone» dei Core Web Vitals: LCP entro 2,5 s, INP entro 200 ms, CLS entro 0,1 (§8). Per web.dev valgono sul 75° percentile delle visite vere; qui si misurano in laboratorio, sulla pagina costruita e sempre con lo stesso profilo: una misura ripetibile, non quella dei visitatori |
+| console | un errore nella console del browser |
+| senza JavaScript | manca del testo: la pagina deve leggersi tutta anche così (§5.3) |
+| marchio | il marchio disegnato non è identico a quello del kit |
+
+Ogni controllo gira su tutte e due le lingue, `/` e `/it/`, e si prova **nei due sensi**: rosso su un difetto messo
+apposta, verde sulla pagina giusta — la regola di `CLAUDE.md` di daemon.
+
+**Costo dichiarato:** le foto delle scene si rifanno apposta ogni volta che cambia il design.
+
+### 6.2 Quale daemon legge la pagina
+
+Il `main` di daemon su GitHub, come lo conosce il repository di daemon accanto (`origin/main`), e **non la sua cartella
+di lavoro**. Così il ramo su cui sta daemon in quel momento — il 2026-10-07, quello dell'audit — non entra nella pagina,
+e ogni commit che la pagina cita è su GitHub per costruzione.
+
+**Costo dichiarato:** una modifica ai documenti di daemon arriva nella pagina solo quando è su `main` ed è stata
+scaricata con `git fetch`.
+
+### 6.3 La CI
+
+Come quella di daemon, in `.github/workflows/quality-gate.yml`:
+
+| | |
+|---|---|
+| quando | a ogni push, e una volta a settimana: per accorgersi se daemon ha cambiato una frase citata |
+| dove | Linux e Windows, lo stesso cancello: la decisione 44 di daemon, *«a matrix, the SAME gate on both»* |
+| daemon | scaricato da GitHub accanto alla landing, al suo `main`: è pubblico, non servono chiavi |
+
+**Costo dichiarato:** Playwright tiene una foto originale per ogni sistema — *«Screenshots differ between browsers and
+platforms due to different rendering, fonts and more»* (§8) — quindi le foto si rifanno su tutti e due i sistemi, e il
+piano fissa dove si fanno gli originali e quanta differenza si tollera. E la CI può diventare rossa anche quando la
+landing non è cambiata, se daemon ha cambiato una frase citata: è lo scopo.
