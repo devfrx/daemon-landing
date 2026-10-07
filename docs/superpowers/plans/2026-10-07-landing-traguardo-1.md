@@ -16,7 +16,7 @@
 | 2 | Gli strumenti e i vincoli | ✅ approvata il 2026-10-07 |
 | 3 | I testi | ✅ approvata il 2026-10-07 |
 | 4 | La mappa dei file | ✅ approvata il 2026-10-07 |
-| 5 | I compiti | ⏳ da presentare |
+| 5 | I compiti | 🔶 i compiti 1–3 approvati il 2026-10-07; i compiti 4–13 da scrivere |
 | 6 | Come si riprende | 🔶 oggi è la consegna della sessione del 2026-10-07 |
 
 ---
@@ -79,11 +79,19 @@ La GUI di daemon ha già un modo di fare queste cose — `gui/package.json`, `gu
 | `playwright` | 1.63.0 | Apache-2.0 | i controlli nel browser, col Chrome installato: non si scarica nessun browser, come nella GUI |
 | `axe-core` | 4.13.0 | MPL-2.0 | l'accessibilità |
 | `web-vitals` | 6.2.3 | Apache-2.0 | la velocità (§2.2) |
-| `cspell`, `@cspell/dict-it-it` | 10.3.6, 3.1.7 | MIT, GPL-3.0-or-later | i refusi. Il dizionario inglese è già dentro `cspell`; quello italiano è GPL, ed è uno strumento di sviluppo che non entra nella pagina |
+| `cspell-lib`, `@cspell/dict-it-it` | 10.3.6, 3.1.7 | MIT, GPL-3.0-or-later | i refusi: `cspell-lib` è la libreria di `cspell`, e il controllo chiama la sua funzione `spellCheckDocument`. Il dizionario inglese è già dentro; quello italiano è GPL, ed è uno strumento di sviluppo che non entra nella pagina |
 | `@fontsource-variable/geist`, `@fontsource/barlow` | 5.3.0, 5.3.0 | OFL-1.1 | i caratteri, ospitati dalla pagina |
 
 **Come nella GUI:** versioni esatte, senza `^`; il cancello installa con `npm ci --no-audit --no-fund`; alla fine lancia
 `npm audit`, senza `--audit-level`.
+
+**Non come nella GUI:** il `package.json` spegne lo script d'installazione di `esbuild`, che arriva con Astro, con
+`"allowScripts": { "esbuild": false }` (risposta del proprietario: A, il 2026-10-07). Oggi npm esegue quegli script e
+avvisa; una sua versione futura li bloccherà, e così la scelta è scritta invece di cambiare da sola. Tutto gira anche
+senza.
+
+⚠️ **Richiamo del 2026-10-07:** per i refusi serve `cspell-lib`, non il programma `cspell`; e lo script di `esbuild` è
+spento — la storia nel [verbale delle prove](../../archivio/2026-10-07-prove-piano-landing.md), §3 e §7.
 
 **La regola delle versioni:** se la GUI di daemon usa già un pacchetto, la landing prende la stessa versione; se no,
 l'ultima stabile del giorno del piano. Si rilancia con `git show "origin/main:gui/package.json"` dalla radice di daemon e
@@ -101,17 +109,23 @@ peerDependencies`.
 | | |
 |---|---|
 | **lo strumento** | `web-vitals`, la libreria di Google che misura LCP, CLS e INP come li misura Chrome. Playwright la mette nella pagina costruita, nella sua versione `web-vitals.iife.js`, e fa le interazioni |
-| **il profilo** | sempre lo stesso, quello «telefono» di Lighthouse: 150 ms di latenza, 1,6 Mbps in discesa e 750 Kbps in salita, il processore 4 volte più lento. Lo impone Chrome stesso durante la misura, quindi i numeri sono osservati, non stimati |
+| **il profilo** | sempre lo stesso, quello «telefono» di Lighthouse, coi numeri che Lighthouse usa quando a rallentare è Chrome: lo schermo di 412 × 823 punti, densità 1,75; 562,5 ms di attesa per richiesta, 1474,56 Kbps in discesa e 675 Kbps in salita — cioè 150 ms, 1,6 Mbps e 750 Kbps coi fattori di correzione di Lighthouse, 3,75 e 0,9, perché Chrome rallenta richiesta per richiesta e non pacchetto per pacchetto; il processore 4 volte più lento. Lo impone Chrome stesso durante la misura, quindi i numeri sono osservati, non stimati |
 | **le interazioni dell'INP** | il cambio di tema e un salto dall'indice, col mouse e con la tastiera. Ogni traguardo dopo aggiunge le sue: per esempio «Salta» e la prova da toccare della Fig. 5 |
 | **le soglie** | LCP entro 2,5 s, INP entro 200 ms, CLS entro 0,1 (§6.1 del disegno) |
 
 Le fonti, guardate il 2026-10-07: il profilo e il fatto che Lighthouse di base stima i numeri con un modello,
-https://github.com/GoogleChrome/lighthouse/blob/main/docs/throttling.md; i percorsi utente solo con Puppeteer,
+https://github.com/GoogleChrome/lighthouse/blob/main/docs/throttling.md; i numeri per Chrome, `mobileSlow4G` in
+https://github.com/ChromeDevTools/devtools-frontend/blob/main/front_end/models/trace/lantern/simulation/Constants.ts; lo
+schermo, `MOTOGPOWER_EMULATION_METRICS` in https://github.com/GoogleChrome/lighthouse/blob/main/core/config/constants.js;
+i percorsi utente solo con Puppeteer,
 https://github.com/GoogleChrome/lighthouse/blob/main/docs/user-flows.md; la versione da iniettare e l'INP che c'è solo se
 qualcuno interagisce, https://github.com/GoogleChrome/web-vitals/blob/main/README.md.
 
 **Costo dichiarato:** il codice che misura lo scriviamo noi, coi suoi test, e non c'è il rapporto dettagliato di
 Lighthouse.
+
+⚠️ **Richiamo del 2026-10-07:** il profilo porta i numeri che Lighthouse dà a Chrome, e lo schermo del telefono — la
+storia nella §4 del [verbale delle prove](../../archivio/2026-10-07-prove-piano-landing.md), con le fonti.
 
 **Scartata:** Lighthouse. Per l'INP servono i suoi percorsi utente, che funzionano solo con Puppeteer: sarebbe un secondo
 modo di guidare il browser accanto a Playwright, con due dipendenze pesanti; e di base i suoi numeri sono stimati da un
@@ -267,6 +281,8 @@ daemon.
 2. **Ogni dipendenza arriva col compito che la usa**, non tutte nel compito 3: è la regola del confine (§1) applicata ai
    pacchetti. Ognuna entra in due passi (vincolo 9).
 
+⚠️ **Richiamo del 2026-10-07:** `vitest.config.ts` arriva col compito 4, insieme a Vitest, per la regola 2 qui sopra.
+
 **I compiti**, uno per sessione, dopo quella del pre-controllo:
 
 | # | Compito | Che cosa consegna |
@@ -284,6 +300,324 @@ daemon.
 | 11 | l'accessibilità | zero errori di axe sulle regole WCAG 2.2 AA; tutto si usa da tastiera |
 | 12 | la velocità | LCP, CLS e INP sotto le soglie, col profilo e le interazioni della §2.2 |
 | 13 | le impronte, il cancello e la CI | `npm run gate`, e la CI su Linux e Windows, a ogni push e una volta a settimana |
+
+---
+
+## 5. I compiti
+
+Ogni compito si esegue in una sessione sua, da un subagente nuovo, dopo il pre-controllo (§7.1 del disegno, e le quattro
+domande del `CLAUDE.md` di daemon). Il codice dei compiti è stato visto girare il 2026-10-07 nello scratchpad (risposta
+A, §6): la storia delle prove è nel [verbale](../../archivio/2026-10-07-prove-piano-landing.md).
+
+| Come si leggono | |
+|---|---|
+| **i comandi** | si danno da `landing/`, in Git Bash; quelli che leggono daemon, con `MSYS_NO_PATHCONV=1` davanti |
+| **le prove a mano** | i programmi che servono solo a provare stanno fuori dal repository: nello scratchpad della sessione, o in una cartella di `mktemp -d` |
+| **«Atteso»** | ciò che il comando deve scrivere. Se scrive altro ci si ferma e lo si dice: la divergenza si registra, il piano non si corregge in silenzio |
+| **il commit** | alla fine del compito, in italiano, senza co-autore, nella forma `t1(compito N): …` — `t1` è questo traguardo; poi `git push` |
+
+### Compito 1 — il `.gitattributes`
+
+**File:** crea `.gitattributes`.
+
+**Usa:** niente. **Lascia:** ogni file di testo va a capo alla Linux, su ogni macchina; i file binari restano come sono
+(§7.3 del disegno).
+
+- [ ] **Passo 1 — la prova, rossa.** Una copia nuova del repository ha gli a-capo di Windows:
+
+```bash
+d=$(mktemp -d) && git clone -q . "$d/landing" && git -C "$d/landing" ls-files --eol | grep -c 'w/crlf'; rm -rf "$d"
+```
+
+Atteso, su Windows con `core.autocrlf=true`: un numero più grande di 0. Su una macchina senza `core.autocrlf` è 0, e la
+prova rossa è `git check-attr eol -- CLAUDE.md`, che risponde `CLAUDE.md: eol: unspecified`.
+
+- [ ] **Passo 2 — il file.** `.gitattributes`, una riga sola:
+
+```gitattributes
+* text=auto eol=lf
+```
+
+- [ ] **Passo 3 — nessun file cambia.**
+
+```bash
+git add .gitattributes && git add --renormalize . && git status --short
+```
+
+Atteso: `A  .gitattributes`, e nient'altro.
+
+- [ ] **Passo 4 — gli attributi.**
+
+```bash
+git check-attr text eol -- CLAUDE.md
+```
+
+Atteso:
+
+```
+CLAUDE.md: text: auto
+CLAUDE.md: eol: lf
+```
+
+- [ ] **Passo 5 — il commit.**
+
+```bash
+git commit -m "t1(compito 1): il .gitattributes -- ogni file di testo va a capo alla Linux, su ogni macchina (§7.3 del disegno)"
+```
+
+- [ ] **Passo 6 — la prova, verde.** Lo stesso comando del passo 1, che adesso clona il commit nuovo:
+
+```bash
+d=$(mktemp -d) && git clone -q . "$d/landing" && git -C "$d/landing" ls-files --eol | grep -c 'w/crlf'; rm -rf "$d"
+```
+
+Atteso: `0`.
+
+- [ ] **Passo 7 —** `git push`.
+
+### Compito 2 — la copia in `brand/`
+
+**File:** crea `brand/`: le copie dei file del kit, e la nota `brand/provenance.json`.
+
+**Usa:** il kit, in `../daemon_kit/`, che sta solo su questa macchina (§7.2 del disegno). **Lascia:**
+
+| In `brand/` | Che cos'è |
+|---|---|
+| ogni `*.svg` di `../daemon_kit/` | i SVG del marchio |
+| `daemon - studio del marchio.html` | lo studio del marchio |
+| `daemon — splash.html` | la splash: l'unico file col blocco `GEOMETRY` |
+| `provenance.json` | la nota: per ogni file, da dove viene, quando è stato copiato e la sua impronta |
+
+Le copie sono byte per byte, coi nomi del kit. I PNG e il video del kit non servono alla pagina, e non si copiano. La nota
+è un oggetto JSON, una voce per file, ordinate per nome; il compito 13 la legge:
+
+```json
+{
+  "daemon-mark-dark.svg": {
+    "from": "daemon_kit/daemon-mark-dark.svg",
+    "copied": "<il giorno della copia, AAAA-MM-GG>",
+    "sha256": "<l'impronta SHA-256 del file, in 64 cifre esadecimali>"
+  }
+}
+```
+
+Il controllo che resta arriva col compito 13; qui la prova è a mano, e il suo programma sta fuori dal repository.
+
+- [ ] **Passo 1 — il kit c'è, e va a capo alla Linux.**
+
+```bash
+ls ../daemon_kit/*.svg ../daemon_kit/*.html && cat ../daemon_kit/*.svg ../daemon_kit/*.html | tr -cd '\r' | wc -c && grep -c 'GEOMETRY-START' "../daemon_kit/daemon — splash.html"
+```
+
+Atteso: gli SVG, `daemon - studio del marchio.html` e `daemon — splash.html`; poi `0`; poi `1`. Se il kit non c'è, ci si
+ferma: il compito si fa sulla macchina dove sta.
+
+- [ ] **Passo 2 — il programma di prova**, `verify-brand.mjs`, fuori dal repository. Si lancia da `landing/`:
+
+```js
+import { createHash } from 'node:crypto';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
+
+const sha256 = (path) => createHash('sha256').update(readFileSync(path)).digest('hex');
+if (!existsSync('brand/provenance.json')) {
+  console.error('brand/provenance.json is missing');
+  process.exit(1);
+}
+const note = JSON.parse(readFileSync('brand/provenance.json', 'utf8'));
+const copies = readdirSync('brand').filter((name) => name !== 'provenance.json').sort();
+const problems = [];
+if (JSON.stringify(copies) !== JSON.stringify(Object.keys(note).sort())) {
+  problems.push('brand/ and the note list different files');
+}
+for (const [name, { from, sha256: recorded }] of Object.entries(note)) {
+  if (!existsSync(`brand/${name}`) || sha256(`brand/${name}`) !== recorded) {
+    problems.push(`brand/${name}: not the recorded fingerprint`);
+  }
+  if (!existsSync(`../${from}`) || sha256(`../${from}`) !== recorded) {
+    problems.push(`../${from}: not the recorded fingerprint`);
+  }
+}
+if (problems.length > 0) {
+  console.error(problems.join('\n'));
+  process.exit(1);
+}
+console.log(`${copies.length} files, identical to the kit and to the note`);
+```
+
+- [ ] **Passo 3 — la prova, rossa.** `node <cartella>/verify-brand.mjs`. Atteso: `brand/provenance.json is missing`, e
+l'uscita è 1.
+
+- [ ] **Passo 4 — le copie.**
+
+```bash
+mkdir brand && cp ../daemon_kit/*.svg "../daemon_kit/daemon - studio del marchio.html" "../daemon_kit/daemon — splash.html" brand/
+```
+
+- [ ] **Passo 5 — la nota**, scritta da un programma che legge le copie:
+
+```bash
+node --input-type=module - <<'EOF'
+import { createHash } from 'node:crypto';
+import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
+
+const now = new Date();
+const copied = [now.getFullYear(), now.getMonth() + 1, now.getDate()].map((n) => String(n).padStart(2, '0')).join('-');
+const note = {};
+for (const name of readdirSync('brand').sort()) {
+  const sha256 = createHash('sha256').update(readFileSync(`brand/${name}`)).digest('hex');
+  note[name] = { from: `daemon_kit/${name}`, copied, sha256 };
+}
+writeFileSync('brand/provenance.json', `${JSON.stringify(note, null, 2)}\n`);
+EOF
+```
+
+- [ ] **Passo 6 — la prova, verde.** `node <cartella>/verify-brand.mjs`. Atteso: `N files, identical to the kit and to
+the note`, con N il numero dei file copiati al passo 4.
+
+- [ ] **Passo 7 — l'altro senso.** Un byte in più in una copia la rende rossa; poi la copia giusta torna al suo posto:
+
+```bash
+printf ' ' >> brand/daemon-mark-dark.svg; node <cartella>/verify-brand.mjs; cp ../daemon_kit/daemon-mark-dark.svg brand/ && node <cartella>/verify-brand.mjs
+```
+
+Atteso: prima `brand/daemon-mark-dark.svg: not the recorded fingerprint`, poi di nuovo il verde del passo 6.
+
+- [ ] **Passo 8 — il commit**, e gli a-capo di ciò che è entrato:
+
+```bash
+git add brand && git commit -m "t1(compito 2): la copia del kit in brand/ -- i SVG del marchio, lo studio e la splash, byte per byte, e la nota con provenienza, data e impronta (§7.2 del disegno)" && git ls-files --eol brand | grep -vc 'i/lf *w/lf'
+```
+
+Atteso: `0`, cioè ogni file va a capo alla Linux, nel repository e sul disco.
+
+- [ ] **Passo 9 —** `git push`.
+
+### Compito 3 — il progetto Node e le due pagine vuote
+
+**File:** crea `.npmrc`, `.gitignore`, `package.json`, `package-lock.json` (lo scrive npm), `tsconfig.json`,
+`astro.config.mjs`, `src/pages/index.astro`, `src/pages/it/index.astro`.
+
+**Usa:** niente. **Lascia:**
+
+- `npm run build`, cioè `astro check && astro build`: i tipi controllati dentro la build, come `vue-tsc --noEmit && vite
+  build` nella GUI;
+- le due lingue in `astro.config.mjs`: `Astro.currentLocale` vale `en` su `/` e `it` su `/it/`;
+- `astro` 7.3.6, `@astrojs/check` 0.9.10 e `typescript` 5.9.3, e lo script di `esbuild` spento (§2.1).
+
+- [ ] **Passo 1 — i file del progetto.**
+
+`.npmrc`:
+
+```ini
+engine-strict=true
+```
+
+`.gitignore`:
+
+```gitignore
+node_modules/
+dist/
+.astro/
+```
+
+`package.json`:
+
+```json
+{
+  "name": "daemon-landing",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
+  },
+  "scripts": {
+    "build": "astro check && astro build"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.10",
+    "astro": "7.3.6",
+    "typescript": "5.9.3"
+  },
+  "allowScripts": {
+    "esbuild": false
+  }
+}
+```
+
+`tsconfig.json`:
+
+```json
+{
+  "extends": "astro/tsconfigs/strict",
+  "include": [".astro/types.d.ts", "**/*"],
+  "exclude": ["dist"]
+}
+```
+
+`astro.config.mjs`:
+
+```js
+import { defineConfig } from 'astro/config';
+
+export default defineConfig({
+  i18n: { locales: ['en', 'it'], defaultLocale: 'en' },
+});
+```
+
+- [ ] **Passo 2 — i pacchetti**, fuori dal cancello (vincolo 9):
+
+```bash
+npm install --no-audit --no-fund && npm approve-scripts --allow-scripts-pending
+```
+
+Atteso: nessun avviso `allow-scripts` durante l'installazione, e alla fine `No packages with unreviewed install
+scripts.`. Nasce `package-lock.json`.
+
+- [ ] **Passo 3 — la prova, rossa.**
+
+```bash
+npm run build; node --input-type=module - <<'EOF'
+import { existsSync, readFileSync } from 'node:fs';
+
+for (const [file, lang] of [['dist/index.html', 'en'], ['dist/it/index.html', 'it']]) {
+  const html = existsSync(file) ? readFileSync(file, 'utf8') : '';
+  if (!html.includes(`<html lang="${lang}"`)) {
+    console.error(`${file}: no <html lang="${lang}">`);
+    process.exit(1);
+  }
+}
+console.log('both pages, both languages');
+EOF
+```
+
+Atteso: la build esce con 0 e avvisa soltanto `Missing pages directory: src/pages` — per questo la prova guarda i file
+prodotti, non l'uscita; la verifica scrive `dist/index.html: no <html lang="en">` ed esce con 1.
+
+- [ ] **Passo 4 — le due pagine.** `src/pages/index.astro` e `src/pages/it/index.astro`, uguali:
+
+```astro
+<html lang={Astro.currentLocale}>
+  <head>
+    <meta charset="utf-8" />
+  </head>
+  <body></body>
+</html>
+```
+
+- [ ] **Passo 5 — la prova, verde.** Gli stessi comandi del passo 3. Atteso: la build scrive `0 errors` e `2 page(s)
+built`; la verifica, `both pages, both languages`.
+
+- [ ] **Passo 6 — nessuna vulnerabilità nota.** `npm audit`. Atteso: `found 0 vulnerabilities`.
+
+- [ ] **Passo 7 — il commit.** `git status --short` mostra solo i file del compito: niente `node_modules/`, `dist/` o
+`.astro/`.
+
+```bash
+git add .npmrc .gitignore package.json package-lock.json tsconfig.json astro.config.mjs src && git commit -m "t1(compito 3): il progetto Node e le due pagine vuote -- npm run build scrive / in inglese e /it/ in italiano; astro, @astrojs/check e typescript alle versioni della §2.1, e lo script di esbuild spento"
+```
+
+- [ ] **Passo 8 —** `git push`.
 
 ---
 
