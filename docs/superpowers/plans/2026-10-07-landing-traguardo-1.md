@@ -13,7 +13,7 @@
 |---|---|---|
 | 1 | Il perimetro | ✅ approvata il 2026-10-07 |
 | 2 | Gli strumenti e i vincoli | ✅ approvata il 2026-10-07 |
-| 3 | I testi | ⏳ da presentare |
+| 3 | I testi | 🔶 in corso: §3.1–§3.3 approvate il 2026-10-07, §3.4 da presentare |
 | 4 | La mappa dei file | ⏳ da presentare |
 | 5 | I compiti | ⏳ da presentare |
 | 6 | Come si riprende | ⏳ da presentare |
@@ -127,3 +127,49 @@ Valgono per ogni compito, anche quando il compito non li ripete.
 | 10 | due temi, chiaro e scuro; senza JavaScript, il tema è quello scuro | §2.2 e §5.3 del disegno |
 | 11 | ogni riga di codice di prodotto nasce da un test che prima era rosso | `CLAUDE.md` di daemon, `superpowers:test-driven-development` |
 | 12 | alla chiusura di ogni compito, commit e push, senza co-autore | `CLAUDE.md` di daemon |
+
+---
+
+## 3. I testi
+
+### 3.1 Due tipi di testo
+
+Il disegno vuole una fonte per ogni frase (§3.1 del disegno). Ma la pagina ha anche parole che non dicono niente su
+daemon, e servono solo a usarla: queste una fonte non ce l'hanno, e il disegno non diceva dove stanno. Stanno in un file a
+parte (risposta del proprietario: A, il 2026-10-07).
+
+| Tipo | Che cos'è | Dove | Che cosa porta | I controlli |
+|---|---|---|---|---|
+| **le frasi** | ciò che la pagina dice di daemon | `src/texts/it.json`, `src/texts/en.json` | in italiano il testo, la fonte, la citazione e, per un meccanismo, l'etichetta; in inglese il testo, con la fonte della frase italiana | tutti: le fonti (§3.2 del disegno) e le parole |
+| **l'interfaccia** | le parole per usare la pagina: «Salta», l'indice, il tema, la lingua, i nomi delle sezioni | `src/ui/it.json`, `src/ui/en.json` | il testo | le parole — refusi, tipografia, parole vietate — e le due lingue; e **nessuna cifra**, perché un numero è sempre un fatto, e un fatto ha una fonte |
+
+**Costo dichiarato:** i file di testo sono quattro invece di due. E una frase su daemon messa per sbaglio fra le parole
+d'interfaccia sfugge al controllo delle fonti: la vede chi rilegge — il secondo revisore e il proprietario.
+
+**Scartata:** l'interfaccia nello stesso file delle frasi, con un segno al posto della fonte. La regola «ogni frase ha la
+sua fonte» avrebbe un'eccezione dentro il suo stesso file, e lo schema dovrebbe prevederla.
+
+### 3.2 Il formato
+
+**JSON**, come le parole della GUI di daemon in `gui/src/locales/it.json`: un oggetto per file, con l'identificatore come
+chiave — la forma che il caricatore `file()` di Astro accetta (https://docs.astro.build/en/guides/content-collections/,
+guardata il 2026-10-07). Lo schema lo controlla Astro, con Zod importato da `astro/zod`.
+
+**Costo dichiarato:** niente commenti, ogni frase su una riga sola, e le virgolette dritte `"` dentro una citazione vanno
+scritte come `\"`.
+
+### 3.3 La lingua e la tipografia
+
+L'inglese è quello americano (`en-US`), il predefinito di cspell. Le regole valgono per ciò che appare sulla pagina — il
+testo delle frasi e l'interfaccia — e mai per le citazioni, che sono copiate da daemon lettera per lettera.
+
+| | Italiano | Inglese |
+|---|---|---|
+| l'apostrofo | ’, mai `'` | ’, mai `'` |
+| le virgolette | « » (dentro, “ ”), mai `"` | “ ” (dentro, ‘ ’), mai `"` |
+| il trattino lungo | — con uno spazio per lato, come nei documenti di daemon | — senza spazi |
+| i puntini | …, mai `...` | …, mai `...` |
+| un numero e la sua unità | separati da uno spazio che non va a capo: «16 GB» | lo stesso |
+| gli spazi | mai due di fila, mai prima di `, . ; : ! ?` | lo stesso |
+
+**Costo dichiarato:** il controllo della tipografia è codice nostro.

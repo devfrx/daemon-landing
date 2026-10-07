@@ -134,6 +134,10 @@ italiana. Il formato dei file si sceglie nel piano.
 ⚠️ **Richiamo del 2026-10-07:** le citazioni del marchio, come «AGENTIC OS», restano nella loro lingua — la storia nella
 §2.4 della [rilettura](../../archivio/2026-10-07-rilettura-disegno-landing.md).
 
+⚠️ **Richiamo del 2026-10-07:** le parole d'interfaccia — «Salta», l'indice, il tema, la lingua, i nomi delle sezioni —
+non hanno una fonte: stanno in un file a parte, senza cifre — la storia nella §3.1 del
+[piano del traguardo 1](../plans/2026-10-07-landing-traguardo-1.md).
+
 ### 3.2 I controlli
 
 | Controllo | Rosso se |
