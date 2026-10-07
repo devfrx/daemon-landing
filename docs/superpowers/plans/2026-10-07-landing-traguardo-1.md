@@ -12,7 +12,7 @@
 | § | Sezione | Stato |
 |---|---|---|
 | 1 | Il perimetro | ✅ approvata il 2026-10-07 |
-| 2 | Gli strumenti e i vincoli | ⏳ da presentare |
+| 2 | Gli strumenti e i vincoli | ✅ approvata il 2026-10-07 |
 | 3 | I testi | ⏳ da presentare |
 | 4 | La mappa dei file | ⏳ da presentare |
 | 5 | I compiti | ⏳ da presentare |
@@ -56,3 +56,74 @@ due sensi su un caso vero: rosso su un difetto messo apposta, verde sulla pagina
 | dove si pubblica | il proprietario, quando la pagina è pronta |
 
 **Costo dichiarato:** il cancello è completo solo dopo il traguardo 2, che per questo è più pesante.
+
+---
+
+## 2. Gli strumenti e i vincoli
+
+### 2.1 Gli strumenti
+
+La GUI di daemon ha già un modo di fare queste cose — `gui/package.json`, `gui/.npmrc` e `scripts/gate-gui.sh` su
+`origin/main` — e la landing lo segue.
+
+| Strumento | Versione | Licenza | A che cosa serve |
+|---|---|---|---|
+| Node | `^22.22.2 \|\| ^24.15.0 \|\| >=26.0.0`, con `engine-strict=true` in `.npmrc` | — | lo stesso intervallo della GUI; sta dentro ciò che chiedono Astro (`>=22.12.0`) e cspell (`>=22.18.0`) |
+| Astro | 7.3.6 | MIT | le pagine, le due lingue, lo schema dei testi (§5.1 del disegno) |
+| TypeScript, `@astrojs/check` | 5.9.3, 0.9.10 | Apache-2.0, MIT | i tipi, controllati dentro la build: come `vue-tsc` nella GUI |
+| Vitest | 4.1.11 | MIT | i test |
+| `playwright` | 1.63.0 | Apache-2.0 | i controlli nel browser, col Chrome installato: non si scarica nessun browser, come nella GUI |
+| `axe-core` | 4.13.0 | MPL-2.0 | l'accessibilità |
+| `web-vitals` | 6.2.3 | Apache-2.0 | la velocità (§2.2) |
+| `cspell`, `@cspell/dict-it-it` | 10.3.6, 3.1.7 | MIT, GPL-3.0-or-later | i refusi. Il dizionario inglese è già dentro `cspell`; quello italiano è GPL, ed è uno strumento di sviluppo che non entra nella pagina |
+| `@fontsource-variable/geist`, `@fontsource/barlow` | 5.3.0, 5.3.0 | OFL-1.1 | i caratteri, ospitati dalla pagina |
+
+**Come nella GUI:** versioni esatte, senza `^`; il cancello installa con `npm ci --no-audit --no-fund`; alla fine lancia
+`npm audit`, senza `--audit-level`.
+
+**La regola delle versioni:** se la GUI di daemon usa già un pacchetto, la landing prende la stessa versione; se no,
+l'ultima stabile del giorno del piano. Si rilancia con `git show "origin/main:gui/package.json"` dalla radice di daemon e
+con `npm view <pacchetto> version license`, il 2026-10-07.
+
+**Costo dichiarato:** Vitest resta indietro di una versione grande — la 5.0.0 è del 2026-09-03 — e `axe-core` di una
+piccola — la 4.14.0 è del 2026-10-05. Si aggiornano con un atto apposta, come ogni dipendenza.
+
+### 2.2 La velocità
+
+| | |
+|---|---|
+| **lo strumento** | `web-vitals`, la libreria di Google che misura LCP, CLS e INP come li misura Chrome. Playwright la mette nella pagina costruita, nella sua versione `web-vitals.iife.js`, e fa le interazioni |
+| **il profilo** | sempre lo stesso, quello «telefono» di Lighthouse: 150 ms di latenza, 1,6 Mbps in discesa e 750 Kbps in salita, il processore 4 volte più lento. Lo impone Chrome stesso durante la misura, quindi i numeri sono osservati, non stimati |
+| **le interazioni dell'INP** | il cambio di tema e un salto dall'indice, col mouse e con la tastiera. Ogni traguardo dopo aggiunge le sue: per esempio «Salta» e la prova da toccare della Fig. 5 |
+| **le soglie** | LCP entro 2,5 s, INP entro 200 ms, CLS entro 0,1 (§6.1 del disegno) |
+
+Le fonti, guardate il 2026-10-07: il profilo e il fatto che Lighthouse di base stima i numeri con un modello,
+https://github.com/GoogleChrome/lighthouse/blob/main/docs/throttling.md; i percorsi utente solo con Puppeteer,
+https://github.com/GoogleChrome/lighthouse/blob/main/docs/user-flows.md; la versione da iniettare e l'INP che c'è solo se
+qualcuno interagisce, https://github.com/GoogleChrome/web-vitals/blob/main/README.md.
+
+**Costo dichiarato:** il codice che misura lo scriviamo noi, coi suoi test, e non c'è il rapporto dettagliato di
+Lighthouse.
+
+**Scartata:** Lighthouse. Per l'INP servono i suoi percorsi utente, che funzionano solo con Puppeteer: sarebbe un secondo
+modo di guidare il browser accanto a Playwright, con due dipendenze pesanti; e di base i suoi numeri sono stimati da un
+modello, non osservati.
+
+### 2.3 I vincoli globali
+
+Valgono per ogni compito, anche quando il compito non li ripete.
+
+| # | Il vincolo | Da dove viene |
+|---|---|---|
+| 1 | il codice in inglese — file, funzioni, messaggi d'uscita, commenti — e i documenti in italiano | `CLAUDE.md` di daemon, §1.0 della sua spec |
+| 2 | mai «open source» né «scarica» in italiano; mai «open source» né «download» in inglese | §1 regola 3 e §3.2 del disegno |
+| 3 | nessuna richiesta a siti di terzi | §1 regola 4 e §5.1 del disegno |
+| 4 | ogni file di testo va a capo alla Linux (LF) | §7.3 del disegno |
+| 5 | daemon si legge a `origin/main`, mai dalla sua cartella di lavoro | §6.2 del disegno |
+| 6 | *«Un numero misurato non si scrive: si scrive il COMANDO che lo produce»* | `CLAUDE.md` di daemon; §3.2 del disegno |
+| 7 | ogni controllo si prova nei due sensi: rosso su un difetto messo apposta, verde sulla pagina giusta | `CLAUDE.md` di daemon; §6.1 del disegno |
+| 8 | l'indirizzo base è un'impostazione, mai scritto nel codice | §7.5 del disegno |
+| 9 | una dipendenza si aggiunge in due passi: il cancello usa `npm ci`; il lockfile si rinfresca fuori dal cancello, con `npm install`, e si committa insieme al manifesto | `CLAUDE.md` di daemon, finding G-5 |
+| 10 | due temi, chiaro e scuro; senza JavaScript, il tema è quello scuro | §2.2 e §5.3 del disegno |
+| 11 | ogni riga di codice di prodotto nasce da un test che prima era rosso | `CLAUDE.md` di daemon, `superpowers:test-driven-development` |
+| 12 | alla chiusura di ogni compito, commit e push, senza co-autore | `CLAUDE.md` di daemon |
