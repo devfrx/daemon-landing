@@ -6,7 +6,8 @@
 > parola per parola.
 >
 > 📌 **Dove siamo:** il disegno si scrive una sezione per volta, e ciascuna entra qui solo dopo il sì del proprietario.
-> Le §1–§8 sono approvate e scritte, il 2026-10-07; manca la §9 definitiva. Come si riparte lo dice la §9.
+> Le §1–§8 sono approvate e scritte, e la rilettura è fatta, il 2026-10-07; manca la §9 definitiva. Come si riparte lo
+> dice la §9.
 
 | § | Sezione | Stato |
 |---|---|---|
@@ -58,11 +59,14 @@ tutti e due i modi: la pila dei livelli che si apre (tavola) e il puntino che vi
 | 1 | Apertura | racconto | i semi diventano l'occhio, poi la o di «daemon» — §2.1 |
 | 2 | Fig. 0 · Il marchio | il passaggio | l'occhio si ferma, arrivano i cerchi e la griglia |
 | 3 | Cos'è | tavola | quattro pilastri su un kernel comune; il limite vero: una sola GPU da 16 GB |
-| 4 | Architettura | tavola | i livelli che si aprono; il puntino che viaggia sui canali |
-| 5 | Meccanismi | tavola | arbitro GPU, giornale e ripresa (la prova da toccare), dati non fidati, le sei invarianti, i test deterministici |
-| 6 | Metodo | tavola | prima la spec, poi il codice; gli ADR; la porta di qualità |
+| 4 | Architettura | tavola | Fig. 1–2: i livelli che si aprono; il puntino che viaggia sui canali |
+| 5 | Meccanismi | tavola | Fig. 3–8: le sei invarianti, l'arbitro GPU, il giornale e la ripresa (la prova da toccare), i dati non fidati, il gateway, i test deterministici |
+| 6 | Metodo | tavola | Fig. 9, lo stack; prima la spec, poi il codice; gli ADR; la porta di qualità |
 | 7 | Stato | tavola | che cosa è costruito, che cosa è deciso, che cosa viene dopo |
 | 8 | Chiusura | — | il codice su GitHub; da quale commit di daemon vengono i dati |
+
+⚠️ **Richiamo del 2026-10-07:** le figure stanno nell'ordine dei loro numeri, e così il gateway e lo stack hanno un posto
+— la storia nella §2.2 della [rilettura](../../archivio/2026-10-07-rilettura-disegno-landing.md).
 
 ### 2.1 L'apertura
 
@@ -122,11 +126,14 @@ Ogni frase sta in un file per lingua, con un identificatore. Nel file italiano, 
 | Campo | Che cosa contiene |
 |---|---|
 | la fonte | il file del repository di daemon da cui viene la frase; per le frasi del marchio — per esempio «AGENTIC OS» — un file di `brand/`, la copia del kit (§7) |
-| la citazione | un pezzo letterale di quel file, in italiano |
+| la citazione | un pezzo letterale di quel file: in italiano per i documenti di daemon, nella sua lingua per il marchio |
 | l'etichetta | per un meccanismo: «costruito» oppure «deciso · col N», la convenzione dei diagrammi di daemon (§4) |
 
 Il file inglese ha gli stessi identificatori, né uno in più né uno in meno, e ogni sua frase ha la fonte della frase
 italiana. Il formato dei file si sceglie nel piano.
+
+⚠️ **Richiamo del 2026-10-07:** le citazioni del marchio, come «AGENTIC OS», restano nella loro lingua — la storia nella
+§2.4 della [rilettura](../../archivio/2026-10-07-rilettura-disegno-landing.md).
 
 ### 3.2 I controlli
 
@@ -142,8 +149,11 @@ italiana. Il formato dei file si sceglie nel piano.
 | la tipografia | apostrofi, virgolette, spazi e trattini non seguono le regole della loro lingua |
 | il commit | il commit di daemon da cui viene la pagina non è su GitHub |
 
-L'inglese, poi, lo rilegge un secondo revisore, frase per frase, contro l'italiano: è l'unico controllo che non fa un
-programma.
+L'inglese, poi, lo rilegge un secondo revisore, frase per frase, contro l'italiano: un subagente nuovo, che non ha scritto
+la traduzione. È l'unico controllo che non fa un programma, e la rilettura del proprietario resta (§1).
+
+⚠️ **Richiamo del 2026-10-07:** il secondo revisore è un subagente nuovo — la storia nella §2.7 della
+[rilettura](../../archivio/2026-10-07-rilettura-disegno-landing.md).
 
 ### 3.3 Le fonti, sulla pagina
 
@@ -159,8 +169,12 @@ programma.
 
 ## 4. Le figure
 
-Dieci figure numerate. Ognuna ha un disegno, due o tre frasi semplici, i nomi veri del codice — per esempio
-`Untrusted::promote` — e il link all'ADR su GitHub.
+Dieci figure numerate. Ognuna ha un disegno e due o tre frasi semplici; dalla Fig. 1 alla 9, anche i nomi veri del codice
+— per esempio `Untrusted::promote` — e il link all'ADR su GitHub. La Fig. 0 è il marchio: non ha nomi del codice né un
+ADR.
+
+⚠️ **Richiamo del 2026-10-07:** la Fig. 0 non ha codice né ADR — la storia nella §2.3 della
+[rilettura](../../archivio/2026-10-07-rilettura-disegno-landing.md).
 
 | Fig. | Che cosa mostra | Come si muove |
 |---|---|---|
@@ -230,13 +244,16 @@ Ogni pezzo fa una cosa sola, e si prova da solo.
 ### 5.3 Il percorso
 
 ```
-documenti di daemon (../) ─┐
+daemon (origin/main) ──────┐
 brand/ ────────────────────┼─→ controllo delle fonti ─→ rosso o verde
 testi (en, it) ────────────┘
           └─→ build di Astro ─→ file pronti:  /  (inglese)   /it/  (italiano)
 
 nel browser:   scroll → orologio → numero 0…1 → scena → disegno
 ```
+
+⚠️ **Richiamo del 2026-10-07:** daemon si legge a `origin/main`, non dalla cartella `../` (§6.2) — la storia nella §2.1
+della [rilettura](../../archivio/2026-10-07-rilettura-disegno-landing.md).
 
 Due conseguenze, che non costano lavoro in più:
 
@@ -271,12 +288,15 @@ Un comando solo, `npm run gate`, come `scripts/gate.sh` in daemon. Diventa rosso
 | fonti | le citazioni, i nomi del codice, le etichette, i numeri, le due lingue, il commit (§3.2) |
 | parole | refusi in italiano e in inglese; apostrofi, virgolette, spazi e trattini; nessuna parola vietata (§3.2) |
 | scene | ogni scena fotografata in punti fissi dello scroll: chiaro e scuro, computer e telefono; col movimento ridotto, il fotogramma di riposo |
-| accessibilità | zero errori WCAG 2.2 AA; tutto si usa da tastiera; il movimento ridotto funziona |
+| accessibilità | zero errori del controllo automatico sulle regole WCAG 2.2 AA; tutto si usa da tastiera; il movimento ridotto funziona. È ciò che un programma sa provare, non la conformità intera: il resto lo vede chi rilegge |
 | rete | nessuna richiesta a siti terzi |
-| velocità | le soglie «buone» dei Core Web Vitals: LCP entro 2,5 s, INP entro 200 ms, CLS entro 0,1 (§8). Per web.dev valgono sul 75° percentile delle visite vere; qui si misurano in laboratorio, sulla pagina costruita e sempre con lo stesso profilo: una misura ripetibile, non quella dei visitatori |
+| velocità | le soglie «buone» dei Core Web Vitals: LCP entro 2,5 s, INP entro 200 ms, CLS entro 0,1 (§8). Per web.dev valgono sul 75° percentile delle visite vere; qui si misurano in laboratorio, sulla pagina costruita e sempre con lo stesso profilo: una misura ripetibile, non quella dei visitatori. L'INP c'è solo se qualcuno interagisce con la pagina: le interazioni si fanno apposta, e quali lo fissa il piano (§8) |
 | console | un errore nella console del browser |
 | senza JavaScript | manca del testo: la pagina deve leggersi tutta anche così (§5.3) |
 | marchio | il marchio disegnato non è identico a quello del kit |
+
+⚠️ **Richiamo del 2026-10-07:** l'accessibilità dice che cosa prova il programma, e l'INP vuole interazioni fatte apposta
+— la storia nelle §2.5 e §2.6 della [rilettura](../../archivio/2026-10-07-rilettura-disegno-landing.md).
 
 Ogni controllo gira su tutte e due le lingue, `/` e `/it/`, e si prova **nei due sensi**: rosso su un difetto messo
 apposta, verde sulla pagina giusta — la regola di `CLAUDE.md` di daemon.
@@ -394,6 +414,7 @@ Dalla radice di daemon, in Git Bash, dopo `export MSYS_NO_PATHCONV=1`. Ciò che 
 | Astro mette la lingua principale su `/` e le altre sotto il loro prefisso, come `/it/`: lo fa `prefixDefaultLocale`, che vale `false` se non lo si scrive | §2.4, §5.1 | https://docs.astro.build/en/guides/internationalization/ |
 | Astro controlla i testi con uno schema, anche in file JSON o YAML | §3.1, §5.1 | https://docs.astro.build/en/guides/content-collections/ |
 | le soglie dei Core Web Vitals: LCP 2,5 s, INP 200 ms, CLS 0,1, sul 75° percentile | §6.1 | https://web.dev/articles/vitals, aggiornata il 2024-10-31 |
+| l'INP, in laboratorio, c'è solo se qualcuno interagisce con la pagina; il TBT ne è un'approssimazione, non un sostituto | §6.1 | https://web.dev/articles/inp, aggiornata il 2025-09-02 |
 | Playwright tiene una foto originale per browser e sistema | §6.3 | https://playwright.dev/docs/test-snapshots |
 
 ### 8.2 Verificato il 2026-10-06
@@ -451,11 +472,8 @@ il suo primo compito è il `.gitattributes` (§7.3), il secondo la copia in `bra
 `CLAUDE.md` di questo repository rimanda al piano; su ogni altra macchina, la riga in `.git/info/exclude` di daemon
 (§7.4).
 
-**Già trovato per la rilettura:**
-
-- i rimandi alla §8 — in §5.1, §6.1, §6.3 e §7.4 — puntano a una sezione che ancora non c'è;
-- il percorso della §5.3 scrive «documenti di daemon (../)», mentre la §6.2 dice che si leggono a `origin/main` e non
-  dalla cartella di lavoro: va allineato, col richiamo datato.
+✅ **La rilettura è fatta**, il 2026-10-07: sette correzioni, approvate dal proprietario (risposta: A), ciascuna col
+suo richiamo; il verbale è in [`docs/archivio/2026-10-07-rilettura-disegno-landing.md`](../../archivio/2026-10-07-rilettura-disegno-landing.md).
 
 **Da sapere subito:**
 
