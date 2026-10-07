@@ -448,6 +448,9 @@ sparire, e i link ai suoi commit si romperebbero.
 
 ## 9. Come si riprende
 
+⚠️ **Richiamo del 2026-10-07:** il piano del traguardo 1 è cominciato, e si riprende da lì — la §6 del
+[piano](../plans/2026-10-07-landing-traguardo-1.md).
+
 **Dove siamo:** il disegno è finito, il 2026-10-07: le §1–§9 sono approvate, la rilettura è fatta — il verbale è in
 [`docs/archivio/2026-10-07-rilettura-disegno-landing.md`](../../archivio/2026-10-07-rilettura-disegno-landing.md) — e il
 proprietario l'ha riletto per intero. Il prossimo passo è il piano del primo traguardo.

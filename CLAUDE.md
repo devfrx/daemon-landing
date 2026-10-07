@@ -10,9 +10,11 @@ lettura d'apertura**, che per questo repository è quella qui sotto (decisione 6
 ## ⛔ Prima cosa, e unica lettura obbligatoria
 
 1. `git fetch --all --prune`, poi `git status -sb`: se il ramo è indietro e l'albero è pulito, `git merge --ff-only`.
-2. Leggi **questo file** e il **documento in corso**, per intero: oggi è
-   [`docs/superpowers/specs/2026-10-06-landing-design.md`](docs/superpowers/specs/2026-10-06-landing-design.md), e il
-   punto da cui si riparte è la sua sezione *«Come si riprende»*.
+2. Leggi **questo file** e il **documento in corso**, per intero: oggi è il piano del traguardo 1,
+   [`docs/superpowers/plans/2026-10-07-landing-traguardo-1.md`](docs/superpowers/plans/2026-10-07-landing-traguardo-1.md),
+   che si legge insieme al disegno che realizza,
+   [`docs/superpowers/specs/2026-10-06-landing-design.md`](docs/superpowers/specs/2026-10-06-landing-design.md). Il punto
+   da cui si riparte è la sezione *«Come si riprende»* del piano.
 3. ⛔ **Il compendio di daemon qui NON si legge.** Le fonti di daemon si aprono solo quando una frase della pagina le
    cita, una alla volta.
 
@@ -20,6 +22,6 @@ lettura d'apertura**, che per questo repository è quella qui sotto (decisione 6
 
 | Regola | |
 |---|---|
-| **la pagina non inventa nulla** | ogni frase ha la sua fonte nei documenti di daemon, controllata da un programma — la parte 2 del documento in corso |
+| **la pagina non inventa nulla** | ogni frase ha la sua fonte nei documenti di daemon, controllata da un programma — la §3 del disegno |
 | **parole vietate** | «open source», perché il repo di daemon non ha una licenza; «scarica», perché non c'è niente da scaricare |
 | **nessun codice prima del piano** | il disegno si approva, poi si scrive il piano, poi si costruisce |
