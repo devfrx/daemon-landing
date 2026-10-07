@@ -12,8 +12,8 @@
 |---|---|---|
 | 1 | Che cosa si costruisce | ✅ approvata il 2026-10-07 |
 | 2 | La pagina | ✅ approvata il 2026-10-07 |
-| 3 | Le parole e le fonti | ⏳ da presentare |
-| 4 | Le figure | ⏳ |
+| 3 | Le parole e le fonti | ✅ approvata il 2026-10-07 |
+| 4 | Le figure | ✅ approvata il 2026-10-07 |
 | 5 | Com'è fatta dentro | ⏳ da presentare: i token |
 | 6 | La porta di qualità | ⏳ da presentare: la CI |
 | 7 | Dove vive | ⏳ da presentare: i fine-riga, dove pubblicare, la riga in daemon |
@@ -108,3 +108,83 @@ lingua automatico:** chiederebbe un server, o uno script che fa lampeggiare la p
 
 **Costo dichiarato:** l'indirizzo principale porta la traduzione, e chi è italiano clicca «IT». Fino alla pubblicazione
 la scelta si cambia senza danni; dopo, romperebbe i link già condivisi.
+
+---
+
+## 3. Le parole e le fonti
+
+**Ogni frase vera, nessun refuso.** La pagina non inventa nulla: ogni frase ha la sua fonte, e un programma la controlla.
+
+### 3.1 Dove sta il testo
+
+Ogni frase sta in un file per lingua, con un identificatore. Nel file italiano, accanto a ogni frase:
+
+| Campo | Che cosa contiene |
+|---|---|
+| la fonte | il file del repository di daemon da cui viene la frase; per le frasi del marchio — per esempio «AGENTIC OS» — un file di `brand/`, la copia del kit (§7) |
+| la citazione | un pezzo letterale di quel file, in italiano |
+| l'etichetta | per un meccanismo: «costruito» oppure «deciso · col N», la convenzione dei diagrammi di daemon (§4) |
+
+Il file inglese ha gli stessi identificatori, né uno in più né uno in meno, e ogni sua frase ha la fonte della frase
+italiana. Il formato dei file si sceglie nel piano.
+
+### 3.2 I controlli
+
+| Controllo | Rosso se |
+|---|---|
+| la citazione | non si trova più nel suo file. Il confronto ignora gli a-capo e gli spazi doppi, perché i documenti di daemon vanno a capo dentro le frasi |
+| i nomi del codice | un nome scritto fra apici inversi — per esempio `Untrusted::promote` — non esiste più in `crates/` |
+| le etichette | «costruito» senza un nome del codice che esiste in `crates/`; «deciso · col N» senza una citazione che dice «col N» |
+| i numeri | un numero non sta dentro una citazione controllata e non lo produce un comando durante la build. Mai a mano: è la regola di `CLAUDE.md` di daemon, *«Un numero misurato non si scrive: si scrive il COMANDO che lo produce»* |
+| le due lingue | un identificatore c'è in una lingua e manca nell'altra |
+| le parole vietate | «open source» e «scarica» in italiano; «open source» e «download» in inglese |
+| i refusi | il controllo ortografico, in italiano e in inglese, trova una parola che non conosce |
+| la tipografia | apostrofi, virgolette, spazi e trattini non seguono le regole della loro lingua |
+| il commit | il commit di daemon da cui viene la pagina non è su GitHub |
+
+L'inglese, poi, lo rilegge un secondo revisore, frase per frase, contro l'italiano: è l'unico controllo che non fa un
+programma.
+
+### 3.3 Le fonti, sulla pagina
+
+- ogni frase tecnica porta un segno: lo si tocca e si vede il file da cui viene, con il link su GitHub;
+- il link punta al **commit esatto**, non a un ramo: mostra il testo che il controllo ha letto, anche dopo che il
+  documento è cambiato;
+- in fondo alla pagina c'è il commit di `devfrx/daemon` da cui vengono le frasi e i numeri;
+- ogni meccanismo porta la sua etichetta, «costruito» o «deciso · col N».
+
+**Costo dichiarato:** quando una frase cambia nei documenti di daemon, il controllo chiede di aggiornare la pagina.
+
+---
+
+## 4. Le figure
+
+Dieci figure numerate. Ognuna ha un disegno, due o tre frasi semplici, i nomi veri del codice — per esempio
+`Untrusted::promote` — e il link all'ADR su GitHub.
+
+| Fig. | Che cosa mostra | Come si muove |
+|---|---|---|
+| 0 · Il marchio | i tre cerchi in rapporto aureo | il passaggio racconto → tavola |
+| 1 · I quattro livelli | fondamenta, arbitri, capacità, integrazione | si apre con lo scroll |
+| 2 · I processi | core, GUI, worker, MCP, OpenRouter e i canali | il puntino viaggia, un passo per volta |
+| 3 · Le sei invarianti | le sei regole che il kernel non può rompere | si accendono una per volta |
+| 4 · L'arbitro GPU | 16 GB; le quote tolte prima; chi entra e chi aspetta | la formula si compone |
+| 5 · Il giornale e la ripresa | intento scritto prima, esito dopo; le tre classi | **prova da toccare:** uccidi il worker |
+| 6 · I dati non fidati | un tipo a parte: possono informare, mai autorizzare | il testo sospetto resta nella sua scatola |
+| 7 · Il gateway | ogni richiesta ha il suo record; sui dati si fallisce chiuso | la catena di riserva scorre |
+| 8 · I test deterministici | tempo, caso, I/O e ordine iniettabili; crash simulati | due corse con lo stesso seme, identiche |
+| 9 · Lo stack | Rust `no_std`, le crate del workspace, Vue 3, Electron, Python, redb | — |
+
+| Regola | |
+|---|---|
+| **la legenda** | una volta sola sulla pagina: «costruito» vuol dire che esiste nel codice; «deciso · col N» vuol dire deciso e non ancora costruito, e N è il sotto-progetto della roadmap che lo costruirà. È la regola 2 di `docs/README.md` di daemon, che è anche la fonte della frase (§3) |
+| **il fotogramma di riposo** | ogni figura ne ha uno che mostra tutto, di solito l'ultimo: è quello che si vede con *riduci il movimento* (§2.2) |
+| **la prova da toccare** | la Fig. 5 si usa anche da tastiera |
+| **sul telefono** | le stesse figure, con le scene più corte (§2.3) |
+
+⚠️ **Dedotto, non verificato per figura:** quale etichetta vada su ogni figura. È dedotto dalla lista dei `pub mod` di
+`crates/kernel/src/lib.rs` e dai «(col N)» di `docs/design/01-topologia-dei-processi.md`; si verifica riga per riga
+contro il codice, nel piano. Lo stesso vale per i contenuti della Fig. 1: i livelli disegnati nella bozza `b` sono
+un'approssimazione, da verificare sulla spec del kernel.
+
+**Costo dichiarato:** la pagina è lunga, circa 15–20 schermate; per questo c'è l'indice fisso in alto (§2.2).
