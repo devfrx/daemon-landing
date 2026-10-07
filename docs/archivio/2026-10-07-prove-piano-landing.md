@@ -1,8 +1,9 @@
 # Le prove per scrivere i compiti del piano del traguardo 1 — il verbale
 
 > 🗄️ **Che cos'è questo file.** Il verbale delle prove fatte il 2026-10-07 per scrivere la §5 del
-> [piano del traguardo 1](../superpowers/plans/2026-10-07-landing-traguardo-1.md) — le §1–§9 nel pomeriggio, dalla §10
-> nella sessione dopo: il proprietario ha scelto di provare il codice prima di scriverlo nel piano (risposta: A). Le prove
+> [piano del traguardo 1](../superpowers/plans/2026-10-07-landing-traguardo-1.md) — le §1–§9 nel pomeriggio, la §10 e la
+> §11 nella sessione dopo, la §12 in quella dopo ancora: il proprietario ha scelto di provare il codice prima di scriverlo
+> nel piano (risposta: A). Le prove
 > sono girate nello scratchpad di ciascuna sessione, poi cancellato. Qui c'è la storia; il piano porta ciò che ne è
 > venuto.
 
@@ -160,3 +161,32 @@ pagine del kit messa accanto.
 `checks/support/landing.ts` del compito 8 ha una riga più in alto di quella provata, con lo stesso effetto. I comandi
 del passo 11 del compito 8 sono stati riscritti dopo le prove, con `node` al posto di `sed -i`; quelli dei compiti 9 e
 10 sono quelli girati. Prima di presentarli, i compiti 8–10 si rifanno dal testo del piano, come i 3–7 nella §10.
+
+## 12. I compiti 1–10, rifatti dal testo del piano
+
+Nella quarta sessione del 2026-10-07, prima di presentare i compiti 8–10 al proprietario. Il banco di prova come nella
+§9: daemon clonato nello scratchpad senza cartella di lavoro, col suo `origin` su `https://github.com/devfrx/daemon.git` e
+`origin/main` scritto con `git update-ref`; accanto, una copia dei SVG e delle due pagine del kit; dentro, una copia della
+landing senza remoto, perché nessun `git push` arrivasse al repository vero. Il codice l'ha preso dal piano un programma,
+blocco per blocco: i file interi così come stanno, i frammenti dei compiti 4 e 6 innestati dove il testo dice. I comandi,
+quelli nei blocchi e quelli scritti nel testo, sono girati come stanno; uno del testo girava solo se il programma lo
+trovava, lettera per lettera, nel suo passo. daemon era a `c2de19a` quando si è cominciato, e a `fc43188` quando si è
+clonato, per un'altra sessione: due commit di documenti che non toccano né le cinque fonti né la GUI. Le prove l'hanno
+letto a `fc43188`.
+
+| Compito | Visto |
+|---|---|
+| 1–7 | i rossi e i verdi della §8, della §9 e della §10; anche l'1 e il 2, perché il 10 usa `brand/` |
+| 8 | come nella §11. Il passo 11, che non era mai girato dal testo del piano: `4 failed \| 18 passed`, coi rossi attesi; la build senza `LANDING_SITE` si ferma, con l'uscita a 1; alla fine `22 passed`, e i due file di nuovo uguali al piano |
+| 9–10 | come nella §11 |
+
+Un inciampo dell'ambiente, non del piano: al passo 9 del compito 6 Git Bash non è riuscito a creare un processo,
+*«fork: retry: Resource temporarily unavailable»*; rilanciato, `0 errors`.
+
+**Che cosa ha trovato la rilettura** dei compiti 8–10, dopo le prove:
+
+| | Che cosa | La misura, o la fonte | Che cosa se ne è fatto |
+|---|---|---|---|
+| 1 | il passo 2 del compito 4, approvato, diceva che il progetto `page` arriva col compito 10: arriva col compito 8, dalla risposta A sul browser | la §4 del piano, col suo richiamo | corretto, col richiamo |
+| 2 | l'interruttore del tema, acceso, si riempiva di `--color-bg-accent`: nel tema scuro sta a 1,84:1 sul fondo della pagina, e un controllo vuole 3:1, WCAG 1.4.11 | `scripts/contrasto.py` della skill `frontend-craft` su `#7A1F2E` e `#151112`; `--color-mark`, `#BF5567`, sta a 4,20:1. In daemon i 3:1 sono di quattro ruoli, *«non-text 3:1   border-strong, focus, mark, border-accent»* in `gui/src/tokens/contrast.test.ts`, e il radio acceso della GUI, `BaseRadioGroup.vue`, usa `--color-mark` | corretto nel compito 9, `--color-mark`; i controlli del 9 e del 10 rilanciati, verdi. Nessun programma lo controlla: axe non misura il contrasto dei controlli |
+| 3 | il segno della fonte, aperto, ha due bersagli alti 19,5 e 20,8 px, a 1,6 px l'uno dall'altro: sotto i 24 px di WCAG 2.5.8 | `getBoundingClientRect()` a 375 px di larghezza. axe-core 4.13.0, nel pannello browser dell'app, con `axe.min.js` servito accanto alla pagina e le regole `wcag2a`, `wcag2aa`, `wcag21a`, `wcag21aa` e `wcag22aa`: coi segni chiusi, 0 violazioni; aperti, `target-size`, *serious*, su due segni. L'unica regola di `wcag22aa` è `target-size`: `axe.getRules(['wcag22aa'])` | lasciato al compito 11, come rosso vero del suo controllo (risposta: A) |

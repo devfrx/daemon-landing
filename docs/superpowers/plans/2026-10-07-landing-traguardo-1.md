@@ -16,7 +16,7 @@
 | 2 | Gli strumenti e i vincoli | ✅ approvata il 2026-10-07 |
 | 3 | I testi | ✅ approvata il 2026-10-07 |
 | 4 | La mappa dei file | ✅ approvata il 2026-10-07 |
-| 5 | I compiti | 🔶 i compiti 1–7 approvati il 2026-10-07; i compiti 8–10 scritti, da approvare; i compiti 11–13 da scrivere |
+| 5 | I compiti | 🔶 i compiti 1–10 approvati il 2026-10-07; i compiti 11–13 da scrivere |
 | 6 | Come si riprende | 🔶 oggi è la consegna della terza sessione del 2026-10-07 |
 
 ---
@@ -665,7 +665,10 @@ build:
 ```
 
 - [ ] **Passo 2 — la configurazione di Vitest**, `vitest.config.ts`. È già fatta a progetti: il secondo, `page`, arriva
-col compito 10.
+col compito 8.
+
+⚠️ **Richiamo del 2026-10-07:** il progetto `page` arriva col compito 8, insieme al browser — la storia nella §12 del
+[verbale delle prove](../../archivio/2026-10-07-prove-piano-landing.md).
 
 ```ts
 import { defineConfig } from 'vitest/config';
@@ -2609,12 +2612,14 @@ a {
   text-transform: uppercase;
 }
 
+/* Checked, the switch fills with a mark, as the checked radio of daemon's GUI does: a mark reads 3:1 on the page, and
+   the accent background does not, in the dark theme. */
 .theme-switch input {
   inline-size: 1.5rem;
   block-size: 1.5rem;
   margin: 0;
   vertical-align: middle;
-  accent-color: var(--color-bg-accent);
+  accent-color: var(--color-mark);
 }
 
 main,
@@ -2983,7 +2988,7 @@ git add src checks && git commit -m "t1(compito 10): i controlli nel browser -- 
 |---|---|
 | §1–§4 | approvate, coi richiami del 2026-10-07 |
 | §5, compiti 1–7 | ✅ approvati; il 7 con le parole vietate in ogni loro forma (risposta: A) |
-| §5, compiti 8–10 | scritti, col codice che ha girato; **da rifare dal testo del piano, poi da approvare** |
+| §5, compiti 8–10 | ✅ approvati il 2026-10-07; nel 9 l'interruttore acceso in `--color-mark`; il segno della fonte aperto, troppo piccolo, è il rosso vero del compito 11 (risposta: A) |
 | §5, compiti 11–13 | da scrivere |
 
 Il codice dei compiti si prova prima di scriverlo (risposta del proprietario: A). La storia delle prove è nel
@@ -2996,10 +3001,12 @@ Il codice dei compiti si prova prima di scriverlo (risposta del proprietario: A)
 3. le skill: `superpowers:writing-plans`, `anthropic-skills:decision-principles`, `anthropic-skills:dev-communication`,
    `anthropic-skills:frontend-craft`;
 4. rilancia ciò che invecchia, coi comandi della tabella in fondo;
-5. rifai i compiti 3–10 nello scratchpad dal testo del piano, come nella §10 del verbale: un programma prende il codice
+5. ✅ rifai i compiti 3–10 nello scratchpad dal testo del piano, come nella §10 del verbale: un programma prende il codice
    dal piano, riga per riga, e i comandi si lanciano come stanno. I comandi del passo 11 del compito 8 non hanno ancora
-   girato così (§11 del verbale). Se qualcosa diverge, si registra e si corregge prima di presentare;
-6. presenta al proprietario i compiti 8–10, con le scelte della tabella qui sotto, e chiedi il sì; commit e push;
+   girato così (§11 del verbale). Se qualcosa diverge, si registra e si corregge prima di presentare — fatto nella
+   sessione dopo, coi compiti 1–10 (§12 del verbale);
+6. ✅ presenta al proprietario i compiti 8–10, con le scelte della tabella qui sotto, e chiedi il sì; commit e push —
+   fatto nella sessione dopo;
 7. scrivi i compiti 11–13, ciascuno provato prima nello scratchpad, e presentali;
 8. la §6 definitiva, cioè come si esegue; lo stato in testa; questa consegna in archivio; commit e push.
 
@@ -3022,6 +3029,7 @@ Il codice dei compiti si prova prima di scriverlo (risposta del proprietario: A)
 | Compito | Che cosa si sa già | Nel verbale |
 |---|---|---|
 | 11 | `openLanding()` e `open()` danno la pagina servita sotto la base, nel Chrome installato, con `before` per ascoltare prima che si carichi | §11 |
+| 11 | il segno della fonte, aperto, è troppo piccolo per WCAG 2.5.8: coi segni aperti axe 4.13.0 dà `target-size`, *serious*. È il rosso vero del controllo, e il compito 11 lo corregge (risposta: A). L'unica regola `wcag22aa` di axe 4.13.0 è `target-size` | §12 |
 | 12 | il profilo si accende con una sessione CDP: `Network.enable`, `Network.emulateNetworkConditions`, `Emulation.setCPUThrottlingRate`; che sia acceso lo prova `responseEnd` della navigazione, non `responseStart`; si interagisce solo dopo che l'LCP è arrivato; la fine della misura si simula come nei test di `web-vitals`; il rosso, su una pagina con 300 ms di lavoro nel clic | §4, §5 |
 | 12 | Vitest lancia in parallelo i file di un progetto: la velocità si misura da sola, in un progetto suo o con `fileParallelism: false` | — |
 | 13 | in CI, `actions/checkout` con `ref: main` lascia `origin/main` nel clone di daemon; daemon usa la v4, e l'ultima è la v7.0.1: si segue daemon e si segnala la differenza | §6 |
