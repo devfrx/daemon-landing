@@ -148,7 +148,7 @@ Valgono per ogni compito, anche quando il compito non li ripete.
 | # | Il vincolo | Da dove viene |
 |---|---|---|
 | 1 | il codice in inglese — file, funzioni, messaggi d'uscita, commenti — e i documenti in italiano | `CLAUDE.md` di daemon, §1.0 della sua spec |
-| 2 | mai «open source» né «scarica» in italiano; mai «open source» né «download» in inglese | §1 regola 3 e §3.2 del disegno |
+| 2 | mai «open source», «scarica» né «download» in italiano; mai «open source» né «download» in inglese | §1 regola 3 e §3.2 del disegno |
 | 3 | nessuna richiesta a siti di terzi | §1 regola 4 e §5.1 del disegno |
 | 4 | ogni file di testo va a capo alla Linux (LF) | §7.3 del disegno |
 | 5 | daemon si legge a `origin/main`, mai dalla sua cartella di lavoro | §6.2 del disegno |
@@ -159,6 +159,9 @@ Valgono per ogni compito, anche quando il compito non li ripete.
 | 10 | due temi, chiaro e scuro; senza JavaScript, il tema è quello scuro | §2.2 e §5.3 del disegno |
 | 11 | ogni riga di codice di prodotto nasce da un test che prima era rosso | `CLAUDE.md` di daemon, `superpowers:test-driven-development` |
 | 12 | alla chiusura di ogni compito, commit e push, senza co-autore | `CLAUDE.md` di daemon |
+
+⚠️ **Richiamo del 2026-10-08:** «download» è vietato anche in italiano (risposta del proprietario: A) — la storia nella
+§18 del [verbale delle prove](../../archivio/2026-10-07-prove-piano-landing.md).
 
 ---
 
@@ -1280,10 +1283,15 @@ dizionari la accettano sempre. **Costo dichiarato:** ogni sigla nuova di due o t
 aggiunge a mano fra le parole note, come «ADR» quando arriverà.
 
 ⚠️ **Richiamo del 2026-10-08:** i refusi si cercano in ogni parola da due lettere in su (risposta del proprietario: A)
-— la storia nella §18 del [verbale delle prove](../../archivio/2026-10-07-prove-piano-landing.md). **Le parole vietate** sono quelle della §1 del disegno, in ogni loro forma —
-«open-sourced», «opensource», «downloads», «scaricare» —, perché la regola parla di ciò che dicono (risposta del
-proprietario: A, il 2026-10-07). **Costo dichiarato:** anche una frase vera come «niente da scaricare» è rossa, e va
-scritta in un altro modo.
+— la storia nella §18 del [verbale delle prove](../../archivio/2026-10-07-prove-piano-landing.md).
+
+**Le parole vietate** sono quelle della §1 del disegno, in ogni loro forma — «open-sourced», «opensource», «downloads»,
+«scaricare» —, perché la regola parla di ciò che dicono (risposta del proprietario: A, il 2026-10-07). In italiano è
+vietato anche «download»: il dizionario italiano conosce la parola, e dice ciò che dice «scarica». **Costo
+dichiarato:** anche una frase vera come «niente da scaricare» è rossa, e va scritta in un altro modo.
+
+⚠️ **Richiamo del 2026-10-08:** «download» è vietato anche in italiano (risposta del proprietario: A) — la storia nella
+§18 del [verbale delle prove](../../archivio/2026-10-07-prove-piano-landing.md).
 
 - [ ] **Passo 1 — i pacchetti**, fuori dal cancello (vincolo 9):
 
@@ -1361,6 +1369,7 @@ describe('forbiddenWords', () => {
     expect(forbiddenWords('an opensource project', 'en')).toEqual(['opensource']);
     expect(forbiddenWords('Downloads', 'en')).toEqual(['Downloads']);
     expect(forbiddenWords('puoi scaricare daemon', 'it')).toEqual(['scaricare']);
+    expect(forbiddenWords('il download di daemon', 'it')).toEqual(['download']);
   });
 
   test('accepts a text without them', () => {
@@ -1434,9 +1443,10 @@ export function typographyProblems(text: string, language: Language): string[] {
 }
 
 // The forbidden words of §1 of the design, in every form — "open-sourced", "opensource", "downloads", "scaricare" —
-// because the rule is about what they say: there is no license, and nothing to download.
+// because the rule is about what they say: there is no license, and nothing to download. "download" in Italian too:
+// the Italian dictionary knows the word, and it says what "scarica" says.
 const FORBIDDEN_WORDS: Record<Language, RegExp[]> = {
-  it: [/\bopen\W?source\w*/i, /\bscaric\w*/i],
+  it: [/\bopen\W?source\w*/i, /\bscaric\w*/i, /\bdownload\w*/i],
   en: [/\bopen\W?source\w*/i, /\bdownload\w*/i],
 };
 

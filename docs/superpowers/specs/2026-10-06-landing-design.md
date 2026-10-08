@@ -35,12 +35,15 @@
 
 1. non inventa nulla: ogni frase ha una fonte nei documenti di daemon, e un programma la controlla (§3);
 2. zero refusi, in italiano e in inglese (§3);
-3. mai «open source», perché il repository di daemon non ha una licenza, e mai «scarica», perché non c'è niente da
-   scaricare;
+3. mai «open source», perché il repository di daemon non ha una licenza, e mai «scarica» né «download», perché non c'è
+   niente da scaricare;
 4. nessuna richiesta a siti di terzi (§5);
 5. lo scroll resta quello del browser: le animazioni seguono lo scroll, non lo comandano (§2);
 6. con *riduci il movimento* la pagina sta ferma, ma è completa (§2);
 7. due temi, chiaro e scuro (§2).
+
+⚠️ **Richiamo del 2026-10-08:** «download» è vietato anche in italiano — la storia nella §18 del
+[verbale delle prove](../../archivio/2026-10-07-prove-piano-landing.md).
 
 **Che cosa non c'è:** niente da scaricare, niente statistiche, niente audio. Dove pubblicarla si decide in §7.
 
@@ -147,10 +150,13 @@ non hanno una fonte: stanno in un file a parte, senza cifre — la storia nella 
 | le etichette | «costruito» senza un nome del codice che esiste in `crates/`; «deciso · col N» senza una citazione che dice «col N» |
 | i numeri | un numero non sta dentro una citazione controllata e non lo produce un comando durante la build. Mai a mano: è la regola di `CLAUDE.md` di daemon, *«Un numero misurato non si scrive: si scrive il COMANDO che lo produce»* |
 | le due lingue | un identificatore c'è in una lingua e manca nell'altra |
-| le parole vietate | «open source» e «scarica» in italiano; «open source» e «download» in inglese |
+| le parole vietate | «open source», «scarica» e «download» in italiano; «open source» e «download» in inglese |
 | i refusi | il controllo ortografico, in italiano e in inglese, trova una parola che non conosce |
 | la tipografia | apostrofi, virgolette, spazi e trattini non seguono le regole della loro lingua |
 | il commit | il commit di daemon da cui viene la pagina non è su GitHub |
+
+⚠️ **Richiamo del 2026-10-08:** «download» è vietato anche in italiano — la storia nella §18 del
+[verbale delle prove](../../archivio/2026-10-07-prove-piano-landing.md).
 
 L'inglese, poi, lo rilegge un secondo revisore, frase per frase, contro l'italiano: un subagente nuovo, che non ha scritto
 la traduzione. È l'unico controllo che non fa un programma, e la rilettura del proprietario resta (§1).

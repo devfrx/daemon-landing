@@ -23,5 +23,5 @@ lettura d'apertura**, che per questo repository è quella qui sotto (decisione 6
 | Regola | |
 |---|---|
 | **la pagina non inventa nulla** | ogni frase ha la sua fonte nei documenti di daemon, controllata da un programma — la §3 del disegno |
-| **parole vietate** | «open source», perché il repo di daemon non ha una licenza; «scarica», perché non c'è niente da scaricare |
+| **parole vietate** | «open source», perché il repo di daemon non ha una licenza; «scarica» e «download», perché non c'è niente da scaricare |
 | **nessun codice prima del piano** | il disegno si approva, poi si scrive il piano, poi si costruisce |
