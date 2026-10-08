@@ -16,8 +16,8 @@
 | 2 | Gli strumenti e i vincoli | ✅ approvata il 2026-10-07 |
 | 3 | I testi | ✅ approvata il 2026-10-07 |
 | 4 | La mappa dei file | ✅ approvata il 2026-10-07 |
-| 5 | I compiti | 🔶 i compiti 1–11 approvati il 2026-10-07; i compiti 12–13 da scrivere |
-| 6 | Come si riprende | 🔶 oggi è la consegna della quinta sessione del 2026-10-07 |
+| 5 | I compiti | 🔶 i compiti 1–11 approvati il 2026-10-07; il compito 12 scritto e rifatto dal testo, da approvare; il compito 13 da scrivere |
+| 6 | Come si riprende | 🔶 oggi è la consegna della sesta sessione, del 2026-10-07 e del 2026-10-08 |
 
 ---
 
@@ -3384,28 +3384,245 @@ git add package.json package-lock.json vitest.config.ts src checks && git commit
 
 - [ ] **Passo 10 —** `git push`.
 
+### Compito 12 — la velocità
+
+**File:** crea `checks/speed.page.test.ts`; modifica `package.json` e `package-lock.json`.
+
+**Usa:** `openLanding` e `open(language, options, before)` (compiti 8 e 10), i controlli nel browser uno per volta
+(compito 11), la pagina coi temi (compito 9). **Lascia:**
+
+- `checks/speed.page.test.ts`, il controllo del cancello: col profilo «telefono» della §2.2, nelle due lingue, LCP entro
+  2,5 s, CLS entro 0,1 e INP entro 200 ms (§6.1 del disegno), misurati da `web-vitals` sulla pagina costruita, con le
+  interazioni della §2.2; e la guardia che il profilo sia acceso;
+- `web-vitals` 6.2.3.
+
+**Il profilo** lo impone Chrome, da una sessione CDP aperta prima che la pagina si carichi: `Network.emulateNetworkConditions`
+per la rete, `Emulation.setCPUThrottlingRate` per il processore; lo schermo lo danno le opzioni di Playwright, `isMobile`
+e `hasTouch` compresi, perché il telefono di Lighthouse è anche «mobile» e col tocco. Sono i comandi di Lighthouse, in
+`core/lib/emulation.js`, e la rete va in byte al secondo come la converte lui, `Math.floor(kbps * 1024 / 8)`. Che il
+profilo sia acceso lo dice `responseEnd` della navigazione: col profilo arriva dopo i 562,5 ms dell'attesa, senza in
+pochi millisecondi.
+
+⚠️ **`Network.emulateNetworkConditions` è deprecato** nel protocollo di Chrome, a favore di
+`Network.emulateNetworkConditionsByRule` e `Network.overrideNetworkState`, che sono sperimentali: `pdl/domains/Network.pdl`
+di `ChromeDevTools/devtools-protocol`, guardato il 2026-10-07. Lighthouse e Puppeteer usano ancora il primo, DevTools i
+secondi; su Chrome 154 danno le stesse misure (§15 del verbale). **Costo dichiarato:** il giorno che Chrome lo toglie, il
+controllo è rosso con un errore del protocollo — mai in silenzio — e si riscrive coi comandi nuovi.
+
+**La misura.** `web-vitals` entra con `page.addInitScript`, prima della pagina e senza passare dalla rete, e scrive i
+valori in `window.__vitals`. Prima di toccare la pagina si aspetta che la rete taccia da 500 ms, `networkidle`: uno
+spostamento nei 500 ms dopo un input non conta per la CLS, e un'interazione troppo presto nasconderebbe gli spostamenti
+del caricamento. Poi le quattro interazioni della §2.2, e alla fine la pagina si nasconde come la nascondono i test di
+`web-vitals` (`test/views/layout.njk`, al tag `v6.2.3`): CLS e INP si consegnano lì. `open()` aspetta 2 s, e una pagina
+rallentata ci mette di più: il controllo alza l'attesa nel suo `before`.
+
+**Il telefono e la CLS.** In modalità telefono la pagina cambia larghezza quando applica il suo `<meta name="viewport">`,
+e per Chrome un cambio della finestra vale come un input: per 500 ms nessuno spostamento conta — `NotifyViewportSizeChanged`
+in `third_party/blink/renderer/core/layout/layout_shift_tracker.cc` di Chromium. Sulla pagina del traguardo 1 quei 500 ms
+coprono il primo disegno: uno spostamento subito dopo, col telefono, non conta; senza la modalità telefono, sì (§15 del
+verbale). **Costo dichiarato:** il controllo non vede uno spostamento in quella finestra, perché Chrome non lo conta; il
+difetto del passo 3 sposta la pagina al `load`, dopo.
+
+**Uno per volta.** Dal compito 11 i controlli nel browser girano in fila: la misura del tempo ha la macchina per sé, e
+non serve un progetto a parte.
+
+**Costo dichiarato:** la guardia vede la rete, non il processore: se il rallentamento del processore mancasse, la pagina
+sembrerebbe più veloce, e nessuno lo direbbe. E la misura è di laboratorio, ripetibile, non quella dei visitatori (§6.1
+del disegno).
+
+- [ ] **Passo 1 — i pacchetti**, fuori dal cancello (vincolo 9):
+
+```bash
+npm install --no-audit --no-fund --save-exact --save-dev web-vitals@6.2.3 && npm approve-scripts --allow-scripts-pending
+```
+
+Atteso: `No packages with unreviewed install scripts.`.
+
+- [ ] **Passo 2 — il controllo.** `checks/speed.page.test.ts`:
+
+```ts
+import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
+import { dirname, join } from 'node:path';
+import { afterAll, beforeAll, describe, expect, test } from 'vitest';
+import { interfaceWord, readTexts } from '../src/lib/texts';
+import type { Language } from '../src/lib/words';
+import { type Landing, openLanding } from './support/landing';
+
+// The gate's check of speed (§6.1 of the design): LCP, CLS and INP within the «good» thresholds of the Core Web Vitals,
+// measured by web-vitals on the built page, with the «phone» profile of Lighthouse imposed by Chrome itself, and with
+// the interactions of §2.2 of the plan. A measure that repeats, not the visitors' one.
+const WEB_VITALS = join(dirname(createRequire(import.meta.url).resolve('web-vitals')), 'web-vitals.iife.js');
+const words = { it: readTexts('src/ui/it.json', interfaceWord), en: readTexts('src/ui/en.json', interfaceWord) };
+
+// Lighthouse's phone, with the numbers Lighthouse gives Chrome when Chrome throttles request by request: 150 ms, 1.6 Mbps
+// and 750 Kbps, corrected by 3.75 and 0.9 (§2.2 of the plan). The throughputs in bytes per second, as Lighthouse
+// converts them.
+const PHONE = { viewport: { width: 412, height: 823 }, deviceScaleFactor: 1.75, isMobile: true, hasTouch: true };
+const LATENCY = 562.5;
+const DOWNLOAD = Math.floor((1474.56 * 1024) / 8);
+const UPLOAD = Math.floor((675 * 1024) / 8);
+const CPU_SLOWDOWN = 4;
+
+interface Vitals {
+  /** When the page finished arriving: after the latency, if the network is slowed. */
+  responseEnd: number;
+  LCP?: number;
+  CLS?: number;
+  INP?: number;
+}
+
+let landing: Landing;
+beforeAll(async () => {
+  landing = await openLanding();
+});
+afterAll(async () => {
+  await landing?.close();
+});
+
+/** Loads the page in `language` on the phone, lets it settle, interacts as §2.2 of the plan says, and reads the vitals. */
+async function measure(language: Language): Promise<Vitals> {
+  const page = await landing.open(language, PHONE, async (page) => {
+    // A slowed page takes longer than the 2 s that open() allows.
+    page.setDefaultTimeout(30_000);
+    const chrome = await page.context().newCDPSession(page);
+    await chrome.send('Network.enable');
+    await chrome.send('Network.emulateNetworkConditions', { offline: false, latency: LATENCY, downloadThroughput: DOWNLOAD, uploadThroughput: UPLOAD });
+    await chrome.send('Emulation.setCPUThrottlingRate', { rate: CPU_SLOWDOWN });
+    // web-vitals reads the page from its first byte: it goes in before the page, as a script of its own, without the network.
+    await page.addInitScript({
+      content: `${readFileSync(WEB_VITALS, 'utf8')}
+self.__vitals = {};
+for (const on of [webVitals.onLCP, webVitals.onCLS, webVitals.onINP]) {
+  on((metric) => { self.__vitals[metric.name] = metric.value; }, { reportAllChanges: true });
+}`,
+    });
+  });
+  try {
+    const responseEnd = await page.evaluate(() => (performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming).responseEnd);
+    // The page settles before anyone touches it: a layout shift within 500 ms of an input does not count, so an
+    // interaction too early would hide the shifts of the load. No request for 500 ms: what the page asked for has come.
+    await page.waitForLoadState('networkidle');
+    // The first interaction closes the LCP: it has been reported by now.
+    await page.waitForFunction(() => (self as unknown as { __vitals: Record<string, number> }).__vitals.LCP !== undefined);
+    const toggle = page.getByRole('switch', { name: words[language]['dark-theme'].text });
+    const index = page.locator('nav a').first();
+    await toggle.click();
+    await index.click();
+    await toggle.focus();
+    await page.keyboard.press('Space');
+    await index.focus();
+    await page.keyboard.press('Enter');
+    // web-vitals reports CLS and INP when the page is hidden: two frames for the last interaction to be timed, then the
+    // page is hidden as web-vitals' own tests hide it (test/views/layout.njk, at v6.2.3).
+    const vitals = await page.evaluate(async () => {
+      await new Promise((frame) => requestAnimationFrame(() => requestAnimationFrame(frame)));
+      Object.defineProperty(document, 'visibilityState', { value: 'hidden', configurable: true });
+      document.documentElement.hidden = true;
+      document.dispatchEvent(new Event('visibilitychange'));
+      return (self as unknown as { __vitals: Record<string, number> }).__vitals;
+    });
+    return { responseEnd, ...vitals };
+  } finally {
+    await page.context().close();
+  }
+}
+
+describe.each(['en', 'it'] as const)('the speed of the page in %s, on the phone', (language) => {
+  let vitals: Vitals;
+  beforeAll(async () => {
+    vitals = await measure(language);
+  }, 60_000);
+
+  test('is measured with the network slowed', () => {
+    // Slowed, the page finishes arriving after the latency: without the profile, in a few milliseconds.
+    expect(vitals.responseEnd).toBeGreaterThanOrEqual(LATENCY);
+  });
+
+  test('LCP within 2.5 s', () => {
+    expect(vitals.LCP).toBeLessThanOrEqual(2_500);
+  });
+
+  test('CLS within 0.1', () => {
+    expect(vitals.CLS).toBeLessThanOrEqual(0.1);
+  });
+
+  test('INP within 200 ms', () => {
+    expect(vitals.INP).toBeLessThanOrEqual(200);
+  });
+});
+```
+
+```bash
+rm -rf dist && npm run build && npx vitest run --project page checks/speed.page.test.ts
+```
+
+Atteso: `0 errors`, poi `8 passed`: la pagina del traguardo 1 sta sotto le soglie, e i rossi li danno i difetti del
+passo 3.
+
+- [ ] **Passo 3 — l'altro senso.** Tre difetti nella pagina, uno per misura: uno script che la ferma 3 s prima del primo
+disegno, un blocco che spinge giù il contenuto al `load`, 300 ms di lavoro a ogni clic. Poi la pagina torna com'era, e il
+controllo perde la rete del profilo; alla fine torna com'era anche lui, e girano tutti i controlli nel browser:
+
+```bash
+d=$(mktemp -d) && cp src/layouts/Page.astro checks/speed.page.test.ts "$d/" && node --input-type=module - <<'EOF'
+import { readFileSync, writeFileSync } from 'node:fs';
+
+const replace = (file, from, to) => writeFileSync(file, readFileSync(file, 'utf8').replace(from, to));
+replace('src/layouts/Page.astro', '    <Theme />\n', '    <Theme />\n    <script is:inline>const until = Date.now() + 3000; while (Date.now() < until);</script>\n');
+replace(
+  'src/layouts/Page.astro',
+  '  </body>',
+  '    <script is:inline>addEventListener("load", () => document.querySelector("main").prepend(Object.assign(document.createElement("div"), { style: "block-size: 50vh" })));</script>\n    <script is:inline>document.addEventListener("click", () => { const end = performance.now() + 300; while (performance.now() < end); });</script>\n  </body>',
+);
+EOF
+rm -rf dist && npm run build && npx vitest run --project page checks/speed.page.test.ts; cp "$d/Page.astro" src/layouts/ && node --input-type=module - <<'EOF'
+import { readFileSync, writeFileSync } from 'node:fs';
+
+const file = 'checks/speed.page.test.ts';
+writeFileSync(file, readFileSync(file, 'utf8').replace(/ *await chrome\.send\('Network\.emulateNetworkConditions'.*\n/, ''));
+EOF
+rm -rf dist && npm run build && npx vitest run --project page checks/speed.page.test.ts; cp "$d/speed.page.test.ts" checks/ && npx vitest run --project page
+```
+
+Atteso: prima `6 failed | 2 passed`: l'LCP, la CLS e l'INP nelle due lingue, ciascuno per il suo difetto, e la guardia
+verde; poi `2 failed | 6 passed`: la guardia nelle due lingue, con `responseEnd` di pochi millisecondi; alla fine
+`70 passed`.
+
+- [ ] **Passo 4 — il resto, e le vulnerabilità.** `npm test -- --project checks`, poi `npm audit`. Atteso: `70 passed`,
+e `found 0 vulnerabilities`.
+
+- [ ] **Passo 5 — il commit.**
+
+```bash
+git add package.json package-lock.json checks && git commit -m "t1(compito 12): la velocità -- LCP, CLS e INP entro le soglie dei Core Web Vitals, misurati da web-vitals sulla pagina costruita col profilo telefono di Lighthouse imposto da Chrome, con le interazioni della §2.2, nelle due lingue; la guardia del profilo; i rossi provati"
+```
+
+- [ ] **Passo 6 —** `git push`.
+
 ---
 
 ## 6. Come si riprende
 
-> 🔶 Oggi questa sezione è la consegna della quinta sessione del 2026-10-07: il piano è a metà. A piano finito, qui ci
-> sarà come si esegue, e questa consegna andrà in archivio. Le consegne di prima sono in archivio, parola per parola:
-> [del mattino](../../archivio/2026-10-07-consegna-piano-landing-mattina.md),
+> 🔶 Oggi questa sezione è la consegna della sesta sessione, del 2026-10-07 e del 2026-10-08: il piano è a metà. A piano
+> finito, qui ci sarà come si esegue, e questa consegna andrà in archivio. Le consegne di prima sono in archivio, parola
+> per parola: [del mattino](../../archivio/2026-10-07-consegna-piano-landing-mattina.md),
 > [del pomeriggio](../../archivio/2026-10-07-consegna-piano-landing-pomeriggio.md),
-> [della terza sessione](../../archivio/2026-10-07-consegna-piano-landing-terza-sessione.md) e
-> [della quarta](../../archivio/2026-10-07-consegna-piano-landing-quarta-sessione.md).
+> [della terza sessione](../../archivio/2026-10-07-consegna-piano-landing-terza-sessione.md),
+> [della quarta](../../archivio/2026-10-07-consegna-piano-landing-quarta-sessione.md) e
+> [della quinta](../../archivio/2026-10-07-consegna-piano-landing-quinta-sessione.md).
 
 **Dove siamo:**
 
 | Parte | Stato |
 |---|---|
 | §1–§4 | approvate, coi richiami del 2026-10-07 |
-| §5, compiti 1–10 | ✅ approvati; rifatti dal testo nella quinta sessione, tutto come scritto |
-| §5, compito 11 | ✅ approvato il 2026-10-07, com'è: i controlli nel browser uno per volta, con la guardia, e una prova per ciascuna sonda della tastiera (risposta: A) |
-| §5, compiti 12–13 | da scrivere |
+| §5, compiti 1–11 | ✅ approvati; rifatti dal testo nella sesta sessione, con daemon a `82d121d`: tutto come scritto |
+| §5, compito 12 | scritto e rifatto dal testo, sulla landing del compito 11, con daemon a `82d121d`: tutto come scritto; **da presentare e approvare** |
+| §5, compito 13 | da scrivere |
 
 Il codice dei compiti si prova prima di scriverlo (risposta del proprietario: A). La storia delle prove è nel
-[verbale](../../archivio/2026-10-07-prove-piano-landing.md), §14; lo scratchpad delle prove è stato cancellato.
+[verbale](../../archivio/2026-10-07-prove-piano-landing.md), §15; lo scratchpad delle prove è stato cancellato.
 
 **Il prossimo passo**, in una sessione nuova:
 
@@ -3413,63 +3630,61 @@ Il codice dei compiti si prova prima di scriverlo (risposta del proprietario: A)
 2. leggi `CLAUDE.md`, questo piano e il disegno, per intero;
 3. le skill: `superpowers:writing-plans`, `anthropic-skills:decision-principles`, `anthropic-skills:dev-communication`,
    `anthropic-skills:frontend-craft`;
-4. ✅ rilancia ciò che invecchia, coi comandi della tabella in fondo — fatto nella sessione dopo: tutto come nella tabella;
-5. ✅ presenta al proprietario il compito 11, con le scelte della tabella qui sotto, e chiedi il sì: A, com'è adesso; B,
-   com'era nella quarta sessione, senza le due correzioni — è nel commit `1f44b2a`. Col sì, nella tabella della §4 la riga
-   del compito 11 prende anche «i controlli nel browser uno per volta», col richiamo datato; commit e push — fatto nella
-   sessione dopo (risposta: A);
-6. scrivi i compiti 12–13, ciascuno provato prima nello scratchpad dal testo del piano, e presentali. Il banco e il
-   programma che prende i blocchi dal piano sono nella §14 del verbale: per il 12 e il 13 si rifanno anche i compiti 1–11,
-   che ne sono la base;
+4. rilancia ciò che invecchia, coi comandi della tabella in fondo;
+5. presenta al proprietario il compito 12, con le scelte della tabella qui sotto, e chiedi il sì: A, com'è adesso, col
+   comando deprecato della rete; B, col comando nuovo, `Network.emulateNetworkConditionsByRule` — e allora il compito si
+   corregge e si rifà dal testo. Commit e push;
+6. scrivi il compito 13, provato prima nello scratchpad dal testo del piano — col banco della §15 del verbale, e i compiti
+   1–12 che ne sono la base; a mano i passi del checkout della CI —, e presentalo;
 7. la §6 definitiva, cioè come si esegue; lo stato in testa; questa consegna in archivio; commit e push.
 
-**Le scelte del compito 11**, da dire al proprietario quando lo presenti. Le due righe 🆕 sono le correzioni di questa
-sessione; le altre erano già nella consegna della quarta.
+**Le scelte del compito 12**, da dire al proprietario quando lo presenti:
 
 | Scelta | Il perché, o il costo |
 |---|---|
-| axe coi tag `wcag2a`, `wcag2aa`, `wcag21a`, `wcag21aa` e `wcag22aa` | sono le regole WCAG 2.2 AA di axe, secondo la sua documentazione; le sue *best practice* restano fuori, perché non sono WCAG |
-| axe in ogni stato: due temi, computer e telefono, fonti chiuse e aperte, nelle due lingue | un difetto che c'è solo a fonti aperte, come il `target-size` di oggi, lo vede solo chi le apre. Costo: 16 passate di axe, il controllo più lungo |
-| «tutto si usa da tastiera» è: il Tab raggiunge ogni controllo, nell'ordine della pagina; ciascuno ha il suo anello; il link al contenuto porta dentro il contenuto; l'indice porta la sua sezione sotto di sé | è la parte della §6.1 del disegno che un programma prova |
-| 🆕 una prova per ciascuna delle quattro, e un difetto per ciascuna nel passo 7 | prima erano due prove con due sonde l'una, e il passo dell'altro senso ne faceva diventare rosse due: l'anello e il link al contenuto non erano mai visti rossi, e una sonda mai vista rossa può essere vuota. Costo: quattro prove invece di due, due difetti in più |
-| 🆕 i controlli nel browser uno per volta, con la guardia in `openLanding()` | rifacendo il compito 11, l'ultimo giro è stato rosso, 2 test su 58: attese scadute, coi file insieme, su una macchina corta di memoria; poi 9 giri rossi su 19 coi file insieme, nessuno su 4 coi file uno per volta. Serve anche al compito 12: una misura del tempo vuole la macchina per sé. Costo: i controlli nel browser durano circa il doppio |
-| l'indice si prova sul telefono girato, 823 × 412 | è l'unico schermo dove la pagina del traguardo 1 scorre: altrove la sonda passerebbe a vuoto |
-| il segno della fonte: `padding-block` sul `<summary>`, `inline-block` sul link | così ciascuno è alto almeno 24 px. Costo: la riga del segno è un po' più alta |
-| il movimento ridotto non entra | arriva col primo movimento, nel traguardo 2 |
+| la rete con `Network.emulateNetworkConditions`, deprecato, e non col sostituto, `Network.emulateNetworkConditionsByRule`, sperimentale | è il comando di Lighthouse e di Puppeteer, e il profilo viene da Lighthouse; DevTools usa il nuovo. Su Chrome 154 danno le stesse misure. Costo: il giorno che Chrome lo toglie, il controllo è rosso con un errore del protocollo, e si riscrive; col nuovo, il rischio è un comando sperimentale che cambia senza avviso |
+| `web-vitals` con `page.addInitScript` | entra prima della pagina, e non passa dalla rete |
+| la guardia del profilo: `responseEnd` oltre i 562,5 ms dell'attesa | col profilo 650–670 ms, senza qualche decina di millisecondi (§15 del verbale). Costo: il processore non ha guardia |
+| prima di toccare la pagina, `networkidle` | uno spostamento nei 500 ms dopo un input non conta: cliccando appena arrivava l'LCP, il controllo a volte cliccava 100 ms dopo il primo disegno, e avrebbe nascosto gli spostamenti del caricamento. Playwright sconsiglia `networkidle` nei test; qui è una misura, su una pagina che non interroga la rete. Costo: circa 1 s per lingua |
+| la CLS col telefono | Chrome non conta gli spostamenti nei 500 ms dopo che la pagina applica il suo `<meta name="viewport">`, e sulla pagina del traguardo 1 coprono il primo disegno: il difetto del passo 3 sposta la pagina al `load`. Costo: il controllo non vede uno spostamento in quella finestra |
+| una misura per lingua, quattro sonde — la guardia, l'LCP, la CLS, l'INP —, ciascuna col suo rosso nel passo 3 | i tre difetti della pagina in un giro solo, come i quattro del compito 11; la guardia in un giro suo |
 
-**Già visto, per i compiti 12–13:**
+**Già visto, per il compito 13:**
 
-| Compito | Che cosa si sa già | Nel verbale |
-|---|---|---|
-| 12 | il profilo si accende con una sessione CDP: `Network.enable`, `Network.emulateNetworkConditions`, `Emulation.setCPUThrottlingRate`; che sia acceso lo prova `responseEnd` della navigazione, non `responseStart`; si interagisce solo dopo che l'LCP è arrivato; la fine della misura si simula come nei test di `web-vitals`; il rosso, su una pagina con 300 ms di lavoro nel clic | §4, §5 |
-| 12 | il telefono di Lighthouse è anche «mobile», col tocco: in Playwright `isMobile: true` e `hasTouch: true`; la rete va in byte al secondo, `Math.floor(kbps * 1024 / 8)`, come la converte Lighthouse | §14 |
-| 12 | coi controlli nel browser uno per volta, dal compito 11, la velocità si misura da sola dentro il progetto `page`: niente progetto suo. `open()` aspetta 2 s, troppo per una pagina rallentata apposta: il controllo alza l'attesa nel suo `before`, con `page.setDefaultTimeout` | §14 |
-| 12 | in `web-vitals` la voce `first-input` si osserva sempre: dopo la prima interazione l'INP ha un valore | §14 |
-| 12 | i rossi pensati, da provare: l'LCP con uno script che ferma la pagina 3 s nel `<head>`; il CLS con un blocco che spinge giù il contenuto dopo la prima pittura; l'INP con 300 ms di lavoro a ogni clic; la guardia del profilo senza `Network.emulateNetworkConditions` | — |
-| 13 | in CI, `actions/checkout` con `ref: main` lascia `origin/main` nel clone di daemon, e `origin` è `https://github.com/devfrx/daemon`, senza `.git`: `originIsGitHub` lo accetta. Prima daemon, poi la landing dentro, con `path: daemon/landing`: nell'ordine opposto il primo checkout pulirebbe via il secondo. daemon usa la v4, e l'ultima è la v7.0.1: si segue daemon e si segnala la differenza | §6, §14 |
-| 13 | l'evento `schedule` gira sull'ultimo commit del ramo predefinito, può tardare all'inizio dell'ora, e in un repository pubblico si spegne dopo 60 giorni senza attività: un costo da dichiarare | §14 |
-| 13 | la verifica delle impronte di `brand/` è già scritta, come prova a mano, nel passo 2 del compito 2: `src/lib/brand.ts` ne è la versione che resta; dove il kit non c'è, il suo test si salta, ed è così che il cancello «lo scrive» | — |
-| 13 | il cancello, nell'ordine di `scripts/gate-gui.sh`: `npm ci`, `dist/` tolta, la build con `LANDING_SITE` e `LANDING_BASE`, i progetti `checks` e `page` uno per volta, `npm audit` alla fine; si ferma al primo rosso | — |
+| Che cosa si sa già | Nel verbale |
+|---|---|
+| in CI, `actions/checkout` con `ref: main` lascia `origin/main` nel clone di daemon, e `origin` è `https://github.com/devfrx/daemon`, senza `.git`: `originIsGitHub` lo accetta. Prima daemon, poi la landing dentro, con `path: daemon/landing`: nell'ordine opposto il primo checkout pulirebbe via il secondo. daemon usa la v4, e l'ultima è la v7.0.1: si segue daemon e si segnala la differenza | §6, §14 |
+| l'evento `schedule` gira sull'ultimo commit del ramo predefinito, può tardare all'inizio dell'ora, e in un repository pubblico si spegne dopo 60 giorni senza attività: un costo da dichiarare | §14 |
+| la verifica delle impronte di `brand/` è già scritta, come prova a mano, nel passo 2 del compito 2: `src/lib/brand.ts` ne è la versione che resta — la nota contro le copie sempre, e contro il kit dove c'è; dove il kit non c'è, il suo test si salta, ed è così che il cancello «lo scrive». Nel kit vero non si mette mai un difetto, perché `daemon_kit/` resta com'è (§7.2 del disegno): il rosso del kit lo prova il test di `brand.ts`, su un kit di prova | — |
+| il cancello, nell'ordine di `scripts/gate-gui.sh`: `npm ci`, `dist/` tolta, la build con `LANDING_SITE` e `LANDING_BASE`, i progetti `checks` e `page` uno per volta, `npm audit` alla fine; si ferma al primo rosso. Da Node, `npm` si lancia con `shell: true` e il comando in una stringa sola: con una lista di argomenti Node 24 avvisa, `DEP0190` | §15 |
+| i permessi del `GITHUB_TOKEN` sono già di sola lettura, nei due repository: un blocco `permissions` non serve, e daemon non lo scrive | §15 |
 
-**Ancora da provare**, scrivendo i compiti 12–13: il controllo della velocità e i suoi rossi; `scripts/gate.mjs`; la CI,
-con la landing dentro la copia di daemon — a mano coi passi del checkout, e su GitHub solo quando il compito 13 si esegue.
+**Ancora da provare**, scrivendo il compito 13: `src/lib/brand.ts` e il suo controllo; `scripts/gate.mjs`; la CI, con la
+landing dentro la copia di daemon — a mano coi passi del checkout, e su GitHub solo quando il compito 13 si esegue —; e
+l'indirizzo con cui la CI costruisce la pagina, che finché il proprietario non decide dove si pubblica è quello di prova
+(§7.5 del disegno).
 
 **Da sapere subito:**
 
-- ⚠️ daemon si muove mentre si lavora: in questa sessione `origin/main` è passato da `fc43188` a `82d121d`, per un'altra
-  sessione su daemon, quella del lean-docs della R5: documenti, non le cinque fonti della §3.4 né la GUI. Un commit di
-  daemon non si scrive mai come vero: si rilancia `git -C .. rev-parse --short origin/main`;
-- ⚠️ **questa macchina è corta di memoria**: 16 GB, e più di 50 impegnati, con altre sessioni di Claude aperte. Coi file
-  insieme i controlli nel browser hanno superato le loro attese; e una misura del tempo presa qui non dice com'è altrove.
-  La memoria del momento: `powershell -NoProfile -Command "Get-CimInstance Win32_OperatingSystem | Select-Object
-  FreePhysicalMemory, TotalVisibleMemorySize, FreeVirtualMemory, TotalVirtualMemorySize"`;
+- ⚠️ daemon si muove mentre si lavora: in questa sessione `origin/main` è passato da `82d121d` a `a27ea6a`, per la
+  sessione del lean-docs della R5: documenti, non le cinque fonti della §3.4 né la GUI. Un commit di daemon non si scrive
+  mai come vero: si rilancia `git -C .. rev-parse --short origin/main`;
+- ⚠️ **questa macchina è corta di memoria**: 16 GB, e in questa sessione 1,3–3,4 GB liberi, con altre sessioni di Claude
+  al lavoro su daemon. Coi file insieme i controlli nel browser superavano le loro attese, e una misura del tempo presa
+  qui non dice com'è altrove. La memoria del momento: `powershell -NoProfile -Command "Get-CimInstance
+  Win32_OperatingSystem | Select-Object FreePhysicalMemory, TotalVisibleMemorySize, FreeVirtualMemory,
+  TotalVirtualMemorySize"`;
+- ⚠️ dopo il giorno del piano sono uscite `astro` 7.3.7 e `playwright` 1.64.0: il piano resta alla 7.3.6 e alla 1.63.0,
+  per la regola della §2.1 — Playwright segue la GUI di daemon, e una versione nuova si prende con un atto apposta;
+- ⚠️ il `README.md` della landing chiama «documento in corso» il disegno, e oggi è il piano. Lo stesso puntatore vive in
+  `CLAUDE.md`: per la regola dei puntatori che vivono in più documenti, nel README si toglie, non si ricorregge. Da
+  fare, col sì del proprietario;
 - su questa macchina daemon sta su `main`, con nella cartella il lavoro di un'altra sessione: da qui non si tocca;
 - `daemon_kit/` non è nascosta a daemon, `/landing/` sì: `git -C .. check-ignore -v daemon_kit landing/CLAUDE.md`. Il
   `.gitignore` di daemon non ha ancora la riga `landing/`, ed è lavoro di daemon;
-- la prova nello scratchpad: `git clone -q --no-checkout` della cartella di daemon, `origin` rimesso su
-  `https://github.com/devfrx/daemon.git`, `origin/main` scritto con `git update-ref`; dentro, una copia della landing col
-  remoto su un repository nudo nello scratchpad, perché `git push` giri senza arrivare al repository vero; accanto, una
-  copia dei SVG e delle due pagine di `daemon_kit/`, per il compito 2;
+- il banco è nella §15 del verbale. Il programma che prende il codice dal piano si è perso con lo scratchpad, la seconda
+  volta: le sue regole sono lì, e si riscrive;
+- Vitest 4 non mostra la console dei test verdi: per vedere i valori di una misura, `--reporter=verbose --silent=false`;
 - in Git Bash, con `MSYS_NO_PATHCONV=1`, un percorso `/c/…` passato a Node o a `git -C` non viene tradotto, e non si
   trova: si passa `cygpath -w`;
 - Git Bash a volte non riesce a creare un processo, *«fork: retry: Resource temporarily unavailable»*: è l'ambiente, e si
@@ -3477,15 +3692,15 @@ con la landing dentro la copia di daemon — a mano coi passi del checkout, e su
 - su Windows `chrome.exe --version` apre il browser invece di scrivere la versione: la versione si legge dal nome della
   cartella, `ls "/c/Program Files/Google/Chrome/Application/"`.
 
-**Verificato il 2026-10-07, nella quinta sessione.** Si rilancia, non si crede. I comandi `git` dalla radice di daemon, in
-Git Bash, dopo `export MSYS_NO_PATHCONV=1`.
+**Verificato il 2026-10-07 e il 2026-10-08, nella sesta sessione.** Si rilancia, non si crede. I comandi `git` dalla
+radice di daemon, in Git Bash, dopo `export MSYS_NO_PATHCONV=1`.
 
 | Fatto | Comando o fonte |
 |---|---|
-| le versioni della §2.1; Node 24.19.0 e npm 11.17.0 su questa macchina | `npm view <pacchetto> version license`; `git show "origin/main:gui/package.json"`; `node --version`; `npm --version` |
-| `origin/main` di daemon era `82d121d` alla chiusura; l'audit c'è, col segno «(col N)» | `git rev-parse --short origin/main`; `git merge-base --is-ancestor origin/repo-audit/20260930-1510 origin/main`; `git show "origin/main:docs/README.md" \| grep -c 'col N'` |
-| le cinque citazioni della §3.4 si trovano, e fra `fc43188` e `82d121d` nessuna delle cinque fonti è cambiata | per ciascuna: `git show "origin/main:<fonte>" \| tr -d '\r' \| tr '\n' ' ' \| tr -s ' ' \| grep -cF -- '<citazione>'`; `git diff --stat fc43188 origin/main -- <le cinque fonti>` |
-| fra `973153f` e `82d121d` la GUI non è cambiata: manifesto, token, cancello, CI | `git diff --stat 973153f origin/main -- gui/package.json gui/src/tokens scripts/gate-gui.sh .github` |
+| le versioni della §2.1, e `web-vitals` 6.2.3; dopo il giorno del piano `astro` 7.3.7, del 2026-10-07 alle 21:37 UTC, e `playwright` 1.64.0; Node 24.19.0 e npm 11.17.0 su questa macchina | `npm view <pacchetto> version license`; `npm view <pacchetto> time`; `git show "origin/main:gui/package.json"`; `node --version`; `npm --version` |
+| `origin/main` di daemon era `a27ea6a` alla chiusura; l'audit c'è, col segno «(col N)» | `git rev-parse --short origin/main`; `git merge-base --is-ancestor origin/repo-audit/20260930-1510 origin/main`; `git show "origin/main:docs/README.md" \| grep -c 'col N'` |
+| le cinque citazioni della §3.4 si trovano, e fra `fc43188` e `a27ea6a` nessuna delle cinque fonti è cambiata | per ciascuna: `git show "origin/main:<fonte>" \| tr -d '\r' \| tr '\n' ' ' \| tr -s ' ' \| grep -cF -- '<citazione>'`; `git diff --stat fc43188 origin/main -- <le cinque fonti>` |
+| fra `973153f` e `a27ea6a` la GUI non è cambiata: manifesto, token, cancello, CI | `git diff --stat 973153f origin/main -- gui/package.json gui/src/tokens scripts/gate-gui.sh .github` |
 | `themes.css` di daemon: `:root` con le `--ref-*`; `[data-theme="dark"]` e `[data-theme="light"]` coi ruoli `--color-*` e `color-scheme` | `git show "origin/main:gui/src/tokens/themes.css"` |
 | in daemon i ruoli non di testo da 3:1 sono `border-strong`, `focus`, `mark` e `border-accent`; il radio acceso della GUI usa `--color-mark` | `git show "origin/main:gui/src/tokens/contrast.test.ts" \| grep -n 'non-text'`; `git grep -n 'color-mark' origin/main -- gui/src/components` |
 | la GUI: il testo in Geist Variable, le etichette e i numeri in Barlow 300–600, importati da `gui/src/tokens/index.ts` | `git show "origin/main:gui/src/tokens/index.ts"` |
@@ -3495,3 +3710,6 @@ Git Bash, dopo `export MSYS_NO_PATHCONV=1`.
 | Chrome chiede `/favicon.ico` da solo, e un 404 lì è un errore in console | il passo 2 del compito 10 |
 | i tag WCAG di axe-core 4.13.0 sono `wcag2a`, `wcag2aa`, `wcag21a`, `wcag21aa` e `wcag22aa`; l'unica regola di `wcag22aa` è `target-size` | `gh api "repos/dequelabs/axe-core/contents/doc/API.md?ref=v4.13.0" --jq .content \| base64 -d \| grep -n 'wcag2'`; `node -e "console.log(require('axe-core').getRules(['wcag22aa']).map((rule) => rule.ruleId))"`, dalla landing |
 | Vitest 4.1.11 lancia i file di un progetto insieme, fino a un processore meno uno; `fileParallelism: false` in un progetto li mette in fila, dopo gli altri progetti; `--fileParallelism` da riga di comando lo scavalca | `resolveMaxWorkers` e `groupSpecs` in `node_modules/vitest/dist/chunks/cli-api.*.js`; il passo 2 del compito 11 |
+| `Network.emulateNetworkConditions` è deprecato, a favore di `Network.emulateNetworkConditionsByRule` e `Network.overrideNetworkState`, sperimentali; Lighthouse e Puppeteer usano il primo, DevTools il secondo | `gh api "repos/ChromeDevTools/devtools-protocol/contents/pdl/domains/Network.pdl" --jq .content \| base64 -d \| grep -n -B2 'command emulateNetworkConditions'`; `grep -n 'Network\.'` su `core/lib/emulation.js` di `GoogleChrome/lighthouse` e su `packages/puppeteer-core/src/cdp/NetworkManager.ts` di `puppeteer/puppeteer`; `gh api "search/code?q=emulateNetworkConditionsByRule+repo:ChromeDevTools/devtools-frontend" --jq '.items[].path'` |
+| per la CLS, Chrome tratta un cambio della finestra come un input, per 500 ms | `gh api "repos/chromium/chromium/contents/third_party/blink/renderer/core/layout/layout_shift_tracker.cc" --jq .content \| base64 -d \| grep -n -A2 'kTimerDelay =\|NotifyViewportSizeChanged()'` |
+| `web-vitals` 6.2.3: `web-vitals.iife.js` non è fra gli `exports` del pacchetto, e sta accanto a ciò che dà `require.resolve('web-vitals')` | `grep -n -A12 '"exports"' node_modules/web-vitals/package.json`, dalla landing col pacchetto |

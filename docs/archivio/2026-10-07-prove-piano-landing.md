@@ -2,7 +2,7 @@
 
 > 🗄️ **Che cos'è questo file.** Il verbale delle prove fatte il 2026-10-07 per scrivere la §5 del
 > [piano del traguardo 1](../superpowers/plans/2026-10-07-landing-traguardo-1.md) — le §1–§9 nel pomeriggio, la §10 e la
-> §11 nella sessione dopo, la §12 e la §13 in quella dopo ancora, la §14 nella quinta: il proprietario ha scelto di provare il codice prima
+> §11 nella sessione dopo, la §12 e la §13 in quella dopo ancora, la §14 nella quinta, la §15 nella sesta: il proprietario ha scelto di provare il codice prima
 > di scriverlo nel piano (risposta: A). Le prove
 > sono girate nello scratchpad di ciascuna sessione, poi cancellato. Qui c'è la storia; il piano porta ciò che ne è
 > venuto.
@@ -273,3 +273,51 @@ Il `git push` del passo 10 è caduto per il banco — la copia era su un ramo ch
 | `sequence.groupOrder`: i progetti con lo stesso numero girano insieme, e i gruppi dal più basso | https://vitest.dev/config/sequence |
 | `actions/checkout` v4 mette `origin` a `https://github.com/devfrx/daemon`, senza `.git`; con `ref: main` scrive `refs/remotes/origin/main` | `src/url-helper.ts` e `src/ref-helper.ts` di `actions/checkout` al tag `v4` |
 | l'evento `schedule` gira sull'ultimo commit del ramo predefinito; può tardare, soprattutto all'inizio di ogni ora; in un repository pubblico si spegne dopo 60 giorni senza attività | https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows |
+
+## 15. La sesta sessione: i compiti 1–11 rifatti, e il compito 12 provato
+
+Nella sesta sessione, il 2026-10-07, dopo il sì al compito 11. Il banco come nella §14: daemon clonato nello scratchpad
+senza cartella di lavoro, col suo `origin` su `https://github.com/devfrx/daemon.git` e `origin/main` a `82d121d`; accanto,
+la copia dei SVG e delle due pagine del kit; dentro, la landing col remoto su un repository nudo. Il programma che prende
+il codice dal piano era andato perso con lo scratchpad della quinta sessione, ed è stato riscritto con le stesse regole: un
+blocco così com'è; un file solo se il suo passo lo nomina, fra apici inversi, prima del blocco; un comando del testo solo
+se si trova, lettera per lettera, nel suo passo, e così «lo stesso comando del passo N»; i frammenti dei compiti 4 e 6
+innestati dove il testo dice; il passo 7 del compito 5, la rilettura dell'inglese, saltato, perché non è codice. Lancia
+ogni comando con il Git Bash di `C:\Program Files\Git\bin\bash.exe`, scrive l'uscita intera in un file per comando e ne
+mostra le righe che contano accanto all'«Atteso» del passo.
+
+| Compito | Visto |
+|---|---|
+| 1–11 | ogni rosso e ogni verde del piano, come nella §14: tutto come scritto, anche l'ultimo comando del passo 7 del compito 11, `62 passed`, coi controlli nel browser uno per volta. La prima build ha impiegato 83 s, le altre 15–60 s, con 1,3–2,2 GB di memoria libera su 16 |
+
+**Il compito 12, provato** sulla pagina del compito 11, con `web-vitals` 6.2.3 e col profilo della §2.2 del piano:
+
+| Provato | Visto |
+|---|---|
+| la misura | LCP 1,0–1,4 s, CLS 0,0002–0,0013, INP 32–40 ms; `responseEnd` 650–670 ms: `8 passed`. Vitest 4 non mostra la console dei test verdi: i valori si vedono con `--reporter=verbose --silent=false` |
+| i tre difetti insieme, col controllo che clicca appena arriva l'LCP | l'LCP e l'INP rossi nelle due lingue; la CLS rossa in una lingua sola, in un giro su due |
+| la CLS, con una sonda che registra i tempi: il primo disegno, gli spostamenti, il `load`, il primo clic | lo spostamento c'è, 0,47, ma col telefono porta `hadRecentInput: true` senza che nessuno abbia toccato la pagina; lo stesso spostamento, senza la modalità telefono, conta. Nel sorgente di Chrome, `NotifyViewportSizeChanged` di `layout_shift_tracker.cc` apre la finestra di 500 ms degli input, `kTimerDelay`: in modalità telefono la pagina cambia larghezza quando applica il suo `<meta name="viewport">`, e quei 500 ms coprono il primo disegno |
+| e il clic troppo presto | a volte il controllo cliccava 100 ms dopo il primo disegno, e uno spostamento nei 500 ms dopo un input non conta: il controllo avrebbe nascosto gli spostamenti del caricamento. Con `networkidle` prima delle interazioni il primo clic arriva quasi 3 s dopo l'inizio |
+| i tre difetti, con `networkidle` e il blocco al `load` | `6 failed \| 2 passed`, tre giri su tre: LCP 4,1 s, CLS 0,47, INP 336–344 ms; la guardia verde |
+| la guardia senza `Network.emulateNetworkConditions` | `responseEnd` 8–17 ms: `2 failed \| 6 passed` |
+| `Network.emulateNetworkConditionsByRule`, con una regola sola e `urlPattern` vuoto | le stesse misure del comando deprecato: `responseEnd` 650–670 ms, LCP 1,1–1,4 s, INP 32–40 ms; `8 passed` |
+
+**Il testo del piano.** Il codice del passo 2 del compito 12 l'ha messo nel piano un programma, dal file che ha girato,
+con tre ritocchi prima: tolta la stampa dei valori, che serviva alle prove; tolti `import type { Page }` e l'annotazione
+che lo usava, superflui; ritoccato il commento di `measure`. Il passo 3 era girato a pezzi. Poi, il 2026-10-08, il
+compito 12 rifatto dal testo del piano, sulla landing del compito 11, con daemon a `82d121d`:
+
+| Passo | Visto |
+|---|---|
+| 1 | `No packages with unreviewed install scripts.` |
+| 2 | `0 errors`, `8 passed` |
+| 3 | `6 failed \| 2 passed`: LCP 4,8 s, CLS 0,47, INP 384–400 ms, la guardia verde; poi `2 failed \| 6 passed`, con `responseEnd` 5,5 e 30,7 ms; alla fine `70 passed`, e la pagina e il controllo di nuovo uguali al piano |
+| 4 | `70 passed`; `npm audit`: 0 vulnerabilità |
+| 5–6 | il commit, e il `git push` al repository nudo del banco |
+
+**Per il compito 13**, guardato il 2026-10-07:
+
+| Che cosa | Fonte |
+|---|---|
+| i permessi del `GITHUB_TOKEN` sono di sola lettura, in `devfrx/daemon-landing` e in `devfrx/daemon`: un blocco `permissions` non serve, e daemon non lo scrive | `gh api repos/devfrx/daemon-landing/actions/permissions/workflow`, e lo stesso per `devfrx/daemon` |
+| da Node 24.19.0, `spawnSync('npm', ['--version'], { shell: true })` scrive l'avviso `DEP0190`; col comando in una stringa sola, no | `node -e`, sulle due forme |
