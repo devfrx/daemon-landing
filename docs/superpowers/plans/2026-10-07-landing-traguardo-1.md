@@ -2277,8 +2277,8 @@ git add astro.config.mjs vitest.config.ts package.json package-lock.json src che
 ### Compito 9 — i due temi e i caratteri
 
 **File:** crea `src/lib/tokens.ts`, `src/lib/tokens.test.ts`, `src/components/Theme.astro`, `checks/tokens.test.ts`,
-`checks/themes.page.test.ts`; modifica `src/layouts/Page.astro`, `src/styles/page.css`, `package.json` e
-`package-lock.json`.
+`checks/themes.page.test.ts`; modifica `checks/support/landing.ts`, `src/layouts/Page.astro`, `src/styles/page.css`,
+`package.json` e `package-lock.json`.
 
 **Usa:** `openDaemon` (compito 4), `daemon` e la pagina (compito 8), `openLanding` (compito 8). **Lascia:**
 
@@ -2290,14 +2290,25 @@ git add astro.config.mjs vitest.config.ts package.json package-lock.json src che
   token, `--color-*`;
 - `checks/tokens.test.ts`: rosso se la pagina legge un token che daemon non definisce in uno dei due temi, o una scala
   `--ref-*`, che la regola di `themes.css` vieta a chi la usa;
-- `checks/themes.page.test.ts`: il tema del sistema; l'interruttore, col mouse e con la tastiera; la scelta che resta; il
-  tema scuro senza JavaScript; i due caratteri;
+- in `checks/support/landing.ts`, `open(language, options, before)`: `before` gira sulla pagina prima che si carichi, ed
+  è lì che un controllo comincia ad ascoltare;
+- `checks/themes.page.test.ts`: il tema del sistema, anche quando cambia a pagina aperta; l'interruttore, col mouse e
+  con la tastiera, anche dove il browser rifiuta la memoria; la scelta che resta; il tema scuro senza JavaScript; i due
+  caratteri;
 - `@fontsource-variable/geist` 5.3.0 e `@fontsource/barlow` 5.3.0, i pacchetti della GUI.
 
-**L'interruttore** segue il sistema finché il visitatore non sceglie; la scelta resta nel `localStorage`, ma solo se è
-diversa dal tema del sistema: tornare al tema del sistema vuol dire seguirlo di nuovo. **Costo dichiarato:** lo script
-del tema sta nella pagina così com'è (`is:inline`), perché deve girare prima che la pagina si disegni; quindi
-`astro check` non lo controlla, e lo provano soltanto i controlli nel browser.
+**L'interruttore** segue il sistema finché il visitatore non sceglie, anche quando il sistema cambia a pagina aperta; la
+scelta resta nel `localStorage`, ma solo se è diversa dal tema del sistema: tornare al tema del sistema vuol dire
+seguirlo di nuovo. Dove il browser rifiuta la memoria, l'interruttore funziona lo stesso, e la scelta dura quanto la
+pagina. **Costo dichiarato:** lo script del tema sta nella pagina così com'è (`is:inline`), perché deve girare prima che
+la pagina si disegni; quindi `astro check` non lo controlla, e lo provano soltanto i controlli nel browser.
+
+**`before`**, il terzo argomento di `open()`, arriva qui col primo controllo che lo usa, quello della memoria rifiutata:
+è la regola del confine (§1).
+
+⚠️ **Richiamo del 2026-10-08:** il controllo dei temi prova anche il cambio del sistema a pagina aperta e il browser che
+rifiuta la memoria, e `before` arriva col compito 9 (risposta del proprietario: A) — la storia nella §18 del
+[verbale delle prove](../../archivio/2026-10-07-prove-piano-landing.md).
 
 - [ ] **Passo 1 — i pacchetti**, fuori dal cancello (vincolo 9):
 
@@ -2414,6 +2425,60 @@ describe('the tokens of the page', () => {
 });
 ```
 
+Poi `open()` prende un terzo argomento, `before`, che gira sulla pagina prima che si carichi: il controllo della memoria
+rifiutata comincia lì. `checks/support/landing.ts`, al posto di quello del compito 8:
+
+```ts
+import { type Browser, type BrowserContextOptions, chromium, type Page } from 'playwright';
+import { readAddress } from '../../src/lib/address';
+import type { Language } from '../../src/lib/words';
+import { serveDist } from './server';
+
+/** The built page, served under its base, and the installed Chrome: where every check in the browser starts. */
+export interface Landing {
+  readonly browser: Browser;
+  /** The path of the page in `language`, under the base: `/` is English, `/it/` Italian (§2.4 of the design). */
+  path(language: Language): string;
+  /** The full address the page in `language` will have once published: what hreflang declares. */
+  address(language: Language): string;
+  /** Where the page in `language` is served now. */
+  url(language: Language): string;
+  /**
+   * The page in `language`, loaded in a context of its own; close it with `page.context().close()`. `before` runs on the
+   * page before it loads: where a check starts to listen.
+   */
+  open(language: Language, options?: BrowserContextOptions, before?: (page: Page) => Promise<void> | void): Promise<Page>;
+  close(): Promise<void>;
+}
+
+export async function openLanding(): Promise<Landing> {
+  const { site, base } = readAddress(process.env);
+  const served = await serveDist(base);
+  const path = (language: Language): string => (language === 'en' ? base : `${base}it/`);
+  const url = (language: Language): string => served.origin + path(language);
+  // The installed Chrome, as the GUI of daemon uses it: no browser is downloaded (§2.1 of the plan).
+  const browser = await chromium.launch({ channel: 'chrome' });
+  return {
+    browser,
+    path,
+    address: (language) => new URL(path(language), site).href,
+    url,
+    async open(language, options = {}, before = () => {}) {
+      const page = await (await browser.newContext(options)).newPage();
+      // The page is built and loaded: what is not there at once is missing, and a red should not wait.
+      page.setDefaultTimeout(2_000);
+      await before(page);
+      await page.goto(url(language));
+      return page;
+    },
+    async close() {
+      await browser.close();
+      await served.close();
+    },
+  };
+}
+```
+
 `checks/themes.page.test.ts`:
 
 ```ts
@@ -2422,8 +2487,9 @@ import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 import { interfaceWord, readTexts } from '../src/lib/texts';
 import { type Landing, openLanding } from './support/landing';
 
-// The gate's check of the themes (§2.2 and §5.3 of the design): the system's theme, a switch that changes it by mouse
-// and by keyboard and keeps the choice, the dark theme without JavaScript, and the page's own fonts.
+// The gate's check of the themes (§2.2 and §5.3 of the design): the system's theme, when the page opens and when the
+// system changes; a switch that changes it by mouse and by keyboard, keeps the choice, and works where the browser
+// refuses the storage; the dark theme without JavaScript; and the page's own fonts.
 const words = { it: readTexts('src/ui/it.json', interfaceWord), en: readTexts('src/ui/en.json', interfaceWord) };
 
 let landing: Landing;
@@ -2439,8 +2505,8 @@ const background = (page: Page) => page.evaluate(() => getComputedStyle(document
 
 describe.each(['en', 'it'] as const)('the themes of the page in %s', (language) => {
   const pages: Page[] = [];
-  const open = async (options: BrowserContextOptions): Promise<Page> => {
-    const page = await landing.open(language, options);
+  const open = async (options: BrowserContextOptions, before?: (page: Page) => Promise<void> | void): Promise<Page> => {
+    const page = await landing.open(language, options, before);
     pages.push(page);
     return page;
   };
@@ -2453,6 +2519,14 @@ describe.each(['en', 'it'] as const)('the themes of the page in %s', (language) 
     const page = await open({ colorScheme: scheme });
     expect(await theme(page)).toBe(scheme);
     expect(await toggle(page).isChecked()).toBe(scheme === 'dark');
+  });
+
+  test('follows a change of the system, while the visitor has not chosen', async () => {
+    const page = await open({ colorScheme: 'light' });
+    await page.emulateMedia({ colorScheme: 'dark' });
+    // The browser tells the page at the next frame: the probe waits for the theme, not for a time.
+    await page.waitForFunction(() => document.documentElement.dataset.theme === 'dark');
+    expect(await toggle(page).isChecked()).toBe(true);
   });
 
   test('is dark without JavaScript, and has no switch, which needs it', async () => {
@@ -2480,6 +2554,24 @@ describe.each(['en', 'it'] as const)('the themes of the page in %s', (language) 
     expect(await page.evaluate(() => localStorage.length)).toBe(0);
   });
 
+  test('keeps the switch working where the browser refuses the storage', async () => {
+    const errors: string[] = [];
+    const page = await open({ colorScheme: 'light' }, async (page) => {
+      // As a browser that blocks the site's storage: reading localStorage throws.
+      await page.addInitScript(() => {
+        Object.defineProperty(window, 'localStorage', {
+          get() {
+            throw new DOMException('the storage is refused', 'SecurityError');
+          },
+        });
+      });
+      page.on('pageerror', (error) => errors.push(error.message));
+    });
+    await toggle(page).click();
+    expect(await theme(page)).toBe('dark');
+    expect(errors).toEqual([]);
+  });
+
   test('writes with its own fonts, Geist and Barlow', async () => {
     const page = await open({});
     const loaded = await page.evaluate(async () => {
@@ -2497,7 +2589,7 @@ npx vitest run checks/tokens.test.ts; rm -rf dist && npm run build && npx vitest
 ```
 
 Atteso: `1 failed | 3 passed`, il rosso su `sees what it judges` — la pagina non legge ancora nessun token, e senza
-quella guardia gli altri tre passerebbero a vuoto —; poi `10 failed`.
+quella guardia gli altri tre passerebbero a vuoto —; poi `14 failed`.
 
 - [ ] **Passo 5 — i temi e i caratteri.** `src/components/Theme.astro`:
 
@@ -2724,25 +2816,30 @@ footer {
 rm -rf dist && npm run build && npx vitest run checks/tokens.test.ts && npx vitest run --project page
 ```
 
-Atteso: `0 errors`; `4 passed`; `34 passed`, i 24 della pagina e i 10 dei temi. I caratteri sono in `dist/_astro/`.
+Atteso: `0 errors`; `4 passed`; `38 passed`, i 24 della pagina e i 14 dei temi. I caratteri sono in `dist/_astro/`.
 
-- [ ] **Passo 7 — l'altro senso.** Un token che daemon non definisce, una scala `--ref-*` e la pagina senza
-`data-theme="dark"`; poi i file tornano com'erano:
+- [ ] **Passo 7 — l'altro senso.** Un token che daemon non definisce, una scala `--ref-*`, la pagina senza
+`data-theme="dark"`, lo script del tema che ascolta il sistema su un evento che non esiste, e `chosen()` che rilancia
+l'errore della memoria rifiutata; poi i file tornano com'erano:
 
 ```bash
-d=$(mktemp -d) && cp src/styles/page.css src/layouts/Page.astro "$d/" && node --input-type=module - <<'EOF'
+d=$(mktemp -d) && cp src/styles/page.css src/layouts/Page.astro src/components/Theme.astro "$d/" && node --input-type=module - <<'EOF'
 import { readFileSync, writeFileSync } from 'node:fs';
 
 const replace = (file, from, to) => writeFileSync(file, readFileSync(file, 'utf8').replace(from, to));
 replace('src/styles/page.css', 'color: var(--color-text-muted);', 'color: var(--color-text-faint);\n  border-color: var(--ref-neutral-48);');
 replace('src/layouts/Page.astro', ' data-theme="dark"', '');
+replace('src/components/Theme.astro', "system.addEventListener('change'", "system.addEventListener('changed'");
+replace('src/components/Theme.astro', '      } catch {\n        return null;\n      }', '      } catch (error) {\n        throw error;\n      }');
 EOF
 npx vitest run checks/tokens.test.ts; rm -rf dist && npm run build && npx vitest run --project page checks/themes.page.test.ts
-cp "$d/page.css" src/styles/ && cp "$d/Page.astro" src/layouts/ && rm -rf dist && npm run build && npx vitest run checks/tokens.test.ts && npx vitest run --project page
+cp "$d/page.css" src/styles/ && cp "$d/Page.astro" src/layouts/ && cp "$d/Theme.astro" src/components/ && rm -rf dist && npm run build && npx vitest run checks/tokens.test.ts && npx vitest run --project page
 ```
 
-Atteso: prima `3 failed | 1 passed`, con `--color-text-faint` e `--ref-neutral-48` nei rossi; poi `2 failed | 8
-passed`, i rossi su `is dark without JavaScript, and has no switch, which needs it`; alla fine `4 passed` e `34 passed`.
+Atteso: prima `3 failed | 1 passed`, con `--color-text-faint` e `--ref-neutral-48` nei rossi; poi `6 failed | 8
+passed`, i rossi su `is dark without JavaScript, and has no switch, which needs it`, su `follows a change of the system,
+while the visitor has not chosen` e su `keeps the switch working where the browser refuses the storage`; alla fine
+`4 passed` e `38 passed`.
 
 - [ ] **Passo 8 — il resto, e le vulnerabilità.** `npm test -- --project checks`, poi `npm audit`. Atteso: `70 passed`,
 e `found 0 vulnerabilities`.
@@ -2750,7 +2847,7 @@ e `found 0 vulnerabilities`.
 - [ ] **Passo 9 — il commit.**
 
 ```bash
-git add package.json package-lock.json src checks && git commit -m "t1(compito 9): i due temi e i caratteri -- i colori di themes.css di daemon a origin/main così com'è, il tema del sistema, l'interruttore che ricorda la scelta, il tema scuro senza JavaScript; Geist e Barlow ospitati dalla pagina; il controllo dei token e quello dei temi, coi rossi provati"
+git add package.json package-lock.json src checks && git commit -m "t1(compito 9): i due temi e i caratteri -- i colori di themes.css di daemon a origin/main così com'è, il tema del sistema anche quando cambia a pagina aperta, l'interruttore che ricorda la scelta e regge un browser che rifiuta la memoria, il tema scuro senza JavaScript; Geist e Barlow ospitati dalla pagina; il controllo dei token e quello dei temi, coi rossi provati"
 ```
 
 - [ ] **Passo 10 —** `git push`.
@@ -2758,12 +2855,11 @@ git add package.json package-lock.json src checks && git commit -m "t1(compito 9
 ### Compito 10 — i controlli nel browser
 
 **File:** crea `checks/network.page.test.ts`, `checks/console.page.test.ts`, `checks/no-javascript.page.test.ts`;
-modifica `checks/support/landing.ts` e `src/layouts/Page.astro`.
+modifica `src/layouts/Page.astro`.
 
-**Usa:** `openLanding` (compito 8), la pagina coi temi (compito 9), `brand/` (compito 2). **Lascia:**
+**Usa:** `openLanding` e `open(language, options, before)` (compiti 8 e 9), la pagina coi temi (compito 9), `brand/`
+(compito 2). **Lascia:**
 
-- `open(language, options, before)`: `before` gira sulla pagina prima che si carichi, ed è lì che un controllo comincia
-  ad ascoltare;
 - `checks/network.page.test.ts`: ogni richiesta va al sito della pagina. Una richiesta altrove si registra e si ferma
   prima che esca dalla macchina;
 - `checks/console.page.test.ts`: nessun errore in console, mentre la pagina si carica e mentre si usa — l'interruttore,
@@ -2773,63 +2869,13 @@ modifica `checks/support/landing.ts` e `src/layouts/Page.astro`.
 - l'icona della scheda: `brand/daemon-icon-dark.svg`, la copia del kit, che la build serve byte per byte.
 
 **L'icona** entra qui perché il controllo della console la chiede: senza, Chrome chiede `/favicon.ico` e scrive il 404 in
-console. Era una delle domande aperte della consegna; il rosso del passo 2 è quello vero, non uno messo apposta.
+console. Era una delle domande aperte della consegna; il rosso del passo 1 è quello vero, non uno messo apposta.
 
-- [ ] **Passo 1 — dove un controllo comincia ad ascoltare.** `checks/support/landing.ts`, al posto di quello del
-compito 8:
+⚠️ **Richiamo del 2026-10-08:** `before` di `open()` arriva col compito 9, e i passi di questo compito scalano di uno
+(risposta del proprietario: A) — la storia nella §18 del
+[verbale delle prove](../../archivio/2026-10-07-prove-piano-landing.md).
 
-```ts
-import { type Browser, type BrowserContextOptions, chromium, type Page } from 'playwright';
-import { readAddress } from '../../src/lib/address';
-import type { Language } from '../../src/lib/words';
-import { serveDist } from './server';
-
-/** The built page, served under its base, and the installed Chrome: where every check in the browser starts. */
-export interface Landing {
-  readonly browser: Browser;
-  /** The path of the page in `language`, under the base: `/` is English, `/it/` Italian (§2.4 of the design). */
-  path(language: Language): string;
-  /** The full address the page in `language` will have once published: what hreflang declares. */
-  address(language: Language): string;
-  /** Where the page in `language` is served now. */
-  url(language: Language): string;
-  /**
-   * The page in `language`, loaded in a context of its own; close it with `page.context().close()`. `before` runs on the
-   * page before it loads: where a check starts to listen.
-   */
-  open(language: Language, options?: BrowserContextOptions, before?: (page: Page) => Promise<void> | void): Promise<Page>;
-  close(): Promise<void>;
-}
-
-export async function openLanding(): Promise<Landing> {
-  const { site, base } = readAddress(process.env);
-  const served = await serveDist(base);
-  const path = (language: Language): string => (language === 'en' ? base : `${base}it/`);
-  const url = (language: Language): string => served.origin + path(language);
-  // The installed Chrome, as the GUI of daemon uses it: no browser is downloaded (§2.1 of the plan).
-  const browser = await chromium.launch({ channel: 'chrome' });
-  return {
-    browser,
-    path,
-    address: (language) => new URL(path(language), site).href,
-    url,
-    async open(language, options = {}, before = () => {}) {
-      const page = await (await browser.newContext(options)).newPage();
-      // The page is built and loaded: what is not there at once is missing, and a red should not wait.
-      page.setDefaultTimeout(2_000);
-      await before(page);
-      await page.goto(url(language));
-      return page;
-    },
-    async close() {
-      await browser.close();
-      await served.close();
-    },
-  };
-}
-```
-
-- [ ] **Passo 2 — i tre controlli; il rosso è l'icona che manca.** `checks/network.page.test.ts`:
+- [ ] **Passo 1 — i tre controlli; il rosso è l'icona che manca.** `checks/network.page.test.ts`:
 
 ```ts
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
@@ -2946,7 +2992,7 @@ rm -rf dist && npm run build && npx vitest run --project page checks/network.pag
 Atteso: `0 errors`, poi `1 failed | 5 passed`: il rosso è la console, con `Failed to load resource: the server responded
 with a status of 404 (Not Found)` — Chrome chiede `/favicon.ico` una volta per browser, quindi in una lingua sola.
 
-- [ ] **Passo 3 — l'icona.** `src/layouts/Page.astro`, al posto di quello del compito 9:
+- [ ] **Passo 2 — l'icona.** `src/layouts/Page.astro`, al posto di quello del compito 9:
 
 ```astro
 ---
@@ -3008,15 +3054,15 @@ if (provenance.length !== 2) throw new Error(`the word provenance wants {commit}
 </html>
 ```
 
-- [ ] **Passo 4 — verde, e l'icona è quella del kit.**
+- [ ] **Passo 3 — verde, e l'icona è quella del kit.**
 
 ```bash
 rm -rf dist && npm run build && npx vitest run --project page && cmp dist/_astro/daemon-icon-dark.*.svg brand/daemon-icon-dark.svg && echo 'the icon is the kit’s'
 ```
 
-Atteso: `0 errors`; `40 passed`; `the icon is the kit’s`.
+Atteso: `0 errors`; `44 passed`; `the icon is the kit’s`.
 
-- [ ] **Passo 5 — l'altro senso.** Un foglio di stile chiesto a un sito di terzi, che non esiste per costruzione, e uno
+- [ ] **Passo 4 — l'altro senso.** Un foglio di stile chiesto a un sito di terzi, che non esiste per costruzione, e uno
 script che aggiunge del testo e poi sbaglia; poi la pagina torna com'era:
 
 ```bash
@@ -3035,25 +3081,25 @@ rm -rf dist && npm run build && npx vitest run --project page checks/network.pag
 cp "$d/Page.astro" src/layouts/ && rm -rf dist && npm run build && npx vitest run --project page
 ```
 
-Atteso: prima `6 failed`, i tre controlli in tutte e due le lingue; poi di nuovo `40 passed`.
+Atteso: prima `6 failed`, i tre controlli in tutte e due le lingue; poi di nuovo `44 passed`.
 
-- [ ] **Passo 6 — il resto, e le vulnerabilità.** `npm test -- --project checks`, poi `npm audit`. Atteso: `70 passed`,
+- [ ] **Passo 5 — il resto, e le vulnerabilità.** `npm test -- --project checks`, poi `npm audit`. Atteso: `70 passed`,
 e `found 0 vulnerabilities`.
 
-- [ ] **Passo 7 — il commit.**
+- [ ] **Passo 6 — il commit.**
 
 ```bash
 git add src checks && git commit -m "t1(compito 10): i controlli nel browser -- nessuna richiesta a terzi, nessun errore in console, la pagina che si legge uguale senza JavaScript; l'icona del kit da brand/, che il controllo della console chiedeva, coi rossi provati"
 ```
 
-- [ ] **Passo 8 —** `git push`.
+- [ ] **Passo 7 —** `git push`.
 
 ### Compito 11 — l'accessibilità
 
 **File:** crea `checks/accessibility.page.test.ts`; modifica `checks/support/landing.ts`, `vitest.config.ts`,
 `src/styles/page.css`, `package.json` e `package-lock.json`.
 
-**Usa:** `openLanding` e `open(language, options)` (compiti 8 e 10), la pagina coi temi (compito 9). **Lascia:**
+**Usa:** `openLanding` e `open(language, options)` (compiti 8 e 9), la pagina coi temi (compito 9). **Lascia:**
 
 - i controlli nel browser **uno per volta**: in `vitest.config.ts` il progetto `page` con `fileParallelism: false`, e in
   `openLanding()` la guardia che si ferma se due controlli nel browser girano insieme;
@@ -3092,7 +3138,7 @@ npm install --no-audit --no-fund --save-exact --save-dev axe-core@4.13.0 && npm 
 
 Atteso: `No packages with unreviewed install scripts.`.
 
-- [ ] **Passo 2 — uno per volta: la guardia, rossa.** `checks/support/landing.ts`, al posto di quello del compito 10:
+- [ ] **Passo 2 — uno per volta: la guardia, rossa.** `checks/support/landing.ts`, al posto di quello del compito 9:
 
 ```ts
 import { type Browser, type BrowserContextOptions, chromium, type Page } from 'playwright';
@@ -3175,7 +3221,7 @@ export default defineConfig({
 });
 ```
 
-Lo stesso comando del passo 2. Atteso: `0 errors` e `40 passed`.
+Lo stesso comando del passo 2. Atteso: `0 errors` e `44 passed`.
 
 - [ ] **Passo 4 — il controllo; il rosso è il segno della fonte.** `checks/accessibility.page.test.ts`:
 
@@ -3442,7 +3488,7 @@ Atteso: prima `8 failed | 16 passed`: le quattro prove della tastiera, in tutte 
 difetto — `Tab reaches every control, in the order of the page`, perché il Tab salta il link all'altra lingua; `every
 control Tab reaches shows its ring`, sui link; `the skip link leads into the content`, perché il Tab va all'indice; `the
 index brings its section below itself`, perché la sezione finisce sotto l'indice. axe resta verde: nessuno dei quattro
-difetti tocca una sua regola WCAG. Alla fine `64 passed`.
+difetti tocca una sua regola WCAG. Alla fine `68 passed`.
 
 - [ ] **Passo 8 — il resto, e le vulnerabilità.** `npm test -- --project checks`, poi `npm audit`. Atteso: `70 passed`,
 e `found 0 vulnerabilities`.
@@ -3459,7 +3505,7 @@ git add package.json package-lock.json vitest.config.ts src checks && git commit
 
 **File:** crea `checks/speed.page.test.ts`; modifica `package.json` e `package-lock.json`.
 
-**Usa:** `openLanding` e `open(language, options, before)` (compiti 8 e 10), i controlli nel browser uno per volta
+**Usa:** `openLanding` e `open(language, options, before)` (compiti 8 e 9), i controlli nel browser uno per volta
 (compito 11), la pagina coi temi (compito 9). **Lascia:**
 
 - `checks/speed.page.test.ts`, il controllo del cancello: col profilo «telefono» della §2.2, nelle due lingue, LCP entro
@@ -3660,7 +3706,7 @@ rm -rf dist && npm run build && npx vitest run --project page checks/speed.page.
 
 Atteso: prima `6 failed | 2 passed`: l'LCP, la CLS e l'INP nelle due lingue, ciascuno per il suo difetto, e la guardia
 verde; poi `2 failed | 6 passed`: la guardia nelle due lingue, con `responseEnd` di pochi millisecondi; alla fine
-`72 passed`.
+`76 passed`.
 
 - [ ] **Passo 4 — il resto, e le vulnerabilità.** `npm test -- --project checks`, poi `npm audit`. Atteso: `70 passed`,
 e `found 0 vulnerabilities`.
@@ -3976,7 +4022,7 @@ Poi, in `package.json`, lo script del cancello accanto agli altri due:
 
 - [ ] **Passo 7 — il cancello, verde.** `npm run gate`. Atteso: le righe dei passi nel loro ordine, `-------- install`,
 `-------- build`, `-------- checks`, `-------- page` e `-------- advisories`; `0 errors` e `2 page(s) built`; `80 passed`,
-cioè i 70 di prima, i 7 di `brand.ts` e i 3 del suo controllo; `72 passed` nel browser; `found 0 vulnerabilities`; e
+cioè i 70 di prima, i 7 di `brand.ts` e i 3 del suo controllo; `76 passed` nel browser; `found 0 vulnerabilities`; e
 l'uscita è 0.
 
 - [ ] **Passo 8 — l'altro senso.** Un difetto per ciascuna ragione del cancello, un giro per difetto: i controlli della
@@ -4100,7 +4146,7 @@ silenzio.
 |---|---|
 | §1–§4 | approvate, coi richiami del 2026-10-07 e del 2026-10-08 |
 | §5, compiti 1–13 | ✅ approvati: l'1–11 il 2026-10-07, il 12 e il 13 il 2026-10-08 |
-| il pre-controllo | 🔶 a metà: otto difetti, tutti decisi dal proprietario, tutti A. Scritti nel piano l'1, il 2 e il 3; da scrivere il 4–8, come dice la tabella qui sotto; poi il banco |
+| il pre-controllo | 🔶 a metà: otto difetti, tutti decisi dal proprietario, tutti A. Scritti nel piano l'1–5; da scrivere il 6–8, come dice la tabella qui sotto; poi il banco |
 | l'esecuzione | ⏳ da cominciare: nessun compito è eseguito, e la landing ha soltanto i documenti |
 
 Gli otto difetti, con le prove e le risposte, sono nella §18 del
@@ -4187,7 +4233,7 @@ subagenti e il loro costo seguono la riga di quella skill nel `CLAUDE.md` di dae
 | `gh` 2.101.0 ha `run list --commit` ed `--event`, `run watch --exit-status`, `run view --log` | `gh run list --help`; `gh run watch --help`; `gh run view --help` |
 | il cancello della GUI: `npm ci --no-audit --no-fund`, `dist/` tolta prima della build, i due progetti di Vitest uno per volta, il Chrome installato, `npm audit` alla fine | `git show "origin/main:scripts/gate-gui.sh"` |
 | Chrome 154.0.8037.98 su questa macchina | `ls "/c/Program Files/Google/Chrome/Application/"` |
-| Chrome chiede `/favicon.ico` da solo, e un 404 lì è un errore in console | il passo 2 del compito 10 |
+| Chrome chiede `/favicon.ico` da solo, e un 404 lì è un errore in console | il passo 1 del compito 10 |
 | i tag WCAG di axe-core 4.13.0 sono `wcag2a`, `wcag2aa`, `wcag21a`, `wcag21aa` e `wcag22aa`; l'unica regola di `wcag22aa` è `target-size` | `gh api "repos/dequelabs/axe-core/contents/doc/API.md?ref=v4.13.0" --jq .content \| base64 -d \| grep -n 'wcag2'`; `node -e "console.log(require('axe-core').getRules(['wcag22aa']).map((rule) => rule.ruleId))"`, dalla landing |
 | Vitest 4.1.11 lancia i file di un progetto insieme, fino a un processore meno uno; `fileParallelism: false` in un progetto li mette in fila, dopo gli altri progetti; `--fileParallelism` da riga di comando lo scavalca | `resolveMaxWorkers` e `groupSpecs` in `node_modules/vitest/dist/chunks/cli-api.*.js`; il passo 2 del compito 11 |
 | `Network.emulateNetworkConditions` è deprecato, a favore di `Network.emulateNetworkConditionsByRule` e `Network.overrideNetworkState`, sperimentali; Lighthouse e Puppeteer usano il primo, e Playwright 1.63.0 per `setOffline`; DevTools il secondo | `gh api "repos/ChromeDevTools/devtools-protocol/contents/pdl/domains/Network.pdl" --jq .content \| base64 -d \| grep -n -B2 'command emulateNetworkConditions'`; `grep -n 'Network\.'` su `core/lib/emulation.js` di `GoogleChrome/lighthouse` e su `packages/puppeteer-core/src/cdp/NetworkManager.ts` di `puppeteer/puppeteer`; `gh api "repos/microsoft/playwright/contents/packages/playwright-core/src/server/chromium/crNetworkManager.ts?ref=v1.63.0" --jq .content \| base64 -d \| grep -n 'emulateNetworkConditions'`; `gh api "search/code?q=emulateNetworkConditionsByRule+repo:ChromeDevTools/devtools-frontend" --jq '.items[].path'` |

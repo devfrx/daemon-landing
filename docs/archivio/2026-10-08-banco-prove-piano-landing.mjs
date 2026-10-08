@@ -119,7 +119,7 @@ const INLINE = {
     14: ['git push'],
   },
   9: { 2: ['npx vitest run src/lib/tokens.test.ts'], 3: [{ same: 2 }], 8: ['npm test -- --project checks', 'npm audit'], 10: ['git push'] },
-  10: { 6: ['npm test -- --project checks', 'npm audit'], 8: ['git push'] },
+  10: { 5: ['npm test -- --project checks', 'npm audit'], 7: ['git push'] },
   11: { 3: [{ same: 2 }], 6: [{ same: 4 }], 8: ['npm test -- --project checks', 'npm audit'], 10: ['git push'] },
   12: { 4: ['npm test -- --project checks', 'npm audit'], 6: ['git push'] },
   // Step 13, the CI on GitHub, does not run here: the bench's push reaches nothing real.
