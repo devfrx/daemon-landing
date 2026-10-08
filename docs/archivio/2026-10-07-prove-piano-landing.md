@@ -3,9 +3,10 @@
 > 🗄️ **Che cos'è questo file.** Il verbale delle prove fatte il 2026-10-07 per scrivere la §5 del
 > [piano del traguardo 1](../superpowers/plans/2026-10-07-landing-traguardo-1.md) — le §1–§9 nel pomeriggio, la §10 e la
 > §11 nella sessione dopo, la §12 e la §13 in quella dopo ancora, la §14 nella quinta, la §15 nella sesta, la §16 nella
-> settima e la §17 nell'ottava, il 2026-10-08: il proprietario ha scelto di provare il codice prima di scriverlo nel
-> piano (risposta: A). Le prove sono girate nello scratchpad di ciascuna sessione, poi cancellato; dalla §16 il programma
-> del banco sta accanto a questo file. Qui c'è la storia; il piano porta ciò che ne è venuto.
+> settima, la §17 nell'ottava e la §18 nella decima, il pre-controllo, il 2026-10-08: il proprietario ha scelto di
+> provare il codice prima di scriverlo nel piano (risposta: A). Le prove sono girate nello scratchpad di ciascuna
+> sessione, poi cancellato; dalla §16 il programma del banco sta accanto a questo file. Qui c'è la storia; il piano porta
+> ciò che ne è venuto.
 
 **La macchina:** Windows 11, Git Bash, Node 24.19.0, npm 11.17.0, Chrome 154.0.8037.98. I pacchetti, alle versioni
 esatte della §2.1 del piano.
@@ -413,3 +414,42 @@ Tutto come scritto. I file scritti dal testo sono uguali, byte per byte, a quell
 | un checkout svuota una cartella che non ha un `.git` del suo repository: per questo daemon va prima della landing | `prepareExistingDirectory` in `src/git-directory-helper.ts` di `actions/checkout`, al tag `v4` |
 | sui runner, `setup-node@v7` con l'intervallo della GUI prende Node 24.21.0 dalla cache, con npm 11.19.0 | il log del giro di daemon del 2026-10-08, sui due sistemi |
 | il percorso più lungo di daemon è di 101 caratteri, e quello sotto `node_modules/` della landing di 122: dentro i 260 di Windows anche sotto `D:\a\daemon-landing\daemon-landing\daemon\landing\` | `git ls-tree -r --name-only origin/main`; `find node_modules -type f`, nella landing del banco |
+
+## 18. La decima sessione: il pre-controllo
+
+Il 2026-10-08, dopo la nona. Ogni compito letto come un'ipotesi, con le quattro domande e le regole 5–8 di *«Prima di
+eseguire un compito di un piano»*, nel `CLAUDE.md` di daemon (§6 del piano). daemon a `8e88ae1`, come alla chiusura della
+nona.
+
+**I fatti che invecchiano**, rilanciati coi comandi della tabella in fondo alla §6 del piano: tutto come scritto. In più:
+
+| Fatto | Comando |
+|---|---|
+| l'insieme dei pacchetti della §2.1, alle versioni esatte, risolto senza installare: `found 0 vulnerabilities` | `npm install --package-lock-only --ignore-scripts`, poi `npm audit`, in una cartella dello scratchpad |
+| `astro` 7.3.7 corregge soltanto errori, e contro la 7.3.6 non c'è nessun avviso di sicurezza | `gh api "repos/withastro/astro/releases/tags/astro@7.3.7" --jq .body`; `gh api "/advisories?ecosystem=npm&affects=astro@7.3.6"`: vuoto |
+
+**Gli otto difetti**, portati al proprietario uno per volta, in A/B. Tutte le risposte: A.
+
+| # | Il difetto | Che cosa lo coglie | Come si è visto | La risposta |
+|---|---|---|---|---|
+| 1 | la pagina può mostrare un testo che non sta nei file dei testi — scritto dentro un `.astro` — e nessun controllo lo vede: né le fonti, né i refusi, né le parole vietate. Il controllo della pagina guarda in un senso solo, «ogni frase dei file è sulla pagina» | la domanda 2, la sonda manca | letto il codice di ogni controllo. Nella GUI di daemon lo fa il linter, con `@intlify/vue-i18n/no-raw-text` in `gui/eslint.config.js`; `eslint-plugin-astro` 3.2.1 una regola così non ce l'ha: `gh api "repos/ota-meshi/eslint-plugin-astro/contents/docs/rules" --jq '.[].name'` | un test per lingua nel controllo della pagina, compito 8: sulla pagina solo ciò che sta nei file |
+| 2 | la GUI di daemon ha un linter nel cancello, la landing no: la domanda aperta della nona sessione | la regola 7 | `gui/eslint.config.js` e `scripts/gate-gui.sh` | niente linter: ciò che fa nella GUI qui lo fanno il controllo del difetto 1, la build e `astro check` |
+| 3 | cspell di base salta le parole sotto le quattro lettere, e il piano non lo cambia: un refuso in «per», «che» o «the» passa | la domanda 1, la sonda è sbagliata | il programma qui sotto | ogni parola da due lettere in su, `minWordLength: 2`; «GPU», «GB» ed «EN» fra le parole note dell'italiano |
+| 4 | «download» in una frase italiana passa: il dizionario italiano lo conosce, e per l'italiano la lista vieta soltanto «open source» e «scarica» | la domanda 1 | il programma qui sotto | «download» vietato anche in italiano |
+| 5 | lo script del tema segue il sistema a pagina aperta, e regge un browser che rifiuta la memoria: nessun test prova né l'uno né l'altro, contro il vincolo 11 del piano | la domanda 2 | letti i test dei compiti 9–12 | un test per ciascuno; `before` di `open()` arriva col compito 9, il primo che lo usa |
+| 6 | l'indice fisso in alto, e «Vai al contenuto» che si vede col fuoco: senza `position: sticky` l'indice scorre via, e il test dell'indice resta verde; senza la regola del fuoco il link ha il suo anello, ma resta sopra lo schermo | le domande 1 e 2 | dedotto dal CSS del piano; lo prova il secondo giro del passo 7 del compito 11 | due controlli nei test che ci sono: l'indice resta in cima, e ciò che ha il fuoco sta nello schermo |
+| 7 | il controllo dei token lascia fuori i token che la pagina dichiara da sé: una pagina che ridefinisce un colore di daemon passa, e lo nasconde al controllo | la domanda 2 | letto il filtro del controllo | un test: la pagina non ridefinisce nessun token di daemon |
+| 8 | la §5.4 del disegno dice che, se sparisce un token che la pagina usa, «la build è rossa»; nel piano è rosso il cancello | la regola 6 | letto il compito 9 | si corregge la frase del disegno |
+
+**Il programma delle prove di cspell**, nello scratchpad, con `cspell-lib` 10.3.6 e `@cspell/dict-it-it` 3.1.7: la
+funzione `unknownWords` del compito 7 lettera per lettera, con un'impostazione in più.
+
+| Testo | Lingua | Come nel piano | Con `minWordLength: 2` |
+|---|---|---|---|
+| `teh cat adn dog` | en | `[]` | `["teh","adn"]` |
+| `nle kernel cno la GPU` | it | `[]` | `["nle","cno","GPU"]` |
+| le frasi e l'interfaccia della §3.4 del piano | it | `[]` | `["GPU","GB","EN"]` |
+| le stesse | en | `[]` | `[]` |
+| `l’arbitro dell’audit un’etichetta c’è all’indice nell’app quest’ultimo d’uso l’ADR e è a i o` | it | `["nell’app"]` | `["nell’app","l’ADR"]` |
+| lettere sole: `il k testo, deciso col N, e N è il sotto-progetto, la x` e `the s user, built at col N, a x b` | it, en | `[]` | `[]`, e così con `minWordLength: 1`: una lettera sola i dizionari la accettano |
+| `il download di daemon` | it | `[]` | — |
