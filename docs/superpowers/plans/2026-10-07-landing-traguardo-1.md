@@ -4185,7 +4185,7 @@ silenzio.
 |---|---|
 | §1–§4 | approvate, coi richiami del 2026-10-07 e del 2026-10-08 |
 | §5, compiti 1–13 | ✅ approvati: l'1–11 il 2026-10-07, il 12 e il 13 il 2026-10-08 |
-| il pre-controllo | 🔶 a metà: otto difetti, tutti decisi dal proprietario, tutti A. Scritti nel piano l'1–7; da scrivere l'8, come dice la tabella qui sotto; poi il banco |
+| il pre-controllo | 🔶 a metà: otto difetti, tutti decisi dal proprietario, tutti A, e tutti scritti nel piano; resta il banco |
 | l'esecuzione | ⏳ da cominciare: nessun compito è eseguito, e la landing ha soltanto i documenti |
 
 Gli otto difetti, con le prove e le risposte, sono nella §18 del

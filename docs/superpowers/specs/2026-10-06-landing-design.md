@@ -276,7 +276,10 @@ Due conseguenze, che non costano lavoro in più:
 I colori dei due temi si leggono, durante la build, da `gui/src/tokens/themes.css` di daemon, **così com'è**: lì ci sono
 già i colori del marchio. È la regola del design system di daemon, scritta in `gui/src/tokens/readToken.ts`: *«The CSS
 variables are the truth (answer 14): this reads them, it keeps no copy.»* Se la GUI cambia un colore, la pagina lo segue
-alla build dopo; se sparisce un token che la pagina usa, la build è rossa.
+alla build dopo; se sparisce un token che la pagina usa, il cancello è rosso, col controllo dei token.
+
+⚠️ **Richiamo del 2026-10-08:** se sparisce un token è rosso il cancello, col controllo dei token, non la build — la
+storia nella §18 del [verbale delle prove](../../archivio/2026-10-07-prove-piano-landing.md).
 
 Da `gui/src/tokens/base.css` la pagina **non prende niente**: ha regole per l'app — il corpo del testo a 14 px, il focus
 — e la pagina ha le sue. Anche la scala dei caratteri è della pagina: una landing ha titoli più grandi di un'app.
