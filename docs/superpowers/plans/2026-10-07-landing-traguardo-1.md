@@ -16,8 +16,8 @@
 | 2 | Gli strumenti e i vincoli | ✅ approvata il 2026-10-07 |
 | 3 | I testi | ✅ approvata il 2026-10-07 |
 | 4 | La mappa dei file | ✅ approvata il 2026-10-07 |
-| 5 | I compiti | ✅ i compiti 1–11 approvati il 2026-10-07, il 12 e il 13 il 2026-10-08; il pre-controllo li ha corretti, il 2026-10-08 (§6) |
-| 6 | Come si riprende | 🔶 oggi è la consegna dell'undicesima sessione, del 2026-10-08: il pre-controllo è finito, e il prossimo passo è il compito 1 |
+| 5 | I compiti | ✅ i compiti 1–11 approvati il 2026-10-07, il 12 e il 13 il 2026-10-08; il pre-controllo li ha corretti, il 2026-10-08; il compito 1 eseguito, il 2026-10-08 (§6) |
+| 6 | Come si riprende | 🔶 oggi è la consegna della dodicesima sessione, del 2026-10-08: il compito 1 è eseguito, e il prossimo passo è il compito 2 |
 
 ---
 
@@ -352,7 +352,7 @@ A, §6): la storia delle prove è nel [verbale](../../archivio/2026-10-07-prove-
 **Usa:** niente. **Lascia:** ogni file di testo va a capo alla Linux, su ogni macchina; i file binari restano come sono
 (§7.3 del disegno).
 
-- [ ] **Passo 1 — la prova, rossa.** Una copia nuova del repository ha gli a-capo di Windows:
+- [x] **Passo 1 — la prova, rossa.** Una copia nuova del repository ha gli a-capo di Windows:
 
 ```bash
 d=$(mktemp -d) && git clone -q . "$d/landing" && git -C "$d/landing" ls-files --eol | grep -c 'w/crlf'; rm -rf "$d"
@@ -361,13 +361,13 @@ d=$(mktemp -d) && git clone -q . "$d/landing" && git -C "$d/landing" ls-files --
 Atteso, su Windows con `core.autocrlf=true`: un numero più grande di 0. Su una macchina senza `core.autocrlf` è 0, e la
 prova rossa è `git check-attr eol -- CLAUDE.md`, che risponde `CLAUDE.md: eol: unspecified`.
 
-- [ ] **Passo 2 — il file.** `.gitattributes`, una riga sola:
+- [x] **Passo 2 — il file.** `.gitattributes`, una riga sola:
 
 ```gitattributes
 * text=auto eol=lf
 ```
 
-- [ ] **Passo 3 — nessun file cambia.**
+- [x] **Passo 3 — nessun file cambia.**
 
 ```bash
 git add .gitattributes && git add --renormalize . && git status --short
@@ -375,7 +375,7 @@ git add .gitattributes && git add --renormalize . && git status --short
 
 Atteso: `A  .gitattributes`, e nient'altro.
 
-- [ ] **Passo 4 — gli attributi.**
+- [x] **Passo 4 — gli attributi.**
 
 ```bash
 git check-attr text eol -- CLAUDE.md
@@ -388,13 +388,13 @@ CLAUDE.md: text: auto
 CLAUDE.md: eol: lf
 ```
 
-- [ ] **Passo 5 — il commit.**
+- [x] **Passo 5 — il commit.**
 
 ```bash
 git commit -m "t1(compito 1): il .gitattributes -- ogni file di testo va a capo alla Linux, su ogni macchina (§7.3 del disegno)"
 ```
 
-- [ ] **Passo 6 — la prova, verde.** Lo stesso comando del passo 1, che adesso clona il commit nuovo:
+- [x] **Passo 6 — la prova, verde.** Lo stesso comando del passo 1, che adesso clona il commit nuovo:
 
 ```bash
 d=$(mktemp -d) && git clone -q . "$d/landing" && git -C "$d/landing" ls-files --eol | grep -c 'w/crlf'; rm -rf "$d"
@@ -402,7 +402,7 @@ d=$(mktemp -d) && git clone -q . "$d/landing" && git -C "$d/landing" ls-files --
 
 Atteso: `0`.
 
-- [ ] **Passo 7 —** `git push`.
+- [x] **Passo 7 —** `git push`.
 
 ### Compito 2 — la copia in `brand/`
 
@@ -4167,8 +4167,8 @@ silenzio.
 
 ## 6. Come si riprende
 
-> 🔶 Oggi questa sezione è la consegna dell'undicesima sessione, del 2026-10-08: il pre-controllo è finito, e si
-> comincia a eseguire. Le consegne di prima sono in archivio, parola per parola:
+> 🔶 Oggi questa sezione è la consegna della dodicesima sessione, del 2026-10-08: il compito 1 è eseguito, e il
+> prossimo è il compito 2. Le consegne di prima sono in archivio, parola per parola:
 > [del mattino](../../archivio/2026-10-07-consegna-piano-landing-mattina.md),
 > [del pomeriggio](../../archivio/2026-10-07-consegna-piano-landing-pomeriggio.md),
 > [della terza sessione](../../archivio/2026-10-07-consegna-piano-landing-terza-sessione.md),
@@ -4177,8 +4177,9 @@ silenzio.
 > [della sesta](../../archivio/2026-10-08-consegna-piano-landing-sesta-sessione.md),
 > [della settima](../../archivio/2026-10-08-consegna-piano-landing-settima-sessione.md),
 > [dell'ottava](../../archivio/2026-10-08-consegna-piano-landing-ottava-sessione.md),
-> [della nona](../../archivio/2026-10-08-consegna-piano-landing-nona-sessione.md) e
-> [della decima](../../archivio/2026-10-08-consegna-piano-landing-decima-sessione.md).
+> [della nona](../../archivio/2026-10-08-consegna-piano-landing-nona-sessione.md),
+> [della decima](../../archivio/2026-10-08-consegna-piano-landing-decima-sessione.md) e
+> [dell'undicesima](../../archivio/2026-10-08-consegna-piano-landing-undicesima-sessione.md).
 
 **Dove siamo:**
 
@@ -4187,12 +4188,22 @@ silenzio.
 | §1–§4 | approvate, coi richiami del 2026-10-07 e del 2026-10-08 |
 | §5, compiti 1–13 | ✅ approvati: l'1–11 il 2026-10-07, il 12 e il 13 il 2026-10-08; corretti dal pre-controllo, coi richiami del 2026-10-08 |
 | il pre-controllo | ✅ finito: otto difetti, tutti decisi dal proprietario, tutti A, e scritti nel piano; il banco ha rifatto dal testo i compiti 1–13, e tutto torna come scritto |
-| l'esecuzione | ⏳ da cominciare: nessun compito è eseguito, e la landing ha soltanto i documenti |
+| l'esecuzione | 🔶 il compito 1 ✅, il 2026-10-08: `t1(compito 1)`, spinto su GitHub; i compiti 2–13 da eseguire |
 
 Gli otto difetti, con le prove, le risposte e ciò che il banco ha visto, sono nella §18 del
 [verbale delle prove](../../archivio/2026-10-07-prove-piano-landing.md). Il programma del banco,
 [`2026-10-08-banco-prove-piano-landing.mjs`](../../archivio/2026-10-08-banco-prove-piano-landing.mjs), rifà dal testo i
 compiti 1–13: serve di nuovo solo se un compito cambia prima di essere eseguito.
+
+**Il compito 1**, eseguito il 2026-10-08:
+
+| | |
+|---|---|
+| il ri-controllo | contro la landing a `e6a0db1`, con le quattro domande e le regole 5–8: nessun difetto. La metà dei binari, «i file binari restano come sono», la tiene il passo 4, `text: auto`: la prova è nella tabella in fondo |
+| l'esecuzione | due subagenti `sonnet`, chi esegue e chi rivede (risposta del proprietario: A). Il rosso del passo 1 ha dato `23`, il verde del passo 6 `0`; i passi 3 e 4 come scritti |
+| la revisione | conforme e approvata, nessun difetto critico o importante. Una nota minore, del piano, rimandata: la prova dei passi 1 e 6 conta soltanto `w/crlf`, e un file `w/mixed` le sfuggirebbe. Qui non succede, perché nel repository ogni file è LF; se un compito riusa la prova, la forma più stretta è `grep -cE 'w/(crlf\|mixed)'` |
+| il costo | chi esegue, circa 96 mila token e 3 minuti; chi rivede, circa 122 mila token e 6 minuti: l'uscita dello strumento `Agent` |
+| il push | il coordinatore, dopo la revisione |
 
 **Come si esegue**: una fase per sessione (§7.1 del disegno), un compito per sessione, nell'ordine 1–13. Il coordinatore
 rilegge il compito contro la landing di adesso — la regola 5 di *«Prima di eseguire un compito di un piano»*, nel
@@ -4200,30 +4211,48 @@ rilegge il compito contro la landing di adesso — la regola 5 di *«Prima di es
 seguono la riga di quella skill nel `CLAUDE.md` di daemon. Il codice nasce dai test,
 `superpowers:test-driven-development`. Il compito si chiude col suo commit, `t1(compito N): …`, e col push.
 
-**Il prossimo passo**, in una sessione nuova — il compito 1, il `.gitattributes`:
+Come l'ha fatto la dodicesima sessione, e come conviene rifarlo:
+
+- prima di mandare i subagenti, il costo al proprietario e il suo sì: più di un subagente lo chiede il `CLAUDE.md` di
+  daemon, e il sì vale per il compito per cui è dato;
+- il lavoro dei subagenti — il fascicolo del compito, il rapporto, il pacchetto della revisione, il registro — sta nello
+  scratchpad della sessione, non nella landing: `sdd-workspace` della skill scriverebbe `.superpowers/sdd/` dentro il
+  repository;
+- il fascicolo si estrae per righe, perché `task-brief` della skill cerca un titolo «Task N» e qui i titoli dicono
+  «Compito N». Dentro: il compito, la §2.3, la tabella *«Come si leggono»* della §5, e la sezione del disegno che il
+  compito realizza;
+- chi esegue fa i passi fino al commit; il push lo fa il coordinatore, dopo una revisione pulita: un commit va su GitHub
+  solo dopo essere stato rivisto;
+- il dispaccio dice in chiaro «senza co-autore»: un subagente può aggiungere da sé una riga `Co-Authored-By`.
+
+**Il prossimo passo**, in una sessione nuova — il compito 2, la copia in `brand/`:
 
 1. dentro `landing/`: `git fetch --all --prune`, `git status -sb`, e il fast-forward se serve;
 2. leggi `CLAUDE.md`, questo piano e il disegno, per intero;
 3. le skill: `anthropic-skills:decision-principles`, `anthropic-skills:dev-discipline`,
    `anthropic-skills:dev-communication`, `superpowers:subagent-driven-development` e
    `superpowers:test-driven-development`;
-4. rileggi il compito 1 contro la landing di adesso, con le quattro domande e le regole 5–8 di *«Prima di eseguire un
-   compito di un piano»*;
-5. eseguilo come dice *«Come si esegue»*: il suo commit, `t1(compito 1): …`, e il push;
-6. alla chiusura, la consegna qui, con questa in archivio; commit e push. La sessione dopo esegue il compito 2.
+4. rileggi il compito 2 contro la landing di adesso, con le quattro domande e le regole 5–8 di *«Prima di eseguire un
+   compito di un piano»*. Il kit sta solo su questa macchina: se `ls ../daemon_kit` non lo trova, ci si ferma, come
+   dice il passo 1 del compito;
+5. di' al proprietario il costo dei subagenti, e aspetta il sì; poi eseguilo come dice *«Come si esegue»*: il suo commit,
+   `t1(compito 2): …`, e il push dopo la revisione;
+6. alla chiusura, la consegna qui, con questa in archivio; commit e push. La sessione dopo esegue il compito 3.
 
 **Da sapere subito:**
 
-- ⚠️ daemon si muove mentre si lavora: in questa sessione `origin/main` è passato da `8e88ae1` a `6166236`, un commit di
-  documenti dell'audit. Un commit di daemon non si scrive mai come vero: si rilancia
+- ⚠️ daemon si muove mentre si lavora: un commit di daemon non si scrive mai come vero, si rilancia
   `git -C .. rev-parse --short origin/main`;
-- ⚠️ **questa macchina è corta di memoria**: 16 GB, e in questa sessione ne erano liberi circa 2. La memoria del
+- ⚠️ **questa macchina è corta di memoria**: 16 GB, e in questa sessione ne era libero circa 1,5. La memoria del
   momento: `powershell -NoProfile -Command "Get-CimInstance Win32_OperatingSystem | Select-Object FreePhysicalMemory,
   TotalVisibleMemorySize, FreeVirtualMemory, TotalVirtualMemorySize"`;
 - ⚠️ dopo il giorno del piano sono uscite `astro` 7.3.7 e `playwright` 1.64.0: il piano resta alla 7.3.6 e alla 1.63.0,
   per la regola della §2.1 — Playwright segue la GUI di daemon, e una versione nuova si prende con un atto apposta;
 - ⚠️ GitHub sposta `ubuntu-latest` su Ubuntu 26 dal 2026-10-19, dice un avviso nel giro di daemon: la CI della landing
   gira per la prima volta al compito 13, forse già lì;
+- col `.gitattributes`, una copia nuova della landing ha ogni file di testo LF. La metà dei binari non ha ancora un
+  caso vero: nessun file della landing è binario, e `brand/` del compito 2 ha soltanto SVG e HTML. Quando arriva il primo
+  binario — le foto delle scene, col traguardo 2 — `git ls-files --eol` deve dirlo `i/-text`;
 - il banco: i comandi in testa al suo programma, poi `node bench.mjs <il piano> <la landing del banco> <la cartella dei
   log> 1 2 … 13`. Il programma legge il piano con qualunque a-capo, e innesta un frammento nel blocco che segue le sue
   parole; il compito 13 lancia il cancello cinque volte. `report.txt` mostra le prime 60 righe utili di ogni comando, e
@@ -4241,8 +4270,8 @@ seguono la riga di quella skill nel `CLAUDE.md` di daemon. Il codice nasce dai t
 - su Windows `chrome.exe --version` apre il browser invece di scrivere la versione: la versione si legge dal nome della
   cartella, `ls "/c/Program Files/Google/Chrome/Application/"`.
 
-**Verificato fra il 2026-10-07 e il 2026-10-08, dalla sesta all'undicesima sessione.** Si rilancia, non si crede. I
-comandi `git` dalla radice di daemon, in Git Bash, dopo `export MSYS_NO_PATHCONV=1`.
+**Verificato fra il 2026-10-07 e il 2026-10-08, dalla sesta alla dodicesima sessione.** Si rilancia, non si crede. I
+comandi `git` dalla radice di daemon, in Git Bash, dopo `export MSYS_NO_PATHCONV=1`, dove non è detto altro.
 
 | Fatto | Comando o fonte |
 |---|---|
@@ -4274,3 +4303,5 @@ comandi `git` dalla radice di daemon, in Git Bash, dopo `export MSYS_NO_PATHCONV
 | l'insieme dei pacchetti della §2.1, alle versioni esatte, non ha vulnerabilità note; `astro` 7.3.7 corregge soltanto errori, e contro la 7.3.6 non c'è nessun avviso | `npm install --package-lock-only --ignore-scripts` e `npm audit`, in una cartella fuori dal repository; `gh api "/advisories?ecosystem=npm&affects=astro@7.3.6"` |
 | cspell, di base, salta le parole sotto le quattro lettere; con `minWordLength: 2` le guarda, e una lettera sola la accetta sempre; il dizionario italiano conosce «download» | il programma della §18 del verbale delle prove |
 | la GUI di daemon vieta il testo scritto nei componenti col linter, `@intlify/vue-i18n/no-raw-text`; `eslint-plugin-astro` 3.2.1 una regola così non ce l'ha | `git show "origin/main:gui/eslint.config.js"`; `gh api "repos/ota-meshi/eslint-plugin-astro/contents/docs/rules" --jq '.[].name'` |
+| con `* text=auto eol=lf`, e `core.autocrlf=true` dalla configurazione di sistema di Git, un file con un byte NUL resta com'è in un clone, `i/-text`; con `* text eol=lf` cambia | in una cartella di prova fuori dal repository, senza `MSYS_NO_PATHCONV`: `git init`, il `.gitattributes`, `printf 'a\r\nb\0c\r\n' > probe.bin`, `git add -A`, il commit, `git clone`, poi `git ls-files --eol` nel clone e `cmp` fra le due copie; `git config --show-origin --get-all core.autocrlf` |
+| `superpowers:subagent-driven-development` 6.3.0: `task-brief` cerca un titolo «Task N»; `sdd-workspace` scrive `.superpowers/sdd/` nella cartella di lavoro del repository | `scripts/task-brief` e `scripts/sdd-workspace`, nella cartella della skill |
