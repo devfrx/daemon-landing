@@ -3106,8 +3106,8 @@ git add src checks && git commit -m "t1(compito 10): i controlli nel browser -- 
 - `checks/accessibility.page.test.ts`, il controllo del cancello: nessun errore di axe sulle regole WCAG 2.2 AA, in ogni
   stato in cui un visitatore porta la pagina — i due temi, un computer e un telefono, le fonti chiuse e aperte —; e
   quattro prove della tastiera, ciascuna col suo rosso: il Tab che raggiunge ogni controllo, nell'ordine della pagina;
-  l'anello di ciascuno; il link «Vai al contenuto» che porta dentro il contenuto; l'indice che porta la sua sezione sotto
-  di sé;
+  l'anello di ciascuno, e il suo posto dentro lo schermo; il link «Vai al contenuto» che porta dentro il contenuto;
+  l'indice che resta in cima, e porta la sua sezione sotto di sé;
 - in `src/styles/page.css`, il segno della fonte e il suo link alti almeno 24 px, come vuole WCAG 2.5.8: è il rosso vero
   del controllo (risposta del proprietario: A, il 2026-10-07);
 - `axe-core` 4.13.0.
@@ -3126,6 +3126,15 @@ in fila, dopo gli altri progetti; la guardia legge `VITEST_POOL_ID`, il numero c
 **Il telefono girato.** Su un computer, 1280 × 720, e sul telefono della §2.2, 412 × 823, la pagina del traguardo 1 sta
 tutta nello schermo, e un salto dall'indice non la muove: lì una sonda passerebbe con o senza `scroll-padding-top`. Sul
 telefono girato, 823 × 412, la pagina scorre.
+
+**Dentro lo schermo.** L'indice fisso e «Vai al contenuto» col fuoco si vedono soltanto grazie al CSS: senza
+`position: sticky` l'indice scorre via, e senza la regola `.skip-link:focus` il link ha il fuoco e il suo anello, ma
+resta sopra lo schermo. Per questo ogni controllo che il Tab raggiunge dice anche se il suo riquadro sta tutto dentro la
+finestra, e dopo il salto l'indice sta in cima.
+
+⚠️ **Richiamo del 2026-10-08:** la tastiera prova anche che ciò che ha il fuoco sta dentro lo schermo, e che l'indice
+resta in cima (risposta del proprietario: A) — la storia nella §18 del
+[verbale delle prove](../../archivio/2026-10-07-prove-piano-landing.md).
 
 **Non entra** il movimento ridotto della §6.1 del disegno: arriva col primo movimento, l'orologio del traguardo 2.
 **Costo dichiarato:** ciò che axe non prova lo vede chi rilegge, come il contrasto di un controllo (§6.1 del disegno).
@@ -3264,21 +3273,25 @@ async function violations(page: Page): Promise<string[]> {
 
 /**
  * Tabs through `page` once per control: the controls a visitor can reach, in the order of the page, and for each Tab
- * where the focus lands among them, -1 if elsewhere, with the style of its ring.
+ * where the focus lands among them, -1 if elsewhere, with the style of its ring and whether it is inside the screen.
  */
-async function tabThrough(page: Page): Promise<{ count: number; reached: { at: number; ring: string }[] }> {
+async function tabThrough(page: Page): Promise<{ count: number; reached: { at: number; ring: string; onScreen: boolean }[] }> {
   // A source's link counts only once the source is open: closed, it is not on the page.
   const controls = await page.evaluateHandle(() =>
     [...document.querySelectorAll('a[href], summary, input')].filter((control) => control.checkVisibility()),
   );
   const count = await controls.evaluate((all) => all.length);
-  const reached: { at: number; ring: string }[] = [];
+  const reached: { at: number; ring: string; onScreen: boolean }[] = [];
   for (let i = 0; i < count; i++) {
     await page.keyboard.press('Tab');
     reached.push(
       await controls.evaluate((all) => {
         const focused = document.activeElement;
-        return focused ? { at: all.indexOf(focused), ring: getComputedStyle(focused).outlineStyle } : { at: -1, ring: 'none' };
+        if (!focused) return { at: -1, ring: 'none', onScreen: false };
+        // Inside the screen: the whole box of the control within the window, where a visitor sees it.
+        const box = focused.getBoundingClientRect();
+        const onScreen = box.top >= 0 && box.left >= 0 && box.bottom <= innerHeight && box.right <= innerWidth;
+        return { at: all.indexOf(focused), ring: getComputedStyle(focused).outlineStyle, onScreen };
       }),
     );
   }
@@ -3316,12 +3329,12 @@ describe.each(['en', 'it'] as const)('the accessibility of the page in %s', (lan
     expect(reached.map((control) => control.at)).toEqual([...Array(count).keys()]);
   });
 
-  test('every control Tab reaches shows its ring', async () => {
+  test('every control Tab reaches is inside the screen, and shows its ring', async () => {
     const { reached } = await tabThrough(await open({}));
     // Only the controls: where the focus leaves the page, the probe above is the one to go red.
     const controls = reached.filter((control) => control.at !== -1);
     expect(controls.length).toBeGreaterThan(0);
-    expect(controls.filter((control) => control.ring === 'none')).toEqual([]);
+    expect(controls.filter((control) => !control.onScreen || control.ring === 'none')).toEqual([]);
   });
 
   test('the skip link leads into the content', async () => {
@@ -3332,13 +3345,14 @@ describe.each(['en', 'it'] as const)('the accessibility of the page in %s', (lan
     expect(await page.evaluate(() => Boolean(document.activeElement?.closest('main')))).toBe(true);
   });
 
-  test('the index brings its section below itself', async () => {
+  test('the index stays on top, and brings its section below itself', async () => {
     const page = await open({ viewport: SCREENS.sideways });
     await page.locator('nav a').first().focus();
     await page.keyboard.press('Enter');
     const index = await page.locator('header').boundingBox();
     const section = await page.locator('#what').boundingBox();
     if (!index || !section) throw new Error('the index or the section is not on the page');
+    expect(index.y).toBe(0);
     expect(section.y).toBeGreaterThanOrEqual(index.y + index.height);
   });
 });
@@ -3466,9 +3480,11 @@ footer {
 
 - [ ] **Passo 6 — verde.** Lo stesso comando del passo 4. Atteso: `0 errors` e `24 passed`.
 
-- [ ] **Passo 7 — l'altro senso.** Un difetto per ciascuna prova della tastiera: l'indice senza `scroll-padding-top`, i
-link senza anello, il link all'altra lingua fuori dal giro del Tab, «Vai al contenuto» che porta dove non c'è niente;
-poi i file tornano com'erano, e girano tutti i controlli nel browser:
+- [ ] **Passo 7 — l'altro senso.** Due giri. Nel primo, un difetto per ciascuna prova della tastiera: l'indice senza
+`scroll-padding-top`, i link senza anello, il link all'altra lingua fuori dal giro del Tab, «Vai al contenuto» che porta
+dove non c'è niente. Nel secondo, ciò che si vede soltanto grazie al CSS: l'indice senza `position: sticky`, e «Vai al
+contenuto» senza la regola che lo porta nello schermo quando ha il fuoco. Dopo ogni giro i file tornano com'erano, e alla
+fine girano tutti i controlli nel browser:
 
 ```bash
 d=$(mktemp -d) && cp src/styles/page.css src/layouts/Page.astro "$d/" && node --input-type=module - <<'EOF'
@@ -3481,14 +3497,25 @@ replace('src/layouts/Page.astro', "aria-label={await word('other-language')}>", 
 replace('src/layouts/Page.astro', 'href="#content"', 'href="#nowhere"');
 EOF
 rm -rf dist && npm run build && npx vitest run --project page checks/accessibility.page.test.ts; cp "$d/page.css" src/styles/ && cp "$d/Page.astro" src/layouts/
+d=$(mktemp -d) && cp src/styles/page.css "$d/" && node --input-type=module - <<'EOF'
+import { readFileSync, writeFileSync } from 'node:fs';
+
+const replace = (file, from, to) => writeFileSync(file, readFileSync(file, 'utf8').replace(from, to));
+replace('src/styles/page.css', '  position: sticky;\n', '');
+replace('src/styles/page.css', '.skip-link:focus {\n  inset-block-start: 0.5rem;\n}\n\n', '');
+EOF
+rm -rf dist && npm run build && npx vitest run --project page checks/accessibility.page.test.ts; cp "$d/page.css" src/styles/
 rm -rf dist && npm run build && npx vitest run --project page
 ```
 
 Atteso: prima `8 failed | 16 passed`: le quattro prove della tastiera, in tutte e due le lingue, ciascuna per il suo
 difetto — `Tab reaches every control, in the order of the page`, perché il Tab salta il link all'altra lingua; `every
-control Tab reaches shows its ring`, sui link; `the skip link leads into the content`, perché il Tab va all'indice; `the
-index brings its section below itself`, perché la sezione finisce sotto l'indice. axe resta verde: nessuno dei quattro
-difetti tocca una sua regola WCAG. Alla fine `68 passed`.
+control Tab reaches is inside the screen, and shows its ring`, sui link senza anello; `the skip link leads into the
+content`, perché il Tab va all'indice; `the index stays on top, and brings its section below itself`, perché la sezione
+finisce sotto l'indice. Poi `4 failed | 20 passed`: in tutte e due le lingue `every control Tab reaches is inside the
+screen, and shows its ring`, perché «Vai al contenuto» ha il fuoco sopra lo schermo, e `the index stays on top, and
+brings its section below itself`, perché l'indice scorre via. axe resta verde in tutti e due i giri: nessun difetto tocca
+una sua regola WCAG. Alla fine `68 passed`.
 
 - [ ] **Passo 8 — il resto, e le vulnerabilità.** `npm test -- --project checks`, poi `npm audit`. Atteso: `70 passed`,
 e `found 0 vulnerabilities`.
@@ -3496,7 +3523,7 @@ e `found 0 vulnerabilities`.
 - [ ] **Passo 9 — il commit.**
 
 ```bash
-git add package.json package-lock.json vitest.config.ts src checks && git commit -m "t1(compito 11): l'accessibilità -- i controlli nel browser uno per volta, con la guardia; nessun errore di axe sulle regole WCAG 2.2 AA, nei due temi, su computer e telefono, con le fonti chiuse e aperte; il Tab, l'anello, il link al contenuto e l'indice, ciascuno col suo rosso; il segno della fonte alto 24 px, il rosso vero del controllo"
+git add package.json package-lock.json vitest.config.ts src checks && git commit -m "t1(compito 11): l'accessibilità -- i controlli nel browser uno per volta, con la guardia; nessun errore di axe sulle regole WCAG 2.2 AA, nei due temi, su computer e telefono, con le fonti chiuse e aperte; il Tab, l'anello dentro lo schermo, il link al contenuto e l'indice che resta in cima, ciascuno col suo rosso; il segno della fonte alto 24 px, il rosso vero del controllo"
 ```
 
 - [ ] **Passo 10 —** `git push`.
@@ -4146,7 +4173,7 @@ silenzio.
 |---|---|
 | §1–§4 | approvate, coi richiami del 2026-10-07 e del 2026-10-08 |
 | §5, compiti 1–13 | ✅ approvati: l'1–11 il 2026-10-07, il 12 e il 13 il 2026-10-08 |
-| il pre-controllo | 🔶 a metà: otto difetti, tutti decisi dal proprietario, tutti A. Scritti nel piano l'1–5; da scrivere il 6–8, come dice la tabella qui sotto; poi il banco |
+| il pre-controllo | 🔶 a metà: otto difetti, tutti decisi dal proprietario, tutti A. Scritti nel piano l'1–6; da scrivere il 7 e l'8, come dice la tabella qui sotto; poi il banco |
 | l'esecuzione | ⏳ da cominciare: nessun compito è eseguito, e la landing ha soltanto i documenti |
 
 Gli otto difetti, con le prove e le risposte, sono nella §18 del
