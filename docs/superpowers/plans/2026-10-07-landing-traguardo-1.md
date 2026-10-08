@@ -1516,7 +1516,9 @@ git add package.json package-lock.json src/lib checks && git commit -m "t1(compi
 - la pagina, nella tabella qui sotto;
 - in `checks/support/` il server di `dist/` sotto la base, col suo test, e `openLanding()`: la pagina servita e il
   Chrome installato, da cui parte ogni controllo nel browser;
-- il progetto di Vitest `page`, per i `*.page.test.ts`, e il controllo della pagina, `checks/page.page.test.ts`;
+- il progetto di Vitest `page`, per i `*.page.test.ts`, e il controllo della pagina, `checks/page.page.test.ts`, nei due
+  sensi: ogni frase dei file è sulla pagina, e sulla pagina c'è solo ciò che sta nei file — un testo scritto in un
+  componente passerebbe ogni controllo dei file;
 - `playwright` 1.63.0.
 
 | La pagina | Che cos'è |
@@ -1529,6 +1531,10 @@ git add package.json package-lock.json src/lib checks && git commit -m "t1(compi
 | «Cos’è» | il titolo `daemon`, poi la sezione con le cinque frasi della §3.4, nel loro ordine |
 | il segno della fonte | un `<details>`: si tocca, e mostra il file di daemon col link al commit. Funziona senza JavaScript e da tastiera |
 | la chiusura | la riga col commit, che porta ai file di daemon a quel commit, e il link a `devfrx/daemon` |
+
+⚠️ **Richiamo del 2026-10-08:** il controllo della pagina guarda anche nell'altro senso, sulla pagina solo ciò che sta
+nei file dei testi (risposta del proprietario: A) — la storia nella §18 del
+[verbale delle prove](../../archivio/2026-10-07-prove-piano-landing.md).
 
 **L'indirizzo, in prova.** Dal passo 8 la build e i controlli nel browser vogliono `LANDING_SITE` e `LANDING_BASE`
 (§5, *«Come si leggono»*). I valori di prova sono `https://landing.invalid`, che per costruzione non esiste, e
@@ -1855,6 +1861,8 @@ const commit = openDaemon().commit;
 const italian = readTexts('src/texts/it.json', italianSentence);
 const sentences = { it: italian, en: readTexts('src/texts/en.json', englishSentence) };
 const words = { it: readTexts('src/ui/it.json', interfaceWord), en: readTexts('src/ui/en.json', interfaceWord) };
+// A text as HTML collapses its spaces, but not the no-break space, which the texts write on purpose (§3.3 of the plan).
+const tidy = (text: string): string => text.replace(/[ \t\n\r\f]+/g, ' ').replace(/^ | $/g, '');
 
 let landing: Landing;
 beforeAll(async () => {
@@ -1922,6 +1930,36 @@ describe.each(['en', 'it'] as const)('the page in %s', (language) => {
     expect(await footer.locator(`a[href="${treeUrl(commit)}"]`).count()).toBe(1);
     expect(await footer.locator(`a[href="${repositoryUrl}"]`).innerText()).toBe(words[language]['code-on-github'].text);
   });
+
+  test('says nothing that is not in the files of the texts', async () => {
+    // The other way round: what the page shows, and what it says to those who do not see it, is a word of the
+    // interface, a sentence, the file of a source or the commit. A text written in a component would pass every check
+    // of the files (§1, rule 1, of the design).
+    const known = new Set(
+      [
+        ...Object.values(words[language]).flatMap((word) => word.text.split('{commit}')),
+        ...Object.values(sentences[language]).map((sentence) => sentence.text),
+        ...Object.values(italian).map((sentence) => sentence.source),
+        commit.slice(0, 7),
+      ].map(tidy),
+    );
+    const said = await page.evaluate(() => {
+      const texts: string[] = [];
+      const walker = document.createTreeWalker(document.documentElement, NodeFilter.SHOW_TEXT);
+      for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+        if (!node.parentElement?.closest('script, style')) texts.push(node.textContent ?? '');
+      }
+      for (const element of document.querySelectorAll('[aria-label], [alt], [title]')) {
+        texts.push(...['aria-label', 'alt', 'title'].map((name) => element.getAttribute(name) ?? ''));
+      }
+      texts.push(document.querySelector('meta[name="description"]')?.getAttribute('content') ?? '');
+      return texts;
+    });
+    const shown = said.map(tidy).filter((text) => text !== '');
+    // What the page says, at least: a page that said nothing would pass the probe below.
+    expect(shown.length).toBeGreaterThan(0);
+    expect(shown.filter((text) => !known.has(text))).toEqual([]);
+  });
 });
 ```
 
@@ -1932,7 +1970,7 @@ export LANDING_SITE=https://landing.invalid LANDING_BASE=/daemon-landing/ MSYS_N
 rm -rf dist && npm run build && npx vitest run --project page
 ```
 
-Atteso: `0 errors`, poi `22 failed`.
+Atteso: `0 errors`, poi `24 failed`.
 
 - [ ] **Passo 9 — la pagina.** `astro.config.mjs`, al posto di quello del compito 3:
 
@@ -2171,10 +2209,10 @@ import Page from '../../layouts/Page.astro';
 ```
 
 - [ ] **Passo 10 — il controllo, verde.** Lo stesso comando del passo 8. Atteso: `0 errors`, `2 page(s) built` e
-`22 passed`.
+`24 passed`.
 
-- [ ] **Passo 11 — l'altro senso.** Una frase tolta dalla sezione, e il link all'altra lingua scritto senza la base;
-poi i file tornano com'erano, e la build si prova senza `LANDING_SITE`:
+- [ ] **Passo 11 — l'altro senso.** Una frase tolta dalla sezione, una scritta dentro il suo componente, e il link
+all'altra lingua scritto senza la base; poi i file tornano com'erano, e la build si prova senza `LANDING_SITE`:
 
 ```bash
 d=$(mktemp -d) && cp src/sections/What.astro src/layouts/Page.astro "$d/" && node --input-type=module - <<'EOF'
@@ -2182,15 +2220,17 @@ import { readFileSync, writeFileSync } from 'node:fs';
 
 const replace = (file, from, to) => writeFileSync(file, readFileSync(file, 'utf8').replace(from, to));
 replace('src/sections/What.astro', ", 'what-limit']", ']');
+replace('src/sections/What.astro', '</section>', '  <p>Download daemon</p>\n</section>');
 replace('src/layouts/Page.astro', 'href={getRelativeLocaleUrl(other)}', "href={other === 'it' ? '/it/' : '/'}");
 EOF
 rm -rf dist && npm run build && npx vitest run --project page; cp "$d/What.astro" src/sections/ && cp "$d/Page.astro" src/layouts/
 env -u LANDING_SITE npm run build; rm -rf dist && npm run build && npx vitest run --project page
 ```
 
-Atteso: prima `4 failed | 18 passed`, coi rossi `links to the other language` e `shows what-limit, with the link to its
-source at the commit` in tutte e due le lingue; poi la build senza il sito si ferma, `LANDING_SITE is missing: hreflang
-wants full addresses`, con l'uscita a 1; alla fine di nuovo `22 passed`.
+Atteso: prima `6 failed | 18 passed`, coi rossi `links to the other language`, `shows what-limit, with the link to its
+source at the commit` e `says nothing that is not in the files of the texts`, con `Download daemon`, in tutte e due le
+lingue; poi la build senza il sito si ferma, `LANDING_SITE is missing: hreflang wants full addresses`, con l'uscita a 1;
+alla fine di nuovo `24 passed`.
 
 - [ ] **Passo 12 — il resto, e le vulnerabilità.** `npm test -- --project checks`, poi `npm audit`. Atteso: `62 passed`,
 e `found 0 vulnerabilities`.
@@ -2198,7 +2238,7 @@ e `found 0 vulnerabilities`.
 - [ ] **Passo 13 — il commit.**
 
 ```bash
-git add astro.config.mjs vitest.config.ts package.json package-lock.json src checks && git commit -m "t1(compito 8): la pagina, e il browser per guardarla -- l'indice, «Cos’è» con le cinque frasi e il segno della fonte, la chiusura col commit, l'altra lingua e hreflang; il sito e la base dalle impostazioni; il server di dist/ sotto la base e il Chrome installato; il controllo della pagina, coi rossi provati"
+git add astro.config.mjs vitest.config.ts package.json package-lock.json src checks && git commit -m "t1(compito 8): la pagina, e il browser per guardarla -- l'indice, «Cos’è» con le cinque frasi e il segno della fonte, la chiusura col commit, l'altra lingua e hreflang; il sito e la base dalle impostazioni; il server di dist/ sotto la base e il Chrome installato; il controllo della pagina nei due sensi, coi rossi provati"
 ```
 
 - [ ] **Passo 14 —** `git push`.
@@ -2653,7 +2693,7 @@ footer {
 rm -rf dist && npm run build && npx vitest run checks/tokens.test.ts && npx vitest run --project page
 ```
 
-Atteso: `0 errors`; `4 passed`; `32 passed`, i 22 della pagina e i 10 dei temi. I caratteri sono in `dist/_astro/`.
+Atteso: `0 errors`; `4 passed`; `34 passed`, i 24 della pagina e i 10 dei temi. I caratteri sono in `dist/_astro/`.
 
 - [ ] **Passo 7 — l'altro senso.** Un token che daemon non definisce, una scala `--ref-*` e la pagina senza
 `data-theme="dark"`; poi i file tornano com'erano:
@@ -2671,7 +2711,7 @@ cp "$d/page.css" src/styles/ && cp "$d/Page.astro" src/layouts/ && rm -rf dist &
 ```
 
 Atteso: prima `3 failed | 1 passed`, con `--color-text-faint` e `--ref-neutral-48` nei rossi; poi `2 failed | 8
-passed`, i rossi su `is dark without JavaScript, and has no switch, which needs it`; alla fine `4 passed` e `32 passed`.
+passed`, i rossi su `is dark without JavaScript, and has no switch, which needs it`; alla fine `4 passed` e `34 passed`.
 
 - [ ] **Passo 8 — il resto, e le vulnerabilità.** `npm test -- --project checks`, poi `npm audit`. Atteso: `70 passed`,
 e `found 0 vulnerabilities`.
@@ -2943,7 +2983,7 @@ if (provenance.length !== 2) throw new Error(`the word provenance wants {commit}
 rm -rf dist && npm run build && npx vitest run --project page && cmp dist/_astro/daemon-icon-dark.*.svg brand/daemon-icon-dark.svg && echo 'the icon is the kit’s'
 ```
 
-Atteso: `0 errors`; `38 passed`; `the icon is the kit’s`.
+Atteso: `0 errors`; `40 passed`; `the icon is the kit’s`.
 
 - [ ] **Passo 5 — l'altro senso.** Un foglio di stile chiesto a un sito di terzi, che non esiste per costruzione, e uno
 script che aggiunge del testo e poi sbaglia; poi la pagina torna com'era:
@@ -2964,7 +3004,7 @@ rm -rf dist && npm run build && npx vitest run --project page checks/network.pag
 cp "$d/Page.astro" src/layouts/ && rm -rf dist && npm run build && npx vitest run --project page
 ```
 
-Atteso: prima `6 failed`, i tre controlli in tutte e due le lingue; poi di nuovo `38 passed`.
+Atteso: prima `6 failed`, i tre controlli in tutte e due le lingue; poi di nuovo `40 passed`.
 
 - [ ] **Passo 6 — il resto, e le vulnerabilità.** `npm test -- --project checks`, poi `npm audit`. Atteso: `70 passed`,
 e `found 0 vulnerabilities`.
@@ -3104,7 +3144,7 @@ export default defineConfig({
 });
 ```
 
-Lo stesso comando del passo 2. Atteso: `0 errors` e `38 passed`.
+Lo stesso comando del passo 2. Atteso: `0 errors` e `40 passed`.
 
 - [ ] **Passo 4 — il controllo; il rosso è il segno della fonte.** `checks/accessibility.page.test.ts`:
 
@@ -3371,7 +3411,7 @@ Atteso: prima `8 failed | 16 passed`: le quattro prove della tastiera, in tutte 
 difetto — `Tab reaches every control, in the order of the page`, perché il Tab salta il link all'altra lingua; `every
 control Tab reaches shows its ring`, sui link; `the skip link leads into the content`, perché il Tab va all'indice; `the
 index brings its section below itself`, perché la sezione finisce sotto l'indice. axe resta verde: nessuno dei quattro
-difetti tocca una sua regola WCAG. Alla fine `62 passed`.
+difetti tocca una sua regola WCAG. Alla fine `64 passed`.
 
 - [ ] **Passo 8 — il resto, e le vulnerabilità.** `npm test -- --project checks`, poi `npm audit`. Atteso: `70 passed`,
 e `found 0 vulnerabilities`.
@@ -3589,7 +3629,7 @@ rm -rf dist && npm run build && npx vitest run --project page checks/speed.page.
 
 Atteso: prima `6 failed | 2 passed`: l'LCP, la CLS e l'INP nelle due lingue, ciascuno per il suo difetto, e la guardia
 verde; poi `2 failed | 6 passed`: la guardia nelle due lingue, con `responseEnd` di pochi millisecondi; alla fine
-`70 passed`.
+`72 passed`.
 
 - [ ] **Passo 4 — il resto, e le vulnerabilità.** `npm test -- --project checks`, poi `npm audit`. Atteso: `70 passed`,
 e `found 0 vulnerabilities`.
@@ -3905,7 +3945,7 @@ Poi, in `package.json`, lo script del cancello accanto agli altri due:
 
 - [ ] **Passo 7 — il cancello, verde.** `npm run gate`. Atteso: le righe dei passi nel loro ordine, `-------- install`,
 `-------- build`, `-------- checks`, `-------- page` e `-------- advisories`; `0 errors` e `2 page(s) built`; `80 passed`,
-cioè i 70 di prima, i 7 di `brand.ts` e i 3 del suo controllo; `70 passed` nel browser; `found 0 vulnerabilities`; e
+cioè i 70 di prima, i 7 di `brand.ts` e i 3 del suo controllo; `72 passed` nel browser; `found 0 vulnerabilities`; e
 l'uscita è 0.
 
 - [ ] **Passo 8 — l'altro senso.** Un difetto per ciascuna ragione del cancello, un giro per difetto: i controlli della
