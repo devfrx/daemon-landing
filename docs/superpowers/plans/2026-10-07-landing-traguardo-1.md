@@ -7,8 +7,8 @@
 > **Per gli agenti:** si esegue con `superpowers:subagent-driven-development`, una fase per sessione: il pre-controllo,
 > poi un compito per sessione (§7.1 del disegno). I passi hanno le caselle (`- [ ]`) per tenere il conto.
 >
-> 📌 **Dove siamo:** il piano si scrive una sezione per volta, ciascuna dopo il sì del proprietario. Da dove si riprende
-> lo dice la §6.
+> 📌 **Dove siamo:** il piano è scritto e approvato per intero, il 2026-10-08, e si esegue una fase per sessione. Da dove
+> si riprende lo dice la §6.
 
 | § | Sezione | Stato |
 |---|---|---|
@@ -17,7 +17,7 @@
 | 3 | I testi | ✅ approvata il 2026-10-07 |
 | 4 | La mappa dei file | ✅ approvata il 2026-10-07 |
 | 5 | I compiti | ✅ i compiti 1–11 approvati il 2026-10-07, il 12 e il 13 il 2026-10-08 |
-| 6 | Come si riprende | 🔶 oggi è la consegna dell'ottava sessione, del 2026-10-08 |
+| 6 | Come si riprende | 🔶 oggi è la consegna della nona sessione, del 2026-10-08: come si esegue |
 
 ---
 
@@ -4011,80 +4011,61 @@ silenzio.
 
 ## 6. Come si riprende
 
-> 🔶 Oggi questa sezione è la consegna dell'ottava sessione, del 2026-10-08: il piano è scritto per intero, e il compito
-> 13 aspetta il sì del proprietario. Dopo il sì, qui ci sarà come si esegue, e questa consegna andrà in archivio. Le
-> consegne di prima sono in archivio, parola per parola:
+> 🔶 Oggi questa sezione è la consegna della nona sessione, del 2026-10-08: il piano è scritto e approvato per intero, e
+> qui c'è come si esegue. Le consegne di prima sono in archivio, parola per parola:
 > [del mattino](../../archivio/2026-10-07-consegna-piano-landing-mattina.md),
 > [del pomeriggio](../../archivio/2026-10-07-consegna-piano-landing-pomeriggio.md),
 > [della terza sessione](../../archivio/2026-10-07-consegna-piano-landing-terza-sessione.md),
 > [della quarta](../../archivio/2026-10-07-consegna-piano-landing-quarta-sessione.md),
 > [della quinta](../../archivio/2026-10-07-consegna-piano-landing-quinta-sessione.md),
-> [della sesta](../../archivio/2026-10-08-consegna-piano-landing-sesta-sessione.md) e
-> [della settima](../../archivio/2026-10-08-consegna-piano-landing-settima-sessione.md).
+> [della sesta](../../archivio/2026-10-08-consegna-piano-landing-sesta-sessione.md),
+> [della settima](../../archivio/2026-10-08-consegna-piano-landing-settima-sessione.md) e
+> [dell'ottava](../../archivio/2026-10-08-consegna-piano-landing-ottava-sessione.md).
 
 **Dove siamo:**
 
 | Parte | Stato |
 |---|---|
 | §1–§4 | approvate, coi richiami del 2026-10-07 |
-| §5, compiti 1–12 | ✅ approvati; rifatti dal testo nell'ottava sessione, con daemon a `ca2a0d4`: tutto come scritto |
-| §5, compito 13 | ✅ approvato il 2026-10-08, com'è: in CI la shell del runner, e `actions/checkout@v7` (risposte: A e A) |
+| §5, compiti 1–13 | ✅ approvati: l'1–11 il 2026-10-07, il 12 e il 13 il 2026-10-08; rifatti tutti dal testo sul banco, uno dopo l'altro, con daemon a `ca2a0d4`: tutto come scritto |
+| l'esecuzione | ⏳ da cominciare: nessun compito è eseguito, e la landing ha soltanto i documenti |
 
-La storia delle prove è nel [verbale](../../archivio/2026-10-07-prove-piano-landing.md), §17. Il programma del banco,
-[`2026-10-08-banco-prove-piano-landing.mjs`](../../archivio/2026-10-08-banco-prove-piano-landing.mjs), porta ora anche il
-compito 13.
+La storia delle prove è nel [verbale](../../archivio/2026-10-07-prove-piano-landing.md). Il programma del banco,
+[`2026-10-08-banco-prove-piano-landing.mjs`](../../archivio/2026-10-08-banco-prove-piano-landing.mjs), rifà dal testo i
+compiti 1–13.
 
-**Il prossimo passo**, in una sessione nuova:
+**Come si esegue.** Una fase per sessione (§7.1 del disegno): prima il pre-controllo, poi un compito per sessione,
+nell'ordine 1–13.
+
+| Fase | Che cosa si fa |
+|---|---|
+| il pre-controllo, in una sessione | ogni compito si legge come un'ipotesi: le quattro domande e le regole 5–8 di *«Prima di eseguire un compito di un piano»*, nel `CLAUDE.md` di daemon. Ogni difetto va al proprietario in A/B, uno per volta; il piano si corregge col richiamo datato, e un compito che cambia si rifà dal testo sul banco |
+| un compito, in una sessione | il coordinatore rilegge il compito contro la landing di adesso — la regola 5 —, poi lo esegue con `superpowers:subagent-driven-development`: i subagenti e il loro costo seguono la riga di quella skill nel `CLAUDE.md` di daemon. Il codice nasce dai test, `superpowers:test-driven-development`. Il compito si chiude col suo commit, `t1(compito N): …`, e col push |
+
+**Il prossimo passo**, in una sessione nuova — il pre-controllo:
 
 1. dentro `landing/`: `git fetch --all --prune`, `git status -sb`, e il fast-forward se serve;
 2. leggi `CLAUDE.md`, questo piano e il disegno, per intero;
-3. le skill: `superpowers:writing-plans`, `anthropic-skills:decision-principles`, `anthropic-skills:dev-communication`;
-4. ✅ rilancia ciò che invecchia, coi comandi della tabella in fondo — fatto nella sessione dopo, con daemon a
-   `8e88ae1`: tutto come nella tabella; e in più, che con `pwsh` lo step esce col codice del cancello, e che anche la
-   v7.0.1 di `actions/checkout` svuota una cartella che non è il suo repository;
-5. ✅ presenta il compito 13 al proprietario: che cosa fa, e che cosa le prove hanno cambiato rispetto all'abbozzo — la
-   tabella qui sotto —; poi la prima domanda, e solo dopo la sua risposta la seconda. Le risposte vanno nelle due righe ⏳
-   del compito. Se una risposta è B, il compito cambia: si rifà dal testo sul banco, dopo i compiti 1–12 che ne sono la
-   base. Commit e push — fatto nella sessione dopo (risposte: A e A);
-6. la §6 definitiva, cioè come si esegue; lo stato in testa; questa consegna in archivio; commit e push.
-
-**Che cosa le prove hanno cambiato**, rispetto all'abbozzo della settima sessione:
-
-| L'abbozzo | Le prove | Nel compito |
-|---|---|---|
-| con `src/pages/` tolta, senza `dist/` tolta i controlli leggerebbero la build vecchia | falso per Astro 7.3.6, che svuota da solo la cartella in cui scrive. La riga del cancello resta per una build che scrive altrove: senza, il cancello è verde su una build così | il secondo difetto del passo 8 è `outDir: 'elsewhere'` |
-| in CI Vitest scrive il test del kit come saltato | di base Vitest 4.1.11 scrive soltanto `1 skipped`, e non dice quale | il passo `checks` con `--reporter=verbose`: il test saltato ha il suo nome, con `↓` |
-| la shell della CI: Git Bash riscriverebbe `LANDING_BASE`, dedotto | visto su questa macchina, anche quando la variabile arriva dal processo padre, come la dà il runner; con `MSYS_NO_PATHCONV=1` no | la prima domanda |
-| `actions/checkout@v4`, come daemon | la v4 gira su Node 20, che GitHub ha tolto dai suoi runner il 2026-09-23: ora la forza su Node 24, con un avviso a ogni giro di daemon | la seconda domanda |
-| `git` in una subshell senza `MSYS_NO_PATHCONV`, dedotto | col flag, `git init` della cartella di `mktemp -d` la crea in `C:\tmp\` | il passo 11 |
-
-**Le due domande**, una per volta:
-
-1. **La shell del passo che lancia il cancello, in CI.**
-   - **A** — quella del runner: `pwsh` su Windows, `bash` su Linux. Il cancello è Node, e la shell non conta; nessuna riga
-     in più. Costo: la CI della landing scrive una cosa diversa da quella di daemon.
-   - **B** — `shell: bash`, come daemon, con `MSYS_NO_PATHCONV: 1` in `env:`, perché Git Bash riscriverebbe
-     `LANDING_BASE`. Costo: due righe, per un problema che c'è solo con bash.
-   - Il consiglio: A. La landing ha un cancello in Node proprio per non dipendere da `bash` (§4, la prima scelta).
-2. **La versione di `actions/checkout`.**
-   - **A** — la v7, l'ultima: gira su Node 24, senza avvisi, e per la landing fa ciò che fa la v4 — lo stesso `origin`,
-     lo stesso `origin/main`. Costo: una versione diversa da daemon.
-   - **B** — la v4, come daemon: va oggi, ma a ogni giro GitHub avvisa che la forza su Node 24, e chiede di aggiornare.
-     Costo: un avviso a ogni giro, su una versione che GitHub tiene in vita a forza.
-   - Il consiglio: A. La CI di daemon ha lo stesso avviso: aggiornarla è lavoro di una sessione di daemon.
+3. le skill: `anthropic-skills:decision-principles`, `anthropic-skills:dev-discipline`, `anthropic-skills:dev-communication`
+   e `superpowers:writing-plans`;
+4. rilancia ciò che invecchia, coi comandi della tabella in fondo;
+5. il pre-controllo dei compiti 1–13, come dice la tabella qui sopra; commit e push a ogni correzione;
+6. alla chiusura, la consegna qui, con questa in archivio; commit e push. La sessione dopo esegue il compito 1.
 
 **Da sapere subito:**
 
-- ⚠️ daemon si muove mentre si lavora: in questa sessione `origin/main` è passato da `a27ea6a` a `ca2a0d4`, due commit di
-  documenti dell'audit che non toccano né le cinque fonti né la GUI. Un commit di daemon non si scrive mai come vero: si
+- ⚠️ daemon si muove mentre si lavora: in questa sessione `origin/main` è passato da `ca2a0d4` a `8e88ae1`, un commit di
+  documenti dell'audit che non tocca né le cinque fonti né la GUI. Un commit di daemon non si scrive mai come vero: si
   rilancia `git -C .. rev-parse --short origin/main`;
-- ⚠️ **questa macchina è corta di memoria**: 16 GB, e in questa sessione 1,6 GB liberi. La memoria del momento:
+- ⚠️ **questa macchina è corta di memoria**: 16 GB, e in questa sessione 1,7 GB liberi. La memoria del momento:
   `powershell -NoProfile -Command "Get-CimInstance Win32_OperatingSystem | Select-Object FreePhysicalMemory,
   TotalVisibleMemorySize, FreeVirtualMemory, TotalVirtualMemorySize"`;
 - ⚠️ dopo il giorno del piano sono uscite `astro` 7.3.7 e `playwright` 1.64.0: il piano resta alla 7.3.6 e alla 1.63.0,
   per la regola della §2.1 — Playwright segue la GUI di daemon, e una versione nuova si prende con un atto apposta;
 - ⚠️ GitHub sposta `ubuntu-latest` su Ubuntu 26 dal 2026-10-19, dice un avviso nel giro di daemon: la CI della landing
-  gira per la prima volta all'esecuzione del compito 13, forse già lì;
+  gira per la prima volta al compito 13, forse già lì;
+- il cancello della GUI di daemon ha anche `npm run lint`, con eslint; la landing no: né il disegno né il piano hanno un
+  linter. Segnalato al proprietario il 2026-10-08, senza una decisione;
 - il banco: i comandi in testa al suo programma, poi `node bench.mjs <il piano> <la landing del banco> <la cartella dei
   log> 1 2 … 13`. Il programma legge il piano con qualunque a-capo, e innesta un frammento nel blocco che segue le sue
   parole; il compito 13 lancia il cancello cinque volte;
