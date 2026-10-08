@@ -1,0 +1,92 @@
+{
+  "daemon - studio del marchio.html": {
+    "from": "daemon_kit/daemon - studio del marchio.html",
+    "copied": "2026-10-08",
+    "sha256": "9fcc86bd8a79cf4d62943d2b596987c1a53072552e6a386e997416075731ce25"
+  },
+  "daemon — splash.html": {
+    "from": "daemon_kit/daemon — splash.html",
+    "copied": "2026-10-08",
+    "sha256": "7318610c285b5ca552007ff418f02395a85ebb67c11e0fc2fb76cf3b70f13740"
+  },
+  "daemon-icon-dark.svg": {
+    "from": "daemon_kit/daemon-icon-dark.svg",
+    "copied": "2026-10-08",
+    "sha256": "de3ee3c9bb214070c6bdda3db86da64ea5c2b6929f821b843ac4231ffb76b7fe"
+  },
+  "daemon-icon-light.svg": {
+    "from": "daemon_kit/daemon-icon-light.svg",
+    "copied": "2026-10-08",
+    "sha256": "df7cb62c84b716d201a332d05e4cc48ea2d4e190730b810da75e1a7c24ef6f19"
+  },
+  "daemon-icon-mono-dark.svg": {
+    "from": "daemon_kit/daemon-icon-mono-dark.svg",
+    "copied": "2026-10-08",
+    "sha256": "2bfb60936a253d9d9ebffc9b550dc4583ff16bdd382de09928ea41da96123a7a"
+  },
+  "daemon-icon-mono-light.svg": {
+    "from": "daemon_kit/daemon-icon-mono-light.svg",
+    "copied": "2026-10-08",
+    "sha256": "f37b9dc355927f6023e4847264c5f40bc42bcead105fb2b7ff582ecfb28dfe9d"
+  },
+  "daemon-logotype-dark.svg": {
+    "from": "daemon_kit/daemon-logotype-dark.svg",
+    "copied": "2026-10-08",
+    "sha256": "bd0ef5443c8e2ccecdc3dcdde27d11212069e484d662a271e11ef9892edbd989"
+  },
+  "daemon-logotype-icon-dark.svg": {
+    "from": "daemon_kit/daemon-logotype-icon-dark.svg",
+    "copied": "2026-10-08",
+    "sha256": "444c6e1d5b6f2bf39ad547779033a5a40784353f64028b1ae382b0f1a626b74f"
+  },
+  "daemon-logotype-icon-light.svg": {
+    "from": "daemon_kit/daemon-logotype-icon-light.svg",
+    "copied": "2026-10-08",
+    "sha256": "dd66796b5225f7d42110853bd39997afed773f5e19e10a9074acf5cbc14718f8"
+  },
+  "daemon-logotype-icon-mono-dark.svg": {
+    "from": "daemon_kit/daemon-logotype-icon-mono-dark.svg",
+    "copied": "2026-10-08",
+    "sha256": "8a29f34dfd387e483f7fed578457088c785a522d9c4cce2e15e1c17637861619"
+  },
+  "daemon-logotype-icon-mono-light.svg": {
+    "from": "daemon_kit/daemon-logotype-icon-mono-light.svg",
+    "copied": "2026-10-08",
+    "sha256": "ed433a96f6e880d75a769f28e78be4080683bb10be35c298a4309de43aaea2be"
+  },
+  "daemon-logotype-light.svg": {
+    "from": "daemon_kit/daemon-logotype-light.svg",
+    "copied": "2026-10-08",
+    "sha256": "79b49bd8326af4fe80d6b0d9e346509db8fca5d5f9888902fcc90133712a91aa"
+  },
+  "daemon-logotype-mono-dark.svg": {
+    "from": "daemon_kit/daemon-logotype-mono-dark.svg",
+    "copied": "2026-10-08",
+    "sha256": "3c030e5ea65ec4b58448335610b99b94a957e52b7ac517eb42bc47912b486f22"
+  },
+  "daemon-logotype-mono-light.svg": {
+    "from": "daemon_kit/daemon-logotype-mono-light.svg",
+    "copied": "2026-10-08",
+    "sha256": "2ef3d42691567fb2b1ab165a7e2a5a8f6f36331c4359879c72f118df7b0daba1"
+  },
+  "daemon-mark-dark.svg": {
+    "from": "daemon_kit/daemon-mark-dark.svg",
+    "copied": "2026-10-08",
+    "sha256": "386083fccc83f3d5ad3acc2bc5dd77725a2420ef1fac8c1a2e7e293cc6dae66a"
+  },
+  "daemon-mark-light.svg": {
+    "from": "daemon_kit/daemon-mark-light.svg",
+    "copied": "2026-10-08",
+    "sha256": "33d7b9cec9ef0840527f46addd8888ebdfb977b9714f21ba726a929d286ac30d"
+  },
+  "daemon-mark-mono-dark.svg": {
+    "from": "daemon_kit/daemon-mark-mono-dark.svg",
+    "copied": "2026-10-08",
+    "sha256": "8e8a942c430fee8227679144e595830703ad22f58406fbce2675345c97a864d5"
+  },
+  "daemon-mark-mono-light.svg": {
+    "from": "daemon_kit/daemon-mark-mono-light.svg",
+    "copied": "2026-10-08",
+    "sha256": "706e8068c6bcfc9baa5045e00bc440047a5954a726a1f7453e25844427651c88"
+  }
+}
