@@ -91,9 +91,17 @@ La GUI di daemon ha già un modo di fare queste cose — `gui/package.json`, `gu
 avvisa; una sua versione futura li bloccherà, e così la scelta è scritta invece di cambiare da sola. Tutto gira anche
 senza.
 
+E **nessun linter**, che nella GUI chiude il cancello: ciò che fa lì, qui lo fanno altri. Il testo scritto in un
+componente lo ferma il controllo della pagina (compito 8); una parola che manca nei file, la build; un componente che non
+compila, `astro check`. **Costo dichiarato:** nessuno strumento guarda la pulizia del codice, per esempio una variabile
+inutilizzata; il linter si riapre con la prima regola vera da far rispettare.
+
 ⚠️ **Richiamo del 2026-10-07:** per i refusi serve `cspell-lib`, non il programma `cspell`; servono i tipi di Node,
 `@types/node`; e lo script di `esbuild` è spento — la storia nel
 [verbale delle prove](../../archivio/2026-10-07-prove-piano-landing.md), §3, §7 e §9.
+
+⚠️ **Richiamo del 2026-10-08:** la landing non ha un linter (risposta del proprietario: A) — la storia nella §18 del
+[verbale delle prove](../../archivio/2026-10-07-prove-piano-landing.md).
 
 **La regola delle versioni:** se la GUI di daemon usa già un pacchetto, la landing prende la stessa versione; se no,
 l'ultima stabile del giorno del piano. Si rilancia con `git show "origin/main:gui/package.json"` dalla radice di daemon e
@@ -3656,8 +3664,8 @@ dei compiti 4–12, la build con l'indirizzo (compito 8). **Lascia:**
 - `checks/brand.test.ts`, il controllo del cancello: le copie di `brand/` contro la nota, su ogni macchina; il kit contro
   la nota, dove `../daemon_kit` sta accanto alla landing. Dove non c'è — in CI — il test si salta, e il cancello lo
   scrive col suo nome: è il «lo scrive» della §7.2 del disegno;
-- `npm run gate`, cioè `scripts/gate.mjs`: i passi di `scripts/gate-gui.sh` di daemon, nel suo ordine, ciascuno
-  annunciato da una riga `-------- <passo>`; al primo rosso si ferma, con l'uscita di quel passo;
+- `npm run gate`, cioè `scripts/gate.mjs`: i passi di `scripts/gate-gui.sh` di daemon, nel suo ordine, tranne il lint
+  (§2.1), ciascuno annunciato da una riga `-------- <passo>`; al primo rosso si ferma, con l'uscita di quel passo;
 - `.github/workflows/quality-gate.yml`: la CI, a ogni push e una volta a settimana, su Linux e su Windows (§6.3 del
   disegno).
 
@@ -3899,9 +3907,9 @@ Atteso: prima `1 failed | 2 passed`, col rosso `brand/daemon-mark-dark.svg: not 
 
 ```js
 // The quality gate of the landing, `npm run gate` (§6.1 of the design): the steps of daemon's scripts/gate-gui.sh, in its
-// order, each announced by its line. At the first red the gate stops, with the exit code of that step. It is a Node
-// program and not a bash script, because on Windows `bash` may open WSL's (§4 of the plan); `npm run gate` runs it from
-// the landing's folder.
+// order, but the lint, which the landing has not (§2.1 of the plan); each announced by its line. At the first red the
+// gate stops, with the exit code of that step. It is a Node program and not a bash script, because on Windows `bash` may
+// open WSL's (§4 of the plan); `npm run gate` runs it from the landing's folder.
 import { spawnSync } from 'node:child_process';
 import { rmSync } from 'node:fs';
 
