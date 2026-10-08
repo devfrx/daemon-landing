@@ -16,8 +16,8 @@
 | 2 | Gli strumenti e i vincoli | ✅ approvata il 2026-10-07 |
 | 3 | I testi | ✅ approvata il 2026-10-07 |
 | 4 | La mappa dei file | ✅ approvata il 2026-10-07 |
-| 5 | I compiti | ✅ i compiti 1–11 approvati il 2026-10-07, il 12 e il 13 il 2026-10-08; il pre-controllo li ha corretti, il 2026-10-08; il compito 1 eseguito, il 2026-10-08 (§6) |
-| 6 | Come si riprende | 🔶 oggi è la consegna della dodicesima sessione, del 2026-10-08: il compito 1 è eseguito, e il prossimo passo è il compito 2 |
+| 5 | I compiti | ✅ i compiti 1–11 approvati il 2026-10-07, il 12 e il 13 il 2026-10-08; il pre-controllo li ha corretti, il 2026-10-08; i compiti 1 e 2 eseguiti, il 2026-10-08 (§6) |
+| 6 | Come si riprende | 🔶 oggi è la consegna della tredicesima sessione, del 2026-10-08: il compito 2 è eseguito, e il prossimo passo è il compito 3 |
 
 ---
 
@@ -432,7 +432,7 @@ Le copie sono byte per byte, coi nomi del kit. I PNG e il video del kit non serv
 
 Il controllo che resta arriva col compito 13; qui la prova è a mano, e il suo programma sta fuori dal repository.
 
-- [ ] **Passo 1 — il kit c'è, e va a capo alla Linux.**
+- [x] **Passo 1 — il kit c'è, e va a capo alla Linux.**
 
 ```bash
 ls ../daemon_kit/*.svg ../daemon_kit/*.html && cat ../daemon_kit/*.svg ../daemon_kit/*.html | tr -cd '\r' | wc -c && grep -c 'GEOMETRY-START' "../daemon_kit/daemon — splash.html"
@@ -441,7 +441,7 @@ ls ../daemon_kit/*.svg ../daemon_kit/*.html && cat ../daemon_kit/*.svg ../daemon
 Atteso: gli SVG, `daemon - studio del marchio.html` e `daemon — splash.html`; poi `0`; poi `1`. Se il kit non c'è, ci si
 ferma: il compito si fa sulla macchina dove sta.
 
-- [ ] **Passo 2 — il programma di prova**, `verify-brand.mjs`, fuori dal repository. Si lancia da `landing/`:
+- [x] **Passo 2 — il programma di prova**, `verify-brand.mjs`, fuori dal repository. Si lancia da `landing/`:
 
 ```js
 import { createHash } from 'node:crypto';
@@ -473,16 +473,16 @@ if (problems.length > 0) {
 console.log(`${copies.length} files, identical to the kit and to the note`);
 ```
 
-- [ ] **Passo 3 — la prova, rossa.** `node <cartella>/verify-brand.mjs`. Atteso: `brand/provenance.json is missing`, e
+- [x] **Passo 3 — la prova, rossa.** `node <cartella>/verify-brand.mjs`. Atteso: `brand/provenance.json is missing`, e
 l'uscita è 1.
 
-- [ ] **Passo 4 — le copie.**
+- [x] **Passo 4 — le copie.**
 
 ```bash
 mkdir brand && cp ../daemon_kit/*.svg "../daemon_kit/daemon - studio del marchio.html" "../daemon_kit/daemon — splash.html" brand/
 ```
 
-- [ ] **Passo 5 — la nota**, scritta da un programma che legge le copie:
+- [x] **Passo 5 — la nota**, scritta da un programma che legge le copie:
 
 ```bash
 node --input-type=module - <<'EOF'
@@ -500,10 +500,10 @@ writeFileSync('brand/provenance.json', `${JSON.stringify(note, null, 2)}\n`);
 EOF
 ```
 
-- [ ] **Passo 6 — la prova, verde.** `node <cartella>/verify-brand.mjs`. Atteso: `N files, identical to the kit and to
+- [x] **Passo 6 — la prova, verde.** `node <cartella>/verify-brand.mjs`. Atteso: `N files, identical to the kit and to
 the note`, con N il numero dei file copiati al passo 4.
 
-- [ ] **Passo 7 — l'altro senso.** Un byte in più in una copia la rende rossa; poi la copia giusta torna al suo posto:
+- [x] **Passo 7 — l'altro senso.** Un byte in più in una copia la rende rossa; poi la copia giusta torna al suo posto:
 
 ```bash
 printf ' ' >> brand/daemon-mark-dark.svg; node <cartella>/verify-brand.mjs; cp ../daemon_kit/daemon-mark-dark.svg brand/ && node <cartella>/verify-brand.mjs
@@ -511,7 +511,7 @@ printf ' ' >> brand/daemon-mark-dark.svg; node <cartella>/verify-brand.mjs; cp .
 
 Atteso: prima `brand/daemon-mark-dark.svg: not the recorded fingerprint`, poi di nuovo il verde del passo 6.
 
-- [ ] **Passo 8 — il commit**, e gli a-capo di ciò che è entrato:
+- [x] **Passo 8 — il commit**, e gli a-capo di ciò che è entrato:
 
 ```bash
 git add brand && git commit -m "t1(compito 2): la copia del kit in brand/ -- i SVG del marchio, lo studio e la splash, byte per byte, e la nota con provenienza, data e impronta (§7.2 del disegno)" && git ls-files --eol brand | grep -vc 'i/lf *w/lf'
@@ -519,7 +519,7 @@ git add brand && git commit -m "t1(compito 2): la copia del kit in brand/ -- i S
 
 Atteso: `0`, cioè ogni file va a capo alla Linux, nel repository e sul disco.
 
-- [ ] **Passo 9 —** `git push`.
+- [x] **Passo 9 —** `git push`.
 
 ### Compito 3 — il progetto Node e le due pagine vuote
 
@@ -4167,8 +4167,8 @@ silenzio.
 
 ## 6. Come si riprende
 
-> 🔶 Oggi questa sezione è la consegna della dodicesima sessione, del 2026-10-08: il compito 1 è eseguito, e il
-> prossimo è il compito 2. Le consegne di prima sono in archivio, parola per parola:
+> 🔶 Oggi questa sezione è la consegna della tredicesima sessione, del 2026-10-08: il compito 2 è eseguito, e il
+> prossimo è il compito 3. Le consegne di prima sono in archivio, parola per parola:
 > [del mattino](../../archivio/2026-10-07-consegna-piano-landing-mattina.md),
 > [del pomeriggio](../../archivio/2026-10-07-consegna-piano-landing-pomeriggio.md),
 > [della terza sessione](../../archivio/2026-10-07-consegna-piano-landing-terza-sessione.md),
@@ -4178,8 +4178,9 @@ silenzio.
 > [della settima](../../archivio/2026-10-08-consegna-piano-landing-settima-sessione.md),
 > [dell'ottava](../../archivio/2026-10-08-consegna-piano-landing-ottava-sessione.md),
 > [della nona](../../archivio/2026-10-08-consegna-piano-landing-nona-sessione.md),
-> [della decima](../../archivio/2026-10-08-consegna-piano-landing-decima-sessione.md) e
-> [dell'undicesima](../../archivio/2026-10-08-consegna-piano-landing-undicesima-sessione.md).
+> [della decima](../../archivio/2026-10-08-consegna-piano-landing-decima-sessione.md),
+> [dell'undicesima](../../archivio/2026-10-08-consegna-piano-landing-undicesima-sessione.md) e
+> [della dodicesima](../../archivio/2026-10-08-consegna-piano-landing-dodicesima-sessione.md).
 
 **Dove siamo:**
 
@@ -4188,22 +4189,27 @@ silenzio.
 | §1–§4 | approvate, coi richiami del 2026-10-07 e del 2026-10-08 |
 | §5, compiti 1–13 | ✅ approvati: l'1–11 il 2026-10-07, il 12 e il 13 il 2026-10-08; corretti dal pre-controllo, coi richiami del 2026-10-08 |
 | il pre-controllo | ✅ finito: otto difetti, tutti decisi dal proprietario, tutti A, e scritti nel piano; il banco ha rifatto dal testo i compiti 1–13, e tutto torna come scritto |
-| l'esecuzione | 🔶 il compito 1 ✅, il 2026-10-08: `t1(compito 1)`, spinto su GitHub; i compiti 2–13 da eseguire |
+| l'esecuzione | 🔶 i compiti 1 e 2 ✅, il 2026-10-08: `t1(compito 1)` e `t1(compito 2)`, spinti su GitHub; i compiti 3–13 da eseguire |
 
 Gli otto difetti, con le prove, le risposte e ciò che il banco ha visto, sono nella §18 del
 [verbale delle prove](../../archivio/2026-10-07-prove-piano-landing.md). Il programma del banco,
 [`2026-10-08-banco-prove-piano-landing.mjs`](../../archivio/2026-10-08-banco-prove-piano-landing.mjs), rifà dal testo i
 compiti 1–13: serve di nuovo solo se un compito cambia prima di essere eseguito.
 
-**Il compito 1**, eseguito il 2026-10-08:
+**Il compito 2**, eseguito il 2026-10-08:
 
 | | |
 |---|---|
-| il ri-controllo | contro la landing a `e6a0db1`, con le quattro domande e le regole 5–8: nessun difetto. La metà dei binari, «i file binari restano come sono», la tiene il passo 4, `text: auto`: la prova è nella tabella in fondo |
-| l'esecuzione | due subagenti `sonnet`, chi esegue e chi rivede (risposta del proprietario: A). Il rosso del passo 1 ha dato `23`, il verde del passo 6 `0`; i passi 3 e 4 come scritti |
-| la revisione | conforme e approvata, nessun difetto critico o importante. Una nota minore, del piano, rimandata: la prova dei passi 1 e 6 conta soltanto `w/crlf`, e un file `w/mixed` le sfuggirebbe. Qui non succede, perché nel repository ogni file è LF; se un compito riusa la prova, la forma più stretta è `grep -cE 'w/(crlf\|mixed)'` |
-| il costo | chi esegue, circa 96 mila token e 3 minuti; chi rivede, circa 122 mila token e 6 minuti: l'uscita dello strumento `Agent` |
-| il push | il coordinatore, dopo la revisione |
+| il ri-controllo | contro la landing a `dc5eda5`, con le quattro domande e le regole 5–8: nessun difetto. Il kit ha 16 SVG e 2 HTML, nessun CR, e `GEOMETRY-START` una volta, nella splash; in un repository di prova col `.gitattributes`, i 18 file sono `i/lf w/lf` e restano identici dopo un clone. Per chi esegue, due note nel fascicolo: al passo 6 N è 18, e al passo 8 `grep -vc` scrive `0` ed esce con 1 |
+| l'esecuzione | due subagenti `sonnet`, chi esegue e chi rivede (risposta del proprietario: A). Il rosso del passo 3, `brand/provenance.json is missing`; il verde del passo 6, `18 files, identical to the kit and to the note`; il passo 7 nei due sensi; il conto del passo 8, `0` |
+| la revisione | conforme e approvata, nessun difetto. Due osservazioni, nessuna da fare: la nota comincia dallo studio e dalla splash, perché `sort()` mette lo spazio prima del trattino — l'esempio del piano è soltanto un esempio, e il compito 13 legge la nota per chiave —; e Git scrive il nome della splash fra virgolette, in ottale (*«Da sapere subito»*) |
+| il costo | chi esegue, circa 109 mila token e 7 minuti; chi rivede, circa 137 mila token e 10 minuti: l'uscita dello strumento `Agent` |
+| il push | il coordinatore, dopo la revisione: `e97157e`, lo stesso su GitHub |
+
+La nota minore della consegna di prima — la prova del compito 1 contava soltanto `w/crlf`, e un file `w/mixed` le
+sarebbe sfuggito — non ha più dove valere: nessun compito dopo riusa quella prova, e fuori da questa sezione
+`grep -n 'w/crlf'` su questo piano trova soltanto i passi 1 e 6 del compito 1. Il passo 8 del compito 2 conta già ogni
+riga che non è `i/lf w/lf`.
 
 **Come si esegue**: una fase per sessione (§7.1 del disegno), un compito per sessione, nell'ordine 1–13. Il coordinatore
 rilegge il compito contro la landing di adesso — la regola 5 di *«Prima di eseguire un compito di un piano»*, nel
@@ -4211,48 +4217,58 @@ rilegge il compito contro la landing di adesso — la regola 5 di *«Prima di es
 seguono la riga di quella skill nel `CLAUDE.md` di daemon. Il codice nasce dai test,
 `superpowers:test-driven-development`. Il compito si chiude col suo commit, `t1(compito N): …`, e col push.
 
-Come l'ha fatto la dodicesima sessione, e come conviene rifarlo:
+Come l'hanno fatto la dodicesima e la tredicesima sessione, e come conviene rifarlo:
 
 - prima di mandare i subagenti, il costo al proprietario e il suo sì: più di un subagente lo chiede il `CLAUDE.md` di
   daemon, e il sì vale per il compito per cui è dato;
 - il lavoro dei subagenti — il fascicolo del compito, il rapporto, il pacchetto della revisione, il registro — sta nello
   scratchpad della sessione, non nella landing: `sdd-workspace` della skill scriverebbe `.superpowers/sdd/` dentro il
-  repository;
+  repository, e `review-package` lo stesso, se non riceve come quarto argomento il file da scrivere;
 - il fascicolo si estrae per righe, perché `task-brief` della skill cerca un titolo «Task N» e qui i titoli dicono
-  «Compito N». Dentro: il compito, la §2.3, la tabella *«Come si leggono»* della §5, e la sezione del disegno che il
-  compito realizza;
+  «Compito N». Dentro: il compito, la §2.3, la tabella *«Come si leggono»* della §5, la sezione del disegno che il
+  compito realizza e, in fondo, le note del coordinatore: ciò che il piano lascia al momento, come la cartella delle
+  prove a mano o il valore di un «Atteso» che si conosce solo quel giorno;
+- il pacchetto della revisione porta il diff intero dei file che il compito scrive; dei file che copia — le copie del
+  kit, nel compito 2 — soltanto il `--stat`, perché di loro conta l'identità, e chi rivede la prova con `cmp`;
 - chi esegue fa i passi fino al commit; il push lo fa il coordinatore, dopo una revisione pulita: un commit va su GitHub
   solo dopo essere stato rivisto;
 - il dispaccio dice in chiaro «senza co-autore»: un subagente può aggiungere da sé una riga `Co-Authored-By`.
 
-**Il prossimo passo**, in una sessione nuova — il compito 2, la copia in `brand/`:
+**Il prossimo passo**, in una sessione nuova — il compito 3, il progetto Node e le due pagine vuote:
 
 1. dentro `landing/`: `git fetch --all --prune`, `git status -sb`, e il fast-forward se serve;
 2. leggi `CLAUDE.md`, questo piano e il disegno, per intero;
 3. le skill: `anthropic-skills:decision-principles`, `anthropic-skills:dev-discipline`,
    `anthropic-skills:dev-communication`, `superpowers:subagent-driven-development` e
    `superpowers:test-driven-development`;
-4. rileggi il compito 2 contro la landing di adesso, con le quattro domande e le regole 5–8 di *«Prima di eseguire un
-   compito di un piano»*. Il kit sta solo su questa macchina: se `ls ../daemon_kit` non lo trova, ci si ferma, come
-   dice il passo 1 del compito;
+4. rileggi il compito 3 contro la landing di adesso, con le quattro domande e le regole 5–8 di *«Prima di eseguire un
+   compito di un piano»*. È il primo compito che installa pacchetti: prima rilancia ciò che invecchia — le versioni,
+   Node e npm della macchina, e gli avvisi contro i pacchetti della §2.1, coi comandi della tabella qui sotto —, perché
+   il passo 6 vuole `found 0 vulnerabilities`;
 5. di' al proprietario il costo dei subagenti, e aspetta il sì; poi eseguilo come dice *«Come si esegue»*: il suo commit,
-   `t1(compito 2): …`, e il push dopo la revisione;
-6. alla chiusura, la consegna qui, con questa in archivio; commit e push. La sessione dopo esegue il compito 3.
+   `t1(compito 3): …`, e il push dopo la revisione;
+6. alla chiusura, la consegna qui, con questa in archivio; commit e push. La sessione dopo esegue il compito 4.
 
 **Da sapere subito:**
 
 - ⚠️ daemon si muove mentre si lavora: un commit di daemon non si scrive mai come vero, si rilancia
-  `git -C .. rev-parse --short origin/main`;
-- ⚠️ **questa macchina è corta di memoria**: 16 GB, e in questa sessione ne era libero circa 1,5. La memoria del
-  momento: `powershell -NoProfile -Command "Get-CimInstance Win32_OperatingSystem | Select-Object FreePhysicalMemory,
+  `git -C .. rev-parse --short origin/main`. Dalla chiusura della dodicesima sessione è passato da `6166236` a
+  `b95c5cc`, con due commit di documenti — `docs/archivio/stato-storico.md`, `docs/audit-2026-09-30.md` e
+  `docs/riferimenti.md` — che non toccano né le cinque fonti né la GUI: `git log --stat 6166236..origin/main`;
+- ⚠️ **questa macchina è corta di memoria**: 16 GB, e alla chiusura di questa sessione ne era libero circa 1. La memoria
+  del momento: `powershell -NoProfile -Command "Get-CimInstance Win32_OperatingSystem | Select-Object FreePhysicalMemory,
   TotalVisibleMemorySize, FreeVirtualMemory, TotalVirtualMemorySize"`;
 - ⚠️ dopo il giorno del piano sono uscite `astro` 7.3.7 e `playwright` 1.64.0: il piano resta alla 7.3.6 e alla 1.63.0,
   per la regola della §2.1 — Playwright segue la GUI di daemon, e una versione nuova si prende con un atto apposta;
 - ⚠️ GitHub sposta `ubuntu-latest` su Ubuntu 26 dal 2026-10-19, dice un avviso nel giro di daemon: la CI della landing
   gira per la prima volta al compito 13, forse già lì;
 - col `.gitattributes`, una copia nuova della landing ha ogni file di testo LF. La metà dei binari non ha ancora un
-  caso vero: nessun file della landing è binario, e `brand/` del compito 2 ha soltanto SVG e HTML. Quando arriva il primo
-  binario — le foto delle scene, col traguardo 2 — `git ls-files --eol` deve dirlo `i/-text`;
+  caso vero: nessun file della landing è binario, e i 18 file di `brand/` sono testo, `i/lf w/lf`. Quando arriva il
+  primo binario — le foto delle scene, col traguardo 2 — `git ls-files --eol` deve dirlo `i/-text`;
+- ⚠️ **Git scrive fra virgolette, in ottale, i nomi non ASCII**: la splash esce come
+  `"brand/daemon \342\200\224 splash.html"`, e un conto per percorso sull'uscita di Git, come `grep '^brand/'`, la mette
+  fuori da `brand/`. È successo nella verifica prima del push del compito 2. Per contare per percorso:
+  `git -c core.quotepath=false …`, oppure `-z`;
 - il banco: i comandi in testa al suo programma, poi `node bench.mjs <il piano> <la landing del banco> <la cartella dei
   log> 1 2 … 13`. Il programma legge il piano con qualunque a-capo, e innesta un frammento nel blocco che segue le sue
   parole; il compito 13 lancia il cancello cinque volte. `report.txt` mostra le prime 60 righe utili di ogni comando, e
@@ -4261,7 +4277,9 @@ Come l'ha fatto la dodicesima sessione, e come conviene rifarlo:
   toccato;
 - su questa macchina daemon sta su `main`. `daemon_kit/` non è nascosta a daemon, `/landing/` sì:
   `git -C .. check-ignore -v daemon_kit landing/CLAUDE.md`. Il `.gitignore` di daemon non ha ancora la riga `landing/`,
-  ed è lavoro di daemon;
+  ed è lavoro di daemon. La §7.2 del disegno dice ancora che su questa macchina daemon ignora il kit con
+  `.git/info/exclude`: oggi non è vero, e la copia non ne dipende, perché il kit resta fuori da ogni repository. La frase
+  si corregge col suo richiamo datato quando lo decide il proprietario: è una voce aperta;
 - Vitest 4 non mostra la console dei test verdi: per vedere i valori di una misura, `--reporter=verbose --silent=false`;
 - in Git Bash, con `MSYS_NO_PATHCONV=1`, un percorso `/c/…` o `/tmp/…` passato a Node o a `git` non viene tradotto: si
   passa `cygpath -w`, o si toglie il flag in una subshell. `git init` lo legge come `C:\tmp\…`;
@@ -4270,15 +4288,15 @@ Come l'ha fatto la dodicesima sessione, e come conviene rifarlo:
 - su Windows `chrome.exe --version` apre il browser invece di scrivere la versione: la versione si legge dal nome della
   cartella, `ls "/c/Program Files/Google/Chrome/Application/"`.
 
-**Verificato fra il 2026-10-07 e il 2026-10-08, dalla sesta alla dodicesima sessione.** Si rilancia, non si crede. I
+**Verificato fra il 2026-10-07 e il 2026-10-08, dalla sesta alla tredicesima sessione.** Si rilancia, non si crede. I
 comandi `git` dalla radice di daemon, in Git Bash, dopo `export MSYS_NO_PATHCONV=1`, dove non è detto altro.
 
 | Fatto | Comando o fonte |
 |---|---|
-| le versioni della §2.1, e `web-vitals` 6.2.3; dopo il giorno del piano `astro` 7.3.7, del 2026-10-07 alle 21:37 UTC, e `playwright` 1.64.0; Node 24.19.0 e npm 11.17.0 su questa macchina | `npm view <pacchetto> version license`; `npm view <pacchetto> time`; `git show "origin/main:gui/package.json"`; `node --version`; `npm --version` |
-| `origin/main` di daemon era `6166236` alla chiusura, uguale a GitHub; l'audit c'è, col segno «(col N)» | `git rev-parse --short origin/main`; `git ls-remote origin refs/heads/main`; `git merge-base --is-ancestor origin/repo-audit/20260930-1510 origin/main`; `git show "origin/main:docs/README.md" \| grep -c 'col N'` |
-| le cinque citazioni della §3.4 si trovano, e fra `fc43188` e `6166236` nessuna delle cinque fonti è cambiata | per ciascuna: `git show "origin/main:<fonte>" \| tr -d '\r' \| tr '\n' ' ' \| tr -s ' ' \| grep -cF -- '<citazione>'`; `git diff --stat fc43188 origin/main -- <le cinque fonti>` |
-| fra `973153f` e `6166236` la GUI non è cambiata: manifesto, token, cancello, CI | `git diff --stat 973153f origin/main -- gui/package.json gui/src/tokens scripts/gate-gui.sh .github` |
+| le versioni della §2.1, e `web-vitals` 6.2.3; dopo il giorno del piano `astro` 7.3.7, del 2026-10-07 alle 21:37 UTC, e `playwright` 1.64.0, ancora le ultime alla chiusura della tredicesima sessione; Node 24.19.0 e npm 11.17.0 su questa macchina | `npm view <pacchetto> version license`; `npm view <pacchetto> time`; `git show "origin/main:gui/package.json"`; `node --version`; `npm --version` |
+| `origin/main` di daemon era `b95c5cc` alla chiusura della tredicesima sessione, uguale a GitHub; l'audit c'è, col segno «(col N)» | `git rev-parse --short origin/main`; `git ls-remote origin refs/heads/main`; `git merge-base --is-ancestor origin/repo-audit/20260930-1510 origin/main`; `git show "origin/main:docs/README.md" \| grep -c 'col N'` |
+| le cinque citazioni della §3.4 si trovano, e fra `fc43188` e `b95c5cc` nessuna delle cinque fonti è cambiata | per ciascuna: `git show "origin/main:<fonte>" \| tr -d '\r' \| tr '\n' ' ' \| tr -s ' ' \| grep -cF -- '<citazione>'`; `git diff --stat fc43188 origin/main -- <le cinque fonti>` |
+| fra `973153f` e `b95c5cc` la GUI non è cambiata: manifesto, token, cancello, CI | `git diff --stat 973153f origin/main -- gui/package.json gui/src/tokens scripts/gate-gui.sh .github` |
 | `themes.css` di daemon: `:root` con le `--ref-*`; `[data-theme="dark"]` e `[data-theme="light"]` coi ruoli `--color-*` e `color-scheme` | `git show "origin/main:gui/src/tokens/themes.css"` |
 | in daemon i ruoli non di testo da 3:1 sono `border-strong`, `focus`, `mark` e `border-accent`; il radio acceso della GUI usa `--color-mark` | `git show "origin/main:gui/src/tokens/contrast.test.ts" \| grep -n 'non-text'`; `git grep -n 'color-mark' origin/main -- gui/src/components` |
 | la GUI: il testo in Geist Variable, le etichette e i numeri in Barlow 300–600, importati da `gui/src/tokens/index.ts` | `git show "origin/main:gui/src/tokens/index.ts"` |
@@ -4304,4 +4322,7 @@ comandi `git` dalla radice di daemon, in Git Bash, dopo `export MSYS_NO_PATHCONV
 | cspell, di base, salta le parole sotto le quattro lettere; con `minWordLength: 2` le guarda, e una lettera sola la accetta sempre; il dizionario italiano conosce «download» | il programma della §18 del verbale delle prove |
 | la GUI di daemon vieta il testo scritto nei componenti col linter, `@intlify/vue-i18n/no-raw-text`; `eslint-plugin-astro` 3.2.1 una regola così non ce l'ha | `git show "origin/main:gui/eslint.config.js"`; `gh api "repos/ota-meshi/eslint-plugin-astro/contents/docs/rules" --jq '.[].name'` |
 | con `* text=auto eol=lf`, e `core.autocrlf=true` dalla configurazione di sistema di Git, un file con un byte NUL resta com'è in un clone, `i/-text`; con `* text eol=lf` cambia | in una cartella di prova fuori dal repository, senza `MSYS_NO_PATHCONV`: `git init`, il `.gitattributes`, `printf 'a\r\nb\0c\r\n' > probe.bin`, `git add -A`, il commit, `git clone`, poi `git ls-files --eol` nel clone e `cmp` fra le due copie; `git config --show-origin --get-all core.autocrlf` |
-| `superpowers:subagent-driven-development` 6.3.0: `task-brief` cerca un titolo «Task N»; `sdd-workspace` scrive `.superpowers/sdd/` nella cartella di lavoro del repository | `scripts/task-brief` e `scripts/sdd-workspace`, nella cartella della skill |
+| il kit: 16 SVG, 2 HTML, 8 PNG e un MP4, nessuna sottocartella; gli SVG e gli HTML vanno a capo alla Linux, e `GEOMETRY-START` sta una volta, nella splash | dalla landing: `ls ../daemon_kit/`; `find ../daemon_kit -mindepth 1 -type d`; il passo 1 del compito 2 |
+| le 18 copie di `brand/` sono identiche al kit, una per una | dalla landing, senza `MSYS_NO_PATHCONV`: `for f in brand/*.svg brand/*.html; do cmp "$f" "../daemon_kit/${f#brand/}"; done`, che non scrive niente; poi il controllo del compito 13 |
+| Git scrive fra virgolette, in ottale, i nomi non ASCII; con `core.quotepath=false` li scrive come sono | dalla landing: `git ls-files brand \| grep splash`; `git -c core.quotepath=false ls-files brand \| grep splash` |
+| `superpowers:subagent-driven-development` 6.3.0: `task-brief` cerca un titolo «Task N»; `sdd-workspace` scrive `.superpowers/sdd/` nella cartella di lavoro del repository, e `review-package` lo stesso, se non riceve il file come quarto argomento | `scripts/task-brief`, `scripts/sdd-workspace` e `scripts/review-package`, nella cartella della skill |
