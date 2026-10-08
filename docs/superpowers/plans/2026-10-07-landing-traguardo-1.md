@@ -16,8 +16,8 @@
 | 2 | Gli strumenti e i vincoli | ✅ approvata il 2026-10-07 |
 | 3 | I testi | ✅ approvata il 2026-10-07 |
 | 4 | La mappa dei file | ✅ approvata il 2026-10-07 |
-| 5 | I compiti | ✅ i compiti 1–11 approvati il 2026-10-07, il 12 e il 13 il 2026-10-08; il pre-controllo li corregge (§6) |
-| 6 | Come si riprende | 🔶 oggi è la consegna della decima sessione, del 2026-10-08: il pre-controllo, a metà |
+| 5 | I compiti | ✅ i compiti 1–11 approvati il 2026-10-07, il 12 e il 13 il 2026-10-08; il pre-controllo li ha corretti, il 2026-10-08 (§6) |
+| 6 | Come si riprende | 🔶 oggi è la consegna dell'undicesima sessione, del 2026-10-08: il pre-controllo è finito, e il prossimo passo è il compito 1 |
 
 ---
 
@@ -4167,8 +4167,8 @@ silenzio.
 
 ## 6. Come si riprende
 
-> 🔶 Oggi questa sezione è la consegna della decima sessione, del 2026-10-08: il pre-controllo è a metà. Le consegne di
-> prima sono in archivio, parola per parola:
+> 🔶 Oggi questa sezione è la consegna dell'undicesima sessione, del 2026-10-08: il pre-controllo è finito, e si
+> comincia a eseguire. Le consegne di prima sono in archivio, parola per parola:
 > [del mattino](../../archivio/2026-10-07-consegna-piano-landing-mattina.md),
 > [del pomeriggio](../../archivio/2026-10-07-consegna-piano-landing-pomeriggio.md),
 > [della terza sessione](../../archivio/2026-10-07-consegna-piano-landing-terza-sessione.md),
@@ -4176,59 +4176,49 @@ silenzio.
 > [della quinta](../../archivio/2026-10-07-consegna-piano-landing-quinta-sessione.md),
 > [della sesta](../../archivio/2026-10-08-consegna-piano-landing-sesta-sessione.md),
 > [della settima](../../archivio/2026-10-08-consegna-piano-landing-settima-sessione.md),
-> [dell'ottava](../../archivio/2026-10-08-consegna-piano-landing-ottava-sessione.md) e
-> [della nona](../../archivio/2026-10-08-consegna-piano-landing-nona-sessione.md).
+> [dell'ottava](../../archivio/2026-10-08-consegna-piano-landing-ottava-sessione.md),
+> [della nona](../../archivio/2026-10-08-consegna-piano-landing-nona-sessione.md) e
+> [della decima](../../archivio/2026-10-08-consegna-piano-landing-decima-sessione.md).
 
 **Dove siamo:**
 
 | Parte | Stato |
 |---|---|
 | §1–§4 | approvate, coi richiami del 2026-10-07 e del 2026-10-08 |
-| §5, compiti 1–13 | ✅ approvati: l'1–11 il 2026-10-07, il 12 e il 13 il 2026-10-08 |
-| il pre-controllo | 🔶 a metà: otto difetti, tutti decisi dal proprietario, tutti A, e tutti scritti nel piano; resta il banco |
+| §5, compiti 1–13 | ✅ approvati: l'1–11 il 2026-10-07, il 12 e il 13 il 2026-10-08; corretti dal pre-controllo, coi richiami del 2026-10-08 |
+| il pre-controllo | ✅ finito: otto difetti, tutti decisi dal proprietario, tutti A, e scritti nel piano; il banco ha rifatto dal testo i compiti 1–13, e tutto torna come scritto |
 | l'esecuzione | ⏳ da cominciare: nessun compito è eseguito, e la landing ha soltanto i documenti |
 
-Gli otto difetti, con le prove e le risposte, sono nella §18 del
+Gli otto difetti, con le prove, le risposte e ciò che il banco ha visto, sono nella §18 del
 [verbale delle prove](../../archivio/2026-10-07-prove-piano-landing.md). Il programma del banco,
 [`2026-10-08-banco-prove-piano-landing.mjs`](../../archivio/2026-10-08-banco-prove-piano-landing.mjs), rifà dal testo i
-compiti 1–13.
+compiti 1–13: serve di nuovo solo se un compito cambia prima di essere eseguito.
 
-**Come si esegue**, finito il pre-controllo: una fase per sessione (§7.1 del disegno), un compito per sessione,
-nell'ordine 1–13. Il coordinatore rilegge il compito contro la landing di adesso — la regola 5 di *«Prima di eseguire un
-compito di un piano»*, nel `CLAUDE.md` di daemon —, poi lo esegue con `superpowers:subagent-driven-development`: i
-subagenti e il loro costo seguono la riga di quella skill nel `CLAUDE.md` di daemon. Il codice nasce dai test,
+**Come si esegue**: una fase per sessione (§7.1 del disegno), un compito per sessione, nell'ordine 1–13. Il coordinatore
+rilegge il compito contro la landing di adesso — la regola 5 di *«Prima di eseguire un compito di un piano»*, nel
+`CLAUDE.md` di daemon —, poi lo esegue con `superpowers:subagent-driven-development`: i subagenti e il loro costo
+seguono la riga di quella skill nel `CLAUDE.md` di daemon. Il codice nasce dai test,
 `superpowers:test-driven-development`. Il compito si chiude col suo commit, `t1(compito N): …`, e col push.
 
-**Il prossimo passo**, in una sessione nuova — il resto del pre-controllo:
+**Il prossimo passo**, in una sessione nuova — il compito 1, il `.gitattributes`:
 
 1. dentro `landing/`: `git fetch --all --prune`, `git status -sb`, e il fast-forward se serve;
-2. leggi `CLAUDE.md`, questo piano e il disegno, per intero, e la §18 del verbale delle prove;
-3. le skill: `anthropic-skills:decision-principles`, `anthropic-skills:dev-discipline`, `anthropic-skills:dev-communication`
-   e `superpowers:writing-plans`;
-4. scrivi nel piano i difetti 4–8, come dice la tabella qui sotto, ciascuno col suo richiamo datato, che rimanda alla
-   §18 del verbale; commit e push a ogni difetto;
-5. rifai sul banco i compiti 1–13 dal testo: cambiano il 7, l'8, il 9, il 10 e l'11, e i conti fino al 13. Ciò che si
-   vede va nella §18 del verbale; ciò che diverge dal piano va al proprietario, in A/B;
-6. alla chiusura, la consegna qui, con questa in archivio; commit e push. La sessione dopo esegue il compito 1.
-
-**I difetti da scrivere**, già decisi:
-
-| # | Dove | Che cosa si scrive |
-|---|---|---|
-| 4 | il compito 7; la regola 3 della §1 e la tabella della §3.2 del disegno; il vincolo 2 della §2.3; la riga «parole vietate» del `CLAUDE.md` | «download» vietato anche in italiano: `/\bdownload\w*/i` in `FORBIDDEN_WORDS.it`, col perché nel commento — il dizionario italiano conosce la parola, e dice ciò che dice «scarica»; nel test `refuses them in every form`, `expect(forbiddenWords('il download di daemon', 'it')).toEqual(['download'])`. I conti non cambiano |
-| 5 | i compiti 9–13 | in `checks/themes.page.test.ts` due test per lingua. `follows a change of the system, while the visitor has not chosen`: `page.emulateMedia({ colorScheme: 'dark' })`, poi `page.waitForFunction` sul `data-theme` — il browser lo dice alla pagina al frame dopo —, e l'interruttore acceso. `keeps the switch working where the browser refuses the storage`: nel `before`, `page.addInitScript` che ridefinisce `localStorage` con un getter che lancia una `DOMException` `SecurityError`, e `page.on('pageerror')`; un clic porta al tema scuro, senza errori. Il `before` di `open()` passa al compito 9, il primo che lo usa — la regola del confine, §1: il passo 4 del compito 9 scrive anche `checks/support/landing.ts`; il compito 10 perde il passo 1, gli altri scalano, e nel banco il suo `INLINE` diventa `{ 5: […], 7: ['git push'] }`; il compito 11 sostituisce il `landing.ts` del compito 9; l'«Usa» dei compiti 10–12 dice «compiti 8 e 9». I rossi, nel passo 7 del compito 9: l'ascolto del sistema su un evento che non esiste, e `chosen()` che rilancia l'errore. I conti nel browser salgono di 4: nel compito 9, `14 failed`, `38 passed`, `6 failed \| 8 passed`; nel 10, e nel passo 3 dell'11, `44`; alla fine dell'11, `68`; nel 12 e nel 13, `76` |
-| 6 | il compito 11 | in `tabThrough` ogni controllo raggiunto dice anche `onScreen`, il suo riquadro tutto dentro la finestra. Il test dell'anello diventa `every control Tab reaches is inside the screen, and shows its ring`; quello dell'indice `the index stays on top, and brings its section below itself`, con `expect(index.y).toBe(0)`; il testo del passo 7 li chiama coi nomi nuovi. Nel passo 7, dopo il primo giro, un secondo: `page.css` senza `position: sticky` e senza la regola `.skip-link:focus`; atteso `4 failed \| 20 passed`. I conti non cambiano |
-| 7 | il compito 9, e i conti fino al 13 | in `checks/tokens.test.ts` il test `the page redefines no token of daemon: the colours are daemon’s, and the page keeps no copy`: `[...own].filter((name) => declaredTokens(themes).has(name))` vuoto. Il rosso, nel passo 7, nello stesso giro degli altri: `--color-bg: #000;` in `page.css`. I conti senza browser salgono di 1: nel compito 9, `1 failed \| 4 passed`, `5 passed`, `4 failed \| 1 passed`; `71 passed` dal 9 al 12; nel 13, `81 passed`, «i 71 di prima», e `80 passed \| 1 skipped (81)` |
-| 8 | la §5.4 del disegno | «se sparisce un token che la pagina usa, il cancello è rosso, col controllo dei token», col richiamo datato |
+2. leggi `CLAUDE.md`, questo piano e il disegno, per intero;
+3. le skill: `anthropic-skills:decision-principles`, `anthropic-skills:dev-discipline`,
+   `anthropic-skills:dev-communication`, `superpowers:subagent-driven-development` e
+   `superpowers:test-driven-development`;
+4. rileggi il compito 1 contro la landing di adesso, con le quattro domande e le regole 5–8 di *«Prima di eseguire un
+   compito di un piano»*;
+5. eseguilo come dice *«Come si esegue»*: il suo commit, `t1(compito 1): …`, e il push;
+6. alla chiusura, la consegna qui, con questa in archivio; commit e push. La sessione dopo esegue il compito 2.
 
 **Da sapere subito:**
 
-- ⚠️ i difetti 1–3 sono scritti nel piano, ma il banco non li ha ancora rifatti. Del 3 è provata soltanto la funzione,
-  nello scratchpad: ogni attesa del suo test torna (§18 del verbale);
-- ⚠️ daemon si muove mentre si lavora: in questa sessione `origin/main` è rimasto a `8e88ae1`. Un commit di daemon non
-  si scrive mai come vero: si rilancia `git -C .. rev-parse --short origin/main`;
-- ⚠️ **questa macchina è corta di memoria**: 16 GB. La memoria del momento:
-  `powershell -NoProfile -Command "Get-CimInstance Win32_OperatingSystem | Select-Object FreePhysicalMemory,
+- ⚠️ daemon si muove mentre si lavora: in questa sessione `origin/main` è passato da `8e88ae1` a `6166236`, un commit di
+  documenti dell'audit. Un commit di daemon non si scrive mai come vero: si rilancia
+  `git -C .. rev-parse --short origin/main`;
+- ⚠️ **questa macchina è corta di memoria**: 16 GB, e in questa sessione ne erano liberi circa 2. La memoria del
+  momento: `powershell -NoProfile -Command "Get-CimInstance Win32_OperatingSystem | Select-Object FreePhysicalMemory,
   TotalVisibleMemorySize, FreeVirtualMemory, TotalVirtualMemorySize"`;
 - ⚠️ dopo il giorno del piano sono uscite `astro` 7.3.7 e `playwright` 1.64.0: il piano resta alla 7.3.6 e alla 1.63.0,
   per la regola della §2.1 — Playwright segue la GUI di daemon, e una versione nuova si prende con un atto apposta;
@@ -4236,8 +4226,10 @@ subagenti e il loro costo seguono la riga di quella skill nel `CLAUDE.md` di dae
   gira per la prima volta al compito 13, forse già lì;
 - il banco: i comandi in testa al suo programma, poi `node bench.mjs <il piano> <la landing del banco> <la cartella dei
   log> 1 2 … 13`. Il programma legge il piano con qualunque a-capo, e innesta un frammento nel blocco che segue le sue
-  parole; il compito 13 lancia il cancello cinque volte. Col difetto 5 cambia il suo `INLINE` del compito 10;
-- `landing.browser`, nell'interfaccia `Landing` del compito 8, non lo usa nessun compito: segnalato qui, non toccato;
+  parole; il compito 13 lancia il cancello cinque volte. `report.txt` mostra le prime 60 righe utili di ogni comando, e
+  i conti del cancello si leggono nel log del comando;
+- `landing.browser`, nell'interfaccia `Landing` dei compiti 8, 9 e 11, non lo usa nessun compito: segnalato qui, non
+  toccato;
 - su questa macchina daemon sta su `main`. `daemon_kit/` non è nascosta a daemon, `/landing/` sì:
   `git -C .. check-ignore -v daemon_kit landing/CLAUDE.md`. Il `.gitignore` di daemon non ha ancora la riga `landing/`,
   ed è lavoro di daemon;
@@ -4249,15 +4241,15 @@ subagenti e il loro costo seguono la riga di quella skill nel `CLAUDE.md` di dae
 - su Windows `chrome.exe --version` apre il browser invece di scrivere la versione: la versione si legge dal nome della
   cartella, `ls "/c/Program Files/Google/Chrome/Application/"`.
 
-**Verificato fra il 2026-10-07 e il 2026-10-08, dalla sesta alla decima sessione.** Si rilancia, non si crede. I comandi
-`git` dalla radice di daemon, in Git Bash, dopo `export MSYS_NO_PATHCONV=1`.
+**Verificato fra il 2026-10-07 e il 2026-10-08, dalla sesta all'undicesima sessione.** Si rilancia, non si crede. I
+comandi `git` dalla radice di daemon, in Git Bash, dopo `export MSYS_NO_PATHCONV=1`.
 
 | Fatto | Comando o fonte |
 |---|---|
 | le versioni della §2.1, e `web-vitals` 6.2.3; dopo il giorno del piano `astro` 7.3.7, del 2026-10-07 alle 21:37 UTC, e `playwright` 1.64.0; Node 24.19.0 e npm 11.17.0 su questa macchina | `npm view <pacchetto> version license`; `npm view <pacchetto> time`; `git show "origin/main:gui/package.json"`; `node --version`; `npm --version` |
-| `origin/main` di daemon era `8e88ae1` alla chiusura, uguale a GitHub; l'audit c'è, col segno «(col N)» | `git rev-parse --short origin/main`; `git ls-remote origin refs/heads/main`; `git merge-base --is-ancestor origin/repo-audit/20260930-1510 origin/main`; `git show "origin/main:docs/README.md" \| grep -c 'col N'` |
-| le cinque citazioni della §3.4 si trovano, e fra `fc43188` e `8e88ae1` nessuna delle cinque fonti è cambiata | per ciascuna: `git show "origin/main:<fonte>" \| tr -d '\r' \| tr '\n' ' ' \| tr -s ' ' \| grep -cF -- '<citazione>'`; `git diff --stat fc43188 origin/main -- <le cinque fonti>` |
-| fra `973153f` e `8e88ae1` la GUI non è cambiata: manifesto, token, cancello, CI | `git diff --stat 973153f origin/main -- gui/package.json gui/src/tokens scripts/gate-gui.sh .github` |
+| `origin/main` di daemon era `6166236` alla chiusura, uguale a GitHub; l'audit c'è, col segno «(col N)» | `git rev-parse --short origin/main`; `git ls-remote origin refs/heads/main`; `git merge-base --is-ancestor origin/repo-audit/20260930-1510 origin/main`; `git show "origin/main:docs/README.md" \| grep -c 'col N'` |
+| le cinque citazioni della §3.4 si trovano, e fra `fc43188` e `6166236` nessuna delle cinque fonti è cambiata | per ciascuna: `git show "origin/main:<fonte>" \| tr -d '\r' \| tr '\n' ' ' \| tr -s ' ' \| grep -cF -- '<citazione>'`; `git diff --stat fc43188 origin/main -- <le cinque fonti>` |
+| fra `973153f` e `6166236` la GUI non è cambiata: manifesto, token, cancello, CI | `git diff --stat 973153f origin/main -- gui/package.json gui/src/tokens scripts/gate-gui.sh .github` |
 | `themes.css` di daemon: `:root` con le `--ref-*`; `[data-theme="dark"]` e `[data-theme="light"]` coi ruoli `--color-*` e `color-scheme` | `git show "origin/main:gui/src/tokens/themes.css"` |
 | in daemon i ruoli non di testo da 3:1 sono `border-strong`, `focus`, `mark` e `border-accent`; il radio acceso della GUI usa `--color-mark` | `git show "origin/main:gui/src/tokens/contrast.test.ts" \| grep -n 'non-text'`; `git grep -n 'color-mark' origin/main -- gui/src/components` |
 | la GUI: il testo in Geist Variable, le etichette e i numeri in Barlow 300–600, importati da `gui/src/tokens/index.ts` | `git show "origin/main:gui/src/tokens/index.ts"` |

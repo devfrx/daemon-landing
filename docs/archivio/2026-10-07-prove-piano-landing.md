@@ -3,10 +3,10 @@
 > 🗄️ **Che cos'è questo file.** Il verbale delle prove fatte il 2026-10-07 per scrivere la §5 del
 > [piano del traguardo 1](../superpowers/plans/2026-10-07-landing-traguardo-1.md) — le §1–§9 nel pomeriggio, la §10 e la
 > §11 nella sessione dopo, la §12 e la §13 in quella dopo ancora, la §14 nella quinta, la §15 nella sesta, la §16 nella
-> settima, la §17 nell'ottava e la §18 nella decima, il pre-controllo, il 2026-10-08: il proprietario ha scelto di
-> provare il codice prima di scriverlo nel piano (risposta: A). Le prove sono girate nello scratchpad di ciascuna
-> sessione, poi cancellato; dalla §16 il programma del banco sta accanto a questo file. Qui c'è la storia; il piano porta
-> ciò che ne è venuto.
+> settima, la §17 nell'ottava e la §18 nella decima e nell'undicesima, il pre-controllo, il 2026-10-08: il proprietario
+> ha scelto di provare il codice prima di scriverlo nel piano (risposta: A). Le prove sono girate nello scratchpad di
+> ciascuna sessione, poi cancellato; dalla §16 il programma del banco sta accanto a questo file. Qui c'è la storia; il
+> piano porta ciò che ne è venuto.
 
 **La macchina:** Windows 11, Git Bash, Node 24.19.0, npm 11.17.0, Chrome 154.0.8037.98. I pacchetti, alle versioni
 esatte della §2.1 del piano.
@@ -453,3 +453,34 @@ funzione `unknownWords` del compito 7 lettera per lettera, con un'impostazione i
 | `l’arbitro dell’audit un’etichetta c’è all’indice nell’app quest’ultimo d’uso l’ADR e è a i o` | it | `["nell’app"]` | `["nell’app","l’ADR"]` |
 | lettere sole: `il k testo, deciso col N, e N è il sotto-progetto, la x` e `the s user, built at col N, a x b` | it, en | `[]` | `[]`, e così con `minWordLength: 1`: una lettera sola i dizionari la accettano |
 | `il download di daemon` | it | `[]` | — |
+
+**L'undicesima sessione**, il 2026-10-08, dopo la decima: i difetti 4–8 scritti nel piano, un commit per difetto —
+`3c033aa`, `f8845d7`, `5d27201`, `5275e79` e `a3280ee` —, poi il banco come nella §17, coi comandi in testa al suo
+programma. daemon a `6166236`: un commit di documenti dell'audit dopo `8e88ae1`, arrivato durante la sessione, che non
+tocca né le cinque fonti né la GUI — `git diff --stat 8e88ae1 6166236 --` con le cinque fonti, `gui/package.json`,
+`gui/src/tokens`, `scripts/gate-gui.sh` e `.github`: vuoto.
+
+**Prima di scriverli**, provati nello scratchpad:
+
+| Che cosa | Visto |
+|---|---|
+| `/\bdownload\w*/i` fra le parole vietate dell'italiano, il difetto 4 | `il download di daemon` dà `["download"]`, `Un assistente desktop locale.` niente; `scarica`, `scaricare` e `open source` come prima |
+| il controllo dei token col test del difetto 7, sul `themes.css` di daemon a `origin/main` e sul `page.css` del compito 9 | sulla pagina giusta tutto verde; col difetto del passo 7, rossi i due temi, la scala e la copia — `--color-bg` —, e la guardia verde; con un `page.css` senza token, rossa la guardia sola |
+
+**Il banco**, dal testo del piano coi difetti 1–8, sulla landing a `a3280ee`:
+
+| Compito | Visto |
+|---|---|
+| 1–6 | ogni rosso e ogni verde del piano: tutto come scritto |
+| 7 | `12 passed`, e `8 passed` sui testi veri, con ogni parola da due lettere in su; poi `4 failed \| 4 passed`, i rossi su `Indce`, sull'apostrofo dritto, su `open source` e su `Tema 2` |
+| 8 | `24 failed`, poi `24 passed`; nel passo 11, `6 failed \| 18 passed`, con `Download daemon` nel rosso di `says nothing that is not in the files of the texts`, nelle due lingue; `62 passed` |
+| 9 | `1 failed \| 4 passed` e `14 failed`; `5 passed` e `38 passed`; nel passo 7, `4 failed \| 1 passed`, con `--color-text-faint`, `--ref-neutral-48` e `--color-bg`, e `6 failed \| 8 passed`, i rossi sui tre test che il passo nomina — `page.waitForFunction` e `locator.click` fuori tempo —; `71 passed`. Sulla pagina giusta `page.emulateMedia` arriva al `data-theme`, e un `localStorage` che lancia `SecurityError` non dà errori |
+| 10 | coi passi scalati: `1 failed \| 5 passed`, la console; `44 passed` e l'icona del kit; `6 failed`, poi `44 passed`; `71 passed` |
+| 11 | `Test Files  4 failed \| 1 passed (5)`; `44 passed`; `8 failed \| 16 passed`, axe sul segno della fonte; `24 passed`; nel passo 7, `8 failed \| 16 passed`, poi `4 failed \| 20 passed` — «Vai al contenuto» col fuoco fuori dallo schermo, e l'indice a `y` = −71 —, alla fine `68 passed`; `71 passed` |
+| 12 | `8 passed`; `6 failed \| 2 passed` e `2 failed \| 6 passed`; `76 passed`; `71 passed` |
+| 13 | `7 passed` e `3 passed`; `1 failed \| 2 passed`; `Missing script: "gate"`; il cancello verde in 190 s, `81 passed` e `76 passed`; il passo 8 in 449 s, fermo a `page` due volte e senza `npm audit`, la seconda con `Test Files  7 failed (7)`; la CI a mano verde in 181 s, `80 passed \| 1 skipped (81)` col test del kit elencato con `↓`. Il passo 13 non gira: il push del banco non arriva a GitHub |
+
+Tutto come scritto. Alla fine la landing del banco è pulita, coi tredici commit dei compiti.
+
+**Un limite del banco, non del piano.** `report.txt` mostra le prime 60 righe utili di ogni comando: i conti del passo 7
+del compito 11, e quelli del cancello, dove `--reporter=verbose` elenca ogni test, si leggono nel log del comando.
