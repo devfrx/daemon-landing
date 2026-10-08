@@ -1273,8 +1273,14 @@ git add src/lib checks && git commit -m "t1(compito 6): il controllo delle fonti
 - `cspell-lib` 10.3.6 e `@cspell/dict-it-it` 3.1.7.
 
 **Le parole che i dizionari non conoscono** e che la pagina usa apposta stanno in `words.ts`, con il loro perché:
-`daemon` e `devfrx` nelle due lingue; in italiano `kernel`, la parola inglese che i documenti di daemon usano, e
-`English`; in inglese `Italiano`. **Le parole vietate** sono quelle della §1 del disegno, in ogni loro forma —
+`daemon` e `devfrx` nelle due lingue; in italiano `kernel`, la parola inglese che i documenti di daemon usano, `GPU` e
+`GB`, che il dizionario italiano non ha, `English` ed `EN`; in inglese `Italiano`. **Ogni parola da due lettere in
+su:** cspell di base salta quelle sotto le quattro, e un refuso in «per», «che» o «the» passerebbe; una lettera sola i
+dizionari la accettano sempre. **Costo dichiarato:** ogni sigla nuova di due o tre lettere nei testi italiani si
+aggiunge a mano fra le parole note, come «ADR» quando arriverà.
+
+⚠️ **Richiamo del 2026-10-08:** i refusi si cercano in ogni parola da due lettere in su (risposta del proprietario: A)
+— la storia nella §18 del [verbale delle prove](../../archivio/2026-10-07-prove-piano-landing.md). **Le parole vietate** sono quelle della §1 del disegno, in ogni loro forma —
 «open-sourced», «opensource», «downloads», «scaricare» —, perché la regola parla di ciò che dicono (risposta del
 proprietario: A, il 2026-10-07). **Costo dichiarato:** anche una frase vera come «niente da scaricare» è rossa, e va
 scritta in un altro modo.
@@ -1299,9 +1305,11 @@ describe('unknownWords', () => {
     expect(await unknownWords('A local desktop assistant, for a single user.', 'en')).toEqual([]);
   });
 
-  test('returns a typo', async () => {
+  test('returns a typo, a short one too', async () => {
     expect(await unknownWords('Un asistente desktop locale.', 'it')).toEqual(['asistente']);
     expect(await unknownWords('A local destkop assistant.', 'en')).toEqual(['destkop']);
+    expect(await unknownWords('Un assistente nle desktop.', 'it')).toEqual(['nle']);
+    expect(await unknownWords('A local desktop assistant for teh user.', 'en')).toEqual(['teh']);
   });
 
   test('does not take one language for the other', async () => {
@@ -1310,7 +1318,7 @@ describe('unknownWords', () => {
   });
 
   test('knows the names the page uses on purpose', async () => {
-    expect(await unknownWords('daemon, devfrx, kernel, English', 'it')).toEqual([]);
+    expect(await unknownWords('daemon, devfrx, kernel, GPU, GB, English, EN', 'it')).toEqual([]);
     expect(await unknownWords('daemon, devfrx, Italiano', 'en')).toEqual([]);
   });
 });
@@ -1380,12 +1388,17 @@ import { spellCheckDocument } from 'cspell-lib';
 export type Language = 'it' | 'en';
 
 // The words that the dictionaries do not know and that the page uses on purpose: daemon's name and its owner's on
-// GitHub; in Italian, "kernel", the English word daemon's documents use, and "English", the name of the other language
-// written in that language — as "Italiano" is in English.
+// GitHub; in Italian, "kernel", the English word daemon's documents use, "GPU" and "GB", which the Italian dictionary
+// does not have, and "English" and "EN", the name of the other language written in that language — as "Italiano" is in
+// English.
 const KNOWN_WORDS: Record<Language, string[]> = {
-  it: ['daemon', 'devfrx', 'kernel', 'English'],
+  it: ['daemon', 'devfrx', 'kernel', 'GPU', 'GB', 'English', 'EN'],
   en: ['daemon', 'devfrx', 'Italiano'],
 };
+
+// Every word of two letters or more: by default cspell skips the words under four, and a typo in "per", "che" or "the"
+// would pass. A word of one letter the dictionaries accept anyway.
+const MIN_WORD_LENGTH = 2;
 
 const ITALIAN_DICTIONARY = createRequire(import.meta.url).resolve('@cspell/dict-it-it/cspell-ext.json');
 
@@ -1395,7 +1408,7 @@ export async function unknownWords(text: string, language: Language): Promise<st
   const result = await spellCheckDocument(
     { uri: `text.${language}.txt`, text, languageId: 'plaintext', locale: language },
     { generateSuggestions: false, noConfigSearch: true },
-    settings,
+    { ...settings, minWordLength: MIN_WORD_LENGTH },
   );
   // A text that was not checked, or a dictionary that did not load, would look like a text without typos.
   if (!result.checked || (result.errors?.length ?? 0) > 0) {
