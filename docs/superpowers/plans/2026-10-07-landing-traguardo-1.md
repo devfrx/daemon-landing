@@ -16,7 +16,7 @@
 | 2 | Gli strumenti e i vincoli | ✅ approvata il 2026-10-07 |
 | 3 | I testi | ✅ approvata il 2026-10-07 |
 | 4 | La mappa dei file | ✅ approvata il 2026-10-07 |
-| 5 | I compiti | 🔶 i compiti 1–11 approvati il 2026-10-07; il compito 12 scritto e rifatto dal testo, da approvare; il compito 13 da scrivere |
+| 5 | I compiti | 🔶 i compiti 1–11 approvati il 2026-10-07, il 12 il 2026-10-08; il compito 13 da scrivere |
 | 6 | Come si riprende | 🔶 oggi è la consegna della sesta sessione, del 2026-10-07 e del 2026-10-08 |
 
 ---
@@ -3405,9 +3405,11 @@ pochi millisecondi.
 
 ⚠️ **`Network.emulateNetworkConditions` è deprecato** nel protocollo di Chrome, a favore di
 `Network.emulateNetworkConditionsByRule` e `Network.overrideNetworkState`, che sono sperimentali: `pdl/domains/Network.pdl`
-di `ChromeDevTools/devtools-protocol`, guardato il 2026-10-07. Lighthouse e Puppeteer usano ancora il primo, DevTools i
-secondi; su Chrome 154 danno le stesse misure (§15 del verbale). **Costo dichiarato:** il giorno che Chrome lo toglie, il
-controllo è rosso con un errore del protocollo — mai in silenzio — e si riscrive coi comandi nuovi.
+di `ChromeDevTools/devtools-protocol`, guardato il 2026-10-07. Lighthouse e Puppeteer usano ancora il primo, e così
+Playwright per `setOffline` — `crNetworkManager.ts` al tag `v1.63.0`, guardato il 2026-10-08 —; DevTools i secondi; su
+Chrome 154 danno le stesse misure (§15 del verbale). Si resta sul primo (risposta del proprietario: A, il 2026-10-08).
+**Costo dichiarato:** il giorno che Chrome lo toglie, il controllo è rosso con un errore del protocollo — mai in
+silenzio — e si riscrive coi comandi nuovi.
 
 **La misura.** `web-vitals` entra con `page.addInitScript`, prima della pagina e senza passare dalla rete, e scrive i
 valori in `window.__vitals`. Prima di toccare la pagina si aspetta che la rete taccia da 500 ms, `networkidle`: uno
@@ -3618,7 +3620,7 @@ git add package.json package-lock.json checks && git commit -m "t1(compito 12): 
 |---|---|
 | §1–§4 | approvate, coi richiami del 2026-10-07 |
 | §5, compiti 1–11 | ✅ approvati; rifatti dal testo nella sesta sessione, con daemon a `82d121d`: tutto come scritto |
-| §5, compito 12 | scritto e rifatto dal testo, sulla landing del compito 11, con daemon a `82d121d`: tutto come scritto; **da presentare e approvare** |
+| §5, compito 12 | ✅ approvato il 2026-10-08, com'è: col comando deprecato della rete, `Network.emulateNetworkConditions` (risposta: A) |
 | §5, compito 13 | da scrivere |
 
 Il codice dei compiti si prova prima di scriverlo (risposta del proprietario: A). La storia delle prove è nel
@@ -3630,10 +3632,11 @@ Il codice dei compiti si prova prima di scriverlo (risposta del proprietario: A)
 2. leggi `CLAUDE.md`, questo piano e il disegno, per intero;
 3. le skill: `superpowers:writing-plans`, `anthropic-skills:decision-principles`, `anthropic-skills:dev-communication`,
    `anthropic-skills:frontend-craft`;
-4. rilancia ciò che invecchia, coi comandi della tabella in fondo;
-5. presenta al proprietario il compito 12, con le scelte della tabella qui sotto, e chiedi il sì: A, com'è adesso, col
+4. ✅ rilancia ciò che invecchia, coi comandi della tabella in fondo — fatto nella sessione dopo, con daemon a
+   `a27ea6a`: tutto come nella tabella, e in più Playwright, che usa anche lui il comando deprecato della rete;
+5. ✅ presenta al proprietario il compito 12, con le scelte della tabella qui sotto, e chiedi il sì: A, com'è adesso, col
    comando deprecato della rete; B, col comando nuovo, `Network.emulateNetworkConditionsByRule` — e allora il compito si
-   corregge e si rifà dal testo. Commit e push;
+   corregge e si rifà dal testo. Commit e push — fatto nella sessione dopo (risposta: A);
 6. scrivi il compito 13, provato prima nello scratchpad dal testo del piano — col banco della §15 del verbale, e i compiti
    1–12 che ne sono la base; a mano i passi del checkout della CI —, e presentalo;
 7. la §6 definitiva, cioè come si esegue; lo stato in testa; questa consegna in archivio; commit e push.
@@ -3710,6 +3713,6 @@ radice di daemon, in Git Bash, dopo `export MSYS_NO_PATHCONV=1`.
 | Chrome chiede `/favicon.ico` da solo, e un 404 lì è un errore in console | il passo 2 del compito 10 |
 | i tag WCAG di axe-core 4.13.0 sono `wcag2a`, `wcag2aa`, `wcag21a`, `wcag21aa` e `wcag22aa`; l'unica regola di `wcag22aa` è `target-size` | `gh api "repos/dequelabs/axe-core/contents/doc/API.md?ref=v4.13.0" --jq .content \| base64 -d \| grep -n 'wcag2'`; `node -e "console.log(require('axe-core').getRules(['wcag22aa']).map((rule) => rule.ruleId))"`, dalla landing |
 | Vitest 4.1.11 lancia i file di un progetto insieme, fino a un processore meno uno; `fileParallelism: false` in un progetto li mette in fila, dopo gli altri progetti; `--fileParallelism` da riga di comando lo scavalca | `resolveMaxWorkers` e `groupSpecs` in `node_modules/vitest/dist/chunks/cli-api.*.js`; il passo 2 del compito 11 |
-| `Network.emulateNetworkConditions` è deprecato, a favore di `Network.emulateNetworkConditionsByRule` e `Network.overrideNetworkState`, sperimentali; Lighthouse e Puppeteer usano il primo, DevTools il secondo | `gh api "repos/ChromeDevTools/devtools-protocol/contents/pdl/domains/Network.pdl" --jq .content \| base64 -d \| grep -n -B2 'command emulateNetworkConditions'`; `grep -n 'Network\.'` su `core/lib/emulation.js` di `GoogleChrome/lighthouse` e su `packages/puppeteer-core/src/cdp/NetworkManager.ts` di `puppeteer/puppeteer`; `gh api "search/code?q=emulateNetworkConditionsByRule+repo:ChromeDevTools/devtools-frontend" --jq '.items[].path'` |
+| `Network.emulateNetworkConditions` è deprecato, a favore di `Network.emulateNetworkConditionsByRule` e `Network.overrideNetworkState`, sperimentali; Lighthouse e Puppeteer usano il primo, e Playwright 1.63.0 per `setOffline`; DevTools il secondo | `gh api "repos/ChromeDevTools/devtools-protocol/contents/pdl/domains/Network.pdl" --jq .content \| base64 -d \| grep -n -B2 'command emulateNetworkConditions'`; `grep -n 'Network\.'` su `core/lib/emulation.js` di `GoogleChrome/lighthouse` e su `packages/puppeteer-core/src/cdp/NetworkManager.ts` di `puppeteer/puppeteer`; `gh api "repos/microsoft/playwright/contents/packages/playwright-core/src/server/chromium/crNetworkManager.ts?ref=v1.63.0" --jq .content \| base64 -d \| grep -n 'emulateNetworkConditions'`; `gh api "search/code?q=emulateNetworkConditionsByRule+repo:ChromeDevTools/devtools-frontend" --jq '.items[].path'` |
 | per la CLS, Chrome tratta un cambio della finestra come un input, per 500 ms | `gh api "repos/chromium/chromium/contents/third_party/blink/renderer/core/layout/layout_shift_tracker.cc" --jq .content \| base64 -d \| grep -n -A2 'kTimerDelay =\|NotifyViewportSizeChanged()'` |
 | `web-vitals` 6.2.3: `web-vitals.iife.js` non è fra gli `exports` del pacchetto, e sta accanto a ciò che dà `require.resolve('web-vitals')` | `grep -n -A12 '"exports"' node_modules/web-vitals/package.json`, dalla landing col pacchetto |
