@@ -2289,7 +2289,8 @@ git add astro.config.mjs vitest.config.ts package.json package-lock.json src che
   mostra; Geist per il testo e Barlow 600 per le etichette, ospitati dalla pagina; lo stile che legge solo i ruoli dei
   token, `--color-*`;
 - `checks/tokens.test.ts`: rosso se la pagina legge un token che daemon non definisce in uno dei due temi, o una scala
-  `--ref-*`, che la regola di `themes.css` vieta a chi la usa;
+  `--ref-*`, che la regola di `themes.css` vieta a chi la usa; e se ridefinisce un token di daemon, perché la pagina non
+  ne tiene copia;
 - in `checks/support/landing.ts`, `open(language, options, before)`: `before` gira sulla pagina prima che si carichi, ed
   è lì che un controllo comincia ad ascoltare;
 - `checks/themes.page.test.ts`: il tema del sistema, anche quando cambia a pagina aperta; l'interruttore, col mouse e
@@ -2308,6 +2309,10 @@ la pagina si disegni; quindi `astro check` non lo controlla, e lo provano soltan
 
 ⚠️ **Richiamo del 2026-10-08:** il controllo dei temi prova anche il cambio del sistema a pagina aperta e il browser che
 rifiuta la memoria, e `before` arriva col compito 9 (risposta del proprietario: A) — la storia nella §18 del
+[verbale delle prove](../../archivio/2026-10-07-prove-piano-landing.md).
+
+⚠️ **Richiamo del 2026-10-08:** il controllo dei token è rosso anche quando la pagina ridefinisce un token di daemon
+(risposta del proprietario: A) — la storia nella §18 del
 [verbale delle prove](../../archivio/2026-10-07-prove-piano-landing.md).
 
 - [ ] **Passo 1 — i pacchetti**, fuori dal cancello (vincolo 9):
@@ -2396,7 +2401,8 @@ import { openDaemon } from '../src/lib/daemon';
 import { block, declaredTokens, readTokens } from '../src/lib/tokens';
 
 // The gate's check of the tokens (§5.4 of the design): the colours are the roles of daemon's themes.css at origin/main,
-// and a token the page reads that daemon no longer defines is a red.
+// and a token the page reads that daemon no longer defines is a red; so is a token of daemon that the page declares
+// itself, because the page keeps no copy.
 const themes = openDaemon().read('gui/src/tokens/themes.css');
 
 // Every stylesheet and component of the page: wherever a token can be read.
@@ -2421,6 +2427,11 @@ describe('the tokens of the page', () => {
   test('the page reads roles, never a scale, so that no theme can be bypassed', () => {
     // The rule of daemon's themes.css: "No component reads a `--ref-*`".
     expect([...read].filter((name) => name.startsWith('--ref-'))).toEqual([]);
+  });
+
+  test('the page redefines no token of daemon: the colours are daemon’s, and the page keeps no copy', () => {
+    // A token the page declares itself escapes the probes above, which leave the page's own tokens out.
+    expect([...own].filter((name) => declaredTokens(themes).has(name))).toEqual([]);
   });
 });
 ```
@@ -2588,8 +2599,8 @@ describe.each(['en', 'it'] as const)('the themes of the page in %s', (language) 
 npx vitest run checks/tokens.test.ts; rm -rf dist && npm run build && npx vitest run --project page checks/themes.page.test.ts
 ```
 
-Atteso: `1 failed | 3 passed`, il rosso su `sees what it judges` — la pagina non legge ancora nessun token, e senza
-quella guardia gli altri tre passerebbero a vuoto —; poi `14 failed`.
+Atteso: `1 failed | 4 passed`, il rosso su `sees what it judges` — la pagina non legge ancora nessun token, e senza
+quella guardia gli altri quattro passerebbero a vuoto —; poi `14 failed`.
 
 - [ ] **Passo 5 — i temi e i caratteri.** `src/components/Theme.astro`:
 
@@ -2816,18 +2827,18 @@ footer {
 rm -rf dist && npm run build && npx vitest run checks/tokens.test.ts && npx vitest run --project page
 ```
 
-Atteso: `0 errors`; `4 passed`; `38 passed`, i 24 della pagina e i 14 dei temi. I caratteri sono in `dist/_astro/`.
+Atteso: `0 errors`; `5 passed`; `38 passed`, i 24 della pagina e i 14 dei temi. I caratteri sono in `dist/_astro/`.
 
-- [ ] **Passo 7 — l'altro senso.** Un token che daemon non definisce, una scala `--ref-*`, la pagina senza
-`data-theme="dark"`, lo script del tema che ascolta il sistema su un evento che non esiste, e `chosen()` che rilancia
-l'errore della memoria rifiutata; poi i file tornano com'erano:
+- [ ] **Passo 7 — l'altro senso.** Un token che daemon non definisce, una scala `--ref-*`, un token di daemon
+ridefinito dalla pagina, la pagina senza `data-theme="dark"`, lo script del tema che ascolta il sistema su un evento che
+non esiste, e `chosen()` che rilancia l'errore della memoria rifiutata; poi i file tornano com'erano:
 
 ```bash
 d=$(mktemp -d) && cp src/styles/page.css src/layouts/Page.astro src/components/Theme.astro "$d/" && node --input-type=module - <<'EOF'
 import { readFileSync, writeFileSync } from 'node:fs';
 
 const replace = (file, from, to) => writeFileSync(file, readFileSync(file, 'utf8').replace(from, to));
-replace('src/styles/page.css', 'color: var(--color-text-muted);', 'color: var(--color-text-faint);\n  border-color: var(--ref-neutral-48);');
+replace('src/styles/page.css', 'color: var(--color-text-muted);', 'color: var(--color-text-faint);\n  border-color: var(--ref-neutral-48);\n  --color-bg: #000;');
 replace('src/layouts/Page.astro', ' data-theme="dark"', '');
 replace('src/components/Theme.astro', "system.addEventListener('change'", "system.addEventListener('changed'");
 replace('src/components/Theme.astro', '      } catch {\n        return null;\n      }', '      } catch (error) {\n        throw error;\n      }');
@@ -2836,12 +2847,13 @@ npx vitest run checks/tokens.test.ts; rm -rf dist && npm run build && npx vitest
 cp "$d/page.css" src/styles/ && cp "$d/Page.astro" src/layouts/ && cp "$d/Theme.astro" src/components/ && rm -rf dist && npm run build && npx vitest run checks/tokens.test.ts && npx vitest run --project page
 ```
 
-Atteso: prima `3 failed | 1 passed`, con `--color-text-faint` e `--ref-neutral-48` nei rossi; poi `6 failed | 8
-passed`, i rossi su `is dark without JavaScript, and has no switch, which needs it`, su `follows a change of the system,
-while the visitor has not chosen` e su `keeps the switch working where the browser refuses the storage`; alla fine
-`4 passed` e `38 passed`.
+Atteso: prima `4 failed | 1 passed`, con `--color-text-faint`, `--ref-neutral-48` e `--color-bg` nei rossi; poi
+`6 failed | 8 passed`, i rossi su `is dark without JavaScript, and has no switch, which needs it`, su `follows a change
+of the system, while the visitor has not chosen` e su `keeps the switch working where the browser refuses the storage`;
+alla fine `5 passed` e `38 passed`. `--color-bg` è ridefinito sul segno della fonte, che non ha uno sfondo suo: la pagina
+non cambia aspetto, e i temi restano verdi su quel difetto.
 
-- [ ] **Passo 8 — il resto, e le vulnerabilità.** `npm test -- --project checks`, poi `npm audit`. Atteso: `70 passed`,
+- [ ] **Passo 8 — il resto, e le vulnerabilità.** `npm test -- --project checks`, poi `npm audit`. Atteso: `71 passed`,
 e `found 0 vulnerabilities`.
 
 - [ ] **Passo 9 — il commit.**
@@ -3083,7 +3095,7 @@ cp "$d/Page.astro" src/layouts/ && rm -rf dist && npm run build && npx vitest ru
 
 Atteso: prima `6 failed`, i tre controlli in tutte e due le lingue; poi di nuovo `44 passed`.
 
-- [ ] **Passo 5 — il resto, e le vulnerabilità.** `npm test -- --project checks`, poi `npm audit`. Atteso: `70 passed`,
+- [ ] **Passo 5 — il resto, e le vulnerabilità.** `npm test -- --project checks`, poi `npm audit`. Atteso: `71 passed`,
 e `found 0 vulnerabilities`.
 
 - [ ] **Passo 6 — il commit.**
@@ -3517,7 +3529,7 @@ screen, and shows its ring`, perché «Vai al contenuto» ha il fuoco sopra lo s
 brings its section below itself`, perché l'indice scorre via. axe resta verde in tutti e due i giri: nessun difetto tocca
 una sua regola WCAG. Alla fine `68 passed`.
 
-- [ ] **Passo 8 — il resto, e le vulnerabilità.** `npm test -- --project checks`, poi `npm audit`. Atteso: `70 passed`,
+- [ ] **Passo 8 — il resto, e le vulnerabilità.** `npm test -- --project checks`, poi `npm audit`. Atteso: `71 passed`,
 e `found 0 vulnerabilities`.
 
 - [ ] **Passo 9 — il commit.**
@@ -3735,7 +3747,7 @@ Atteso: prima `6 failed | 2 passed`: l'LCP, la CLS e l'INP nelle due lingue, cia
 verde; poi `2 failed | 6 passed`: la guardia nelle due lingue, con `responseEnd` di pochi millisecondi; alla fine
 `76 passed`.
 
-- [ ] **Passo 4 — il resto, e le vulnerabilità.** `npm test -- --project checks`, poi `npm audit`. Atteso: `70 passed`,
+- [ ] **Passo 4 — il resto, e le vulnerabilità.** `npm test -- --project checks`, poi `npm audit`. Atteso: `71 passed`,
 e `found 0 vulnerabilities`.
 
 - [ ] **Passo 5 — il commit.**
@@ -3771,7 +3783,7 @@ dei compiti 4–12, la build con l'indirizzo (compito 8). **Lascia:**
 |---|---|
 | `npm ci --no-audit --no-fund` | installa ciò che il lockfile fissa |
 | `dist/` tolta, poi `npm run build` | Astro svuota la cartella in cui scrive, ma una build che scrive altrove lascerebbe ai controlli della pagina quella vecchia, in `dist/`: senza la riga che la toglie, il cancello è verde su una build così |
-| i due progetti di Vitest, uno per volta | in un giro solo un progetto che non trova file è verde — senza i file della pagina, `npx vitest run` dà `80 passed` —; da solo è rosso, `No test files found` |
+| i due progetti di Vitest, uno per volta | in un giro solo un progetto che non trova file è verde — senza i file della pagina, `npx vitest run` dà `81 passed` —; da solo è rosso, `No test files found` |
 | `checks` con `--reporter=verbose` | un test saltato si scrive col suo nome. Di base Vitest 4.1.11 scrive soltanto `1 skipped`, e non dice quale |
 | `npm audit`, alla fine | senza `--audit-level`, come in daemon |
 
@@ -4048,8 +4060,8 @@ Poi, in `package.json`, lo script del cancello accanto agli altri due:
 ```
 
 - [ ] **Passo 7 — il cancello, verde.** `npm run gate`. Atteso: le righe dei passi nel loro ordine, `-------- install`,
-`-------- build`, `-------- checks`, `-------- page` e `-------- advisories`; `0 errors` e `2 page(s) built`; `80 passed`,
-cioè i 70 di prima, i 7 di `brand.ts` e i 3 del suo controllo; `76 passed` nel browser; `found 0 vulnerabilities`; e
+`-------- build`, `-------- checks`, `-------- page` e `-------- advisories`; `0 errors` e `2 page(s) built`; `81 passed`,
+cioè i 71 di prima, i 7 di `brand.ts` e i 3 del suo controllo; `76 passed` nel browser; `found 0 vulnerabilities`; e
 l'uscita è 0.
 
 - [ ] **Passo 8 — l'altro senso.** Un difetto per ciascuna ragione del cancello, un giro per difetto: i controlli della
@@ -4139,7 +4151,7 @@ git add package.json src/lib checks scripts .github && git commit -m "t1(compito
 d=$(mktemp -d) && (unset MSYS_NO_PATHCONV && git init -q "$d/daemon" && git -C "$d/daemon" remote add origin https://github.com/devfrx/daemon && git -C "$d/daemon" fetch -q --no-tags --depth=1 origin +refs/heads/main:refs/remotes/origin/main && git -C "$d/daemon" checkout -q -B main refs/remotes/origin/main && git clone -q . "$d/daemon/landing") && (cd "$d/daemon/landing" && npm run gate); echo "the gate: exit $?"; rm -rf "$d"
 ```
 
-Atteso: il verde del passo 7, tranne i controlli: `79 passed | 1 skipped (80)`, e il test del kit elencato con `↓`,
+Atteso: il verde del passo 7, tranne i controlli: `80 passed | 1 skipped (81)`, e il test del kit elencato con `↓`,
 perché il kit non c'è; `the gate: exit 0`.
 
 - [ ] **Passo 12 —** `git push`.
@@ -4173,7 +4185,7 @@ silenzio.
 |---|---|
 | §1–§4 | approvate, coi richiami del 2026-10-07 e del 2026-10-08 |
 | §5, compiti 1–13 | ✅ approvati: l'1–11 il 2026-10-07, il 12 e il 13 il 2026-10-08 |
-| il pre-controllo | 🔶 a metà: otto difetti, tutti decisi dal proprietario, tutti A. Scritti nel piano l'1–6; da scrivere il 7 e l'8, come dice la tabella qui sotto; poi il banco |
+| il pre-controllo | 🔶 a metà: otto difetti, tutti decisi dal proprietario, tutti A. Scritti nel piano l'1–7; da scrivere l'8, come dice la tabella qui sotto; poi il banco |
 | l'esecuzione | ⏳ da cominciare: nessun compito è eseguito, e la landing ha soltanto i documenti |
 
 Gli otto difetti, con le prove e le risposte, sono nella §18 del
