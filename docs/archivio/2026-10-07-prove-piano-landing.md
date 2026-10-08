@@ -2,10 +2,10 @@
 
 > 🗄️ **Che cos'è questo file.** Il verbale delle prove fatte il 2026-10-07 per scrivere la §5 del
 > [piano del traguardo 1](../superpowers/plans/2026-10-07-landing-traguardo-1.md) — le §1–§9 nel pomeriggio, la §10 e la
-> §11 nella sessione dopo, la §12 e la §13 in quella dopo ancora, la §14 nella quinta, la §15 nella sesta: il proprietario ha scelto di provare il codice prima
-> di scriverlo nel piano (risposta: A). Le prove
-> sono girate nello scratchpad di ciascuna sessione, poi cancellato. Qui c'è la storia; il piano porta ciò che ne è
-> venuto.
+> §11 nella sessione dopo, la §12 e la §13 in quella dopo ancora, la §14 nella quinta, la §15 nella sesta, la §16 nella
+> settima, il 2026-10-08: il proprietario ha scelto di provare il codice prima di scriverlo nel piano (risposta: A). Le
+> prove sono girate nello scratchpad di ciascuna sessione, poi cancellato; dalla §16 il programma del banco sta accanto a
+> questo file. Qui c'è la storia; il piano porta ciò che ne è venuto.
 
 **La macchina:** Windows 11, Git Bash, Node 24.19.0, npm 11.17.0, Chrome 154.0.8037.98. I pacchetti, alle versioni
 esatte della §2.1 del piano.
@@ -321,3 +321,37 @@ compito 12 rifatto dal testo del piano, sulla landing del compito 11, con daemon
 |---|---|
 | i permessi del `GITHUB_TOKEN` sono di sola lettura, in `devfrx/daemon-landing` e in `devfrx/daemon`: un blocco `permissions` non serve, e daemon non lo scrive | `gh api repos/devfrx/daemon-landing/actions/permissions/workflow`, e lo stesso per `devfrx/daemon` |
 | da Node 24.19.0, `spawnSync('npm', ['--version'], { shell: true })` scrive l'avviso `DEP0190`; col comando in una stringa sola, no | `node -e`, sulle due forme |
+
+## 16. La settima sessione: il banco in archivio
+
+Il 2026-10-08, dopo il sì al compito 12. Il banco come nella §15, con daemon a `a27ea6a`. Il programma che prende il
+codice dal piano si era perso con lo scratchpad per la seconda volta: è stato riscritto con le stesse regole, e da qui
+sta accanto a questo verbale, [`2026-10-08-banco-prove-piano-landing.mjs`](2026-10-08-banco-prove-piano-landing.mjs),
+coi comandi che preparano il banco in testa (risposta del proprietario: A). Un compito nuovo aggiunge i suoi comandi alla
+tabella `INLINE` del programma.
+
+| Compito | Visto |
+|---|---|
+| 1–6 | ogni rosso e ogni verde del piano, dal suo testo: tutto come scritto, compresi gli innesti dei compiti 4 e 6 |
+| 7–12 | non rifatti: la sessione si è chiusa prima, e il banco si è fermato all'inizio del compito 7 |
+
+**Un inciampo del banco, non del piano.** Al passo 1 del compito 4 il programma non trovava le parole dell'innesto: nel
+piano la frase va a capo a metà, fra «accanto a quello della» e «build». Ora confronta il testo come si legge, con uno
+spazio solo fra le parole, per gli innesti e per i comandi scritti nel testo.
+
+**Per il compito 13**, guardato il 2026-10-08:
+
+| Che cosa | Fonte |
+|---|---|
+| `scripts/gate-gui.sh` lancia i due progetti di Vitest uno per volta perché, dentro un giro solo, un progetto che non trova file è verde: Vitest 4.1.11 scrive «No test files found» solo quando il giro intero è vuoto, misurato là il 2026-09-24 | il commento in `scripts/gate-gui.sh` di daemon a `origin/main` |
+| la CI di daemon: `push` su ogni ramo e `pull_request`, nessuno `schedule`; `shell: bash` scritto apposta, perché l'immagine Windows ha tre `bash` — di Git, di MSYS2 e di WSL —; `actions/setup-node@v7` con `node-version-file: gui/package.json` e `package-manager-cache: false`, la decisione 47 di daemon | `.github/workflows/quality-gate.yml` di daemon a `origin/main` |
+| `actions/setup-node` alla `v7` è la v7.1.0; `node-version-file` si risolve a partire da `GITHUB_WORKSPACE`; la cache automatica legge il `package.json` alla radice di `GITHUB_WORKSPACE`, dentro un `try`, e senza quel file non parte | `gh api repos/actions/setup-node/releases/latest`; `src/main.ts` di `actions/setup-node` al tag `v7` |
+| Playwright 1.63.0 usa `Network.emulateNetworkConditions` per `setOffline` | `packages/playwright-core/src/server/chromium/crNetworkManager.ts` di `microsoft/playwright` al tag `v1.63.0` |
+
+**Dedotto, da provare scrivendo il compito 13:**
+
+| Che cosa | Da che cosa |
+|---|---|
+| con `shell: bash` su Windows, Git Bash riscriverebbe `LANDING_BASE=/daemon-landing/` dato in `env:`, prima che arrivi a Node: serve `MSYS_NO_PATHCONV: 1`, oppure la shell predefinita del runner, perché il cancello è Node | la §1 |
+| con `MSYS_NO_PATHCONV=1`, una cartella di `mktemp -d` passata a `git` non si trova: nella CI a mano, `git` gira in una subshell con `unset MSYS_NO_PATHCONV` | la consegna della sesta sessione, *«Da sapere subito»* |
+| senza `src/pages/` la build esce con 0 e nessuna pagina: senza `dist/` tolta, i controlli della pagina leggerebbero la build vecchia. È il rosso con cui provare il cancello | la §1, e il passo 3 del compito 3 |
