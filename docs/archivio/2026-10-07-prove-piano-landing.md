@@ -3,9 +3,9 @@
 > 🗄️ **Che cos'è questo file.** Il verbale delle prove fatte il 2026-10-07 per scrivere la §5 del
 > [piano del traguardo 1](../superpowers/plans/2026-10-07-landing-traguardo-1.md) — le §1–§9 nel pomeriggio, la §10 e la
 > §11 nella sessione dopo, la §12 e la §13 in quella dopo ancora, la §14 nella quinta, la §15 nella sesta, la §16 nella
-> settima, il 2026-10-08: il proprietario ha scelto di provare il codice prima di scriverlo nel piano (risposta: A). Le
-> prove sono girate nello scratchpad di ciascuna sessione, poi cancellato; dalla §16 il programma del banco sta accanto a
-> questo file. Qui c'è la storia; il piano porta ciò che ne è venuto.
+> settima e la §17 nell'ottava, il 2026-10-08: il proprietario ha scelto di provare il codice prima di scriverlo nel
+> piano (risposta: A). Le prove sono girate nello scratchpad di ciascuna sessione, poi cancellato; dalla §16 il programma
+> del banco sta accanto a questo file. Qui c'è la storia; il piano porta ciò che ne è venuto.
 
 **La macchina:** Windows 11, Git Bash, Node 24.19.0, npm 11.17.0, Chrome 154.0.8037.98. I pacchetti, alle versioni
 esatte della §2.1 del piano.
@@ -355,3 +355,61 @@ spazio solo fra le parole, per gli innesti e per i comandi scritti nel testo.
 | con `shell: bash` su Windows, Git Bash riscriverebbe `LANDING_BASE=/daemon-landing/` dato in `env:`, prima che arrivi a Node: serve `MSYS_NO_PATHCONV: 1`, oppure la shell predefinita del runner, perché il cancello è Node | la §1 |
 | con `MSYS_NO_PATHCONV=1`, una cartella di `mktemp -d` passata a `git` non si trova: nella CI a mano, `git` gira in una subshell con `unset MSYS_NO_PATHCONV` | la consegna della sesta sessione, *«Da sapere subito»* |
 | senza `src/pages/` la build esce con 0 e nessuna pagina: senza `dist/` tolta, i controlli della pagina leggerebbero la build vecchia. È il rosso con cui provare il cancello | la §1, e il passo 3 del compito 3 |
+
+## 17. L'ottava sessione: i compiti 1–12 rifatti, e il compito 13 provato
+
+Il 2026-10-08, dopo la settima. Il banco come nella §16, coi comandi in testa al programma, con daemon a `ca2a0d4`: due
+commit di documenti dell'audit dopo `a27ea6a`, che non toccano né le cinque fonti né la GUI.
+
+**Due inciampi del banco, non del piano**, e il programma corretto:
+
+| | L'inciampo | La correzione |
+|---|---|---|
+| 1 | la copia del piano dentro il banco, clonata prima del `.gitattributes`, ha gli a-capo di Windows, e il programma non trovava nessun compito: `no task 1 in the plan` | legge il piano con qualunque a-capo |
+| 2 | un innesto prendeva il primo blocco del suo passo, anche quando era un file da scrivere: il passo 6 del compito 13 ha un file e un frammento | un frammento va nel blocco che segue le sue parole; uno che non trova il suo blocco è un errore |
+
+| Compito | Visto |
+|---|---|
+| 1–12 | ogni rosso e ogni verde del piano, dal suo testo: tutto come scritto |
+
+**Il compito 13, provato** sulla landing del compito 12, coi file nello scratchpad:
+
+| Provato | Visto |
+|---|---|
+| i test delle impronte | `Cannot find module './brand'`, poi `7 passed`. Nove difetti messi nel codice, uno per volta — lo schema senza `strictObject`, la data e l'impronta qualsiasi, la nota mancante senza il suo messaggio, le copie non registrate ignorate, le copie e il kit sempre uguali, un file mancante preso per buono, l'impronta in base64 —: ciascuno fa rosso almeno un test |
+| il controllo del cancello | `3 passed` col kit accanto; un byte in più in una copia, `1 failed \| 2 passed`; senza il kit — la sua copia nel banco spostata, mai quella vera —, `2 passed \| 1 skipped (3)` |
+| che cosa scrive Vitest 4.1.11 di un test saltato | di base, soltanto `1 skipped`: né il nome del test, né un `console.warn` del file, né la nota di `context.skip`. Con `--reporter=verbose`, il test col suo nome e `↓`, e la nota fra parentesi quadre: 93 righe per tutto il progetto `checks` |
+| Astro senza `src/pages/`, dopo una build buona | `0 page(s) built`, l'uscita a 0, e `dist/` vuota: Astro svuota da solo la cartella in cui scrive. L'abbozzo diceva il contrario |
+| un giro solo coi due progetti, senza i file della pagina | `80 passed`, l'uscita a 0; il progetto `page` da solo, `No test files found, exiting with code 1` |
+| il cancello | `Missing script: "gate"`; poi verde, in 183 s: `80 passed`, `70 passed`, `found 0 vulnerabilities`, nessun avviso `DEP0190` |
+| i due difetti del passo 8, e il verde dopo | 391 s per i tre giri. Tutte e due le volte fermo a `page`, l'uscita a 1, nessun `npm audit`; la seconda, `page.goto: net::ERR_HTTP_RESPONSE_CODE_FAILURE`, e `40 failed \| 30 skipped (70)` |
+| la build che scrive altrove, col cancello senza la riga che toglie `dist/` | verde: i controlli della pagina leggono la build di prima. Con la riga, rosso |
+| `git init` di una cartella di `mktemp -d`, con `MSYS_NO_PATHCONV=1` | la cartella finisce in `C:\tmp\`; senza il flag, al suo posto. Quella creata così è stata tolta, e il resto di `C:\tmp\` non si è toccato |
+| `LANDING_BASE=/daemon-landing/` data da PowerShell a Git Bash, come la dà il runner | Node riceve `C:/Program Files/Git/daemon-landing/`; con `MSYS_NO_PATHCONV=1`, `/daemon-landing/`; da PowerShell senza Git Bash, `/daemon-landing/` |
+| la CI a mano | daemon da GitHub, a profondità 1, e la landing dentro, senza il kit: verde in 157 s, con `79 passed \| 1 skipped (80)` e il test del kit elencato con `↓` |
+
+**Il testo del piano.** Il codice del compito 13 l'ha messo nel piano un programma, dai file che hanno girato. Poi il
+compito è stato rifatto dal testo, sulla landing del compito 12, col banco corretto:
+
+| Passo | Visto |
+|---|---|
+| 1–4 | `Cannot find module './brand'`; `7 passed`; `3 passed`; `1 failed \| 2 passed`, col rosso sulla copia, poi `3 passed` |
+| 5–7 | `Missing script: "gate"`, con l'uscita a 1; il file e l'innesto in `package.json`; il cancello verde, in 154 s |
+| 8 | 368 s per i tre giri: fermo a `page` due volte, con l'uscita a 1 e senza `npm audit`; poi verde |
+| 10–12 | il commit; la CI a mano verde, in 148 s, col test del kit elencato con `↓`; il `git push` al repository nudo del banco |
+| 13 | non girato: il push del banco non arriva a GitHub |
+
+Tutto come scritto. I file scritti dal testo sono uguali, byte per byte, a quelli provati, e alla fine la landing del banco
+è pulita.
+
+**Per il compito 13**, guardato il 2026-10-08:
+
+| Che cosa | Fonte |
+|---|---|
+| il giro di daemon del 2026-10-08 avvisa che `actions/checkout@v4` chiede Node 20, *«but are being forced to run on Node.js 24»*; e un altro avviso dice che `ubuntu-latest` passa a Ubuntu 26 dal 2026-10-19 | `gh api repos/devfrx/daemon/check-runs/113180090886/annotations` |
+| GitHub ha tolto Node 20 dai suoi runner il 2026-09-23; il consiglio è aggiornare le azioni a una versione su Node 24 | https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/ |
+| `actions/checkout`: la v4 gira su `node20`; la v5.0.0, la v6.0.0, la v7.0.0 e la v7.0.1 su `node24`. Le note: la v5 passa a Node 24, la v6 tiene le credenziali in un file a parte, la v7 blocca il checkout di una PR di un fork per `pull_request_target` e `workflow_run` | `action.yml` ai tag; `gh api "repos/actions/checkout/releases"` |
+| alla v4 e alla v7.0.1, `getFetchUrl` dà `https://github.com/devfrx/daemon` e `getRefSpec` di `main`, senza commit, `+refs/heads/main*:refs/remotes/origin/main*` | `src/url-helper.ts` e `src/ref-helper.ts` di `actions/checkout`, ai due tag |
+| un checkout svuota una cartella che non ha un `.git` del suo repository: per questo daemon va prima della landing | `prepareExistingDirectory` in `src/git-directory-helper.ts` di `actions/checkout`, al tag `v4` |
+| sui runner, `setup-node@v7` con l'intervallo della GUI prende Node 24.21.0 dalla cache, con npm 11.19.0 | il log del giro di daemon del 2026-10-08, sui due sistemi |
+| il percorso più lungo di daemon è di 101 caratteri, e quello sotto `node_modules/` della landing di 122: dentro i 260 di Windows anche sotto `D:\a\daemon-landing\daemon-landing\daemon\landing\` | `git ls-tree -r --name-only origin/main`; `find node_modules -type f`, nella landing del banco |

@@ -16,8 +16,8 @@
 | 2 | Gli strumenti e i vincoli | ✅ approvata il 2026-10-07 |
 | 3 | I testi | ✅ approvata il 2026-10-07 |
 | 4 | La mappa dei file | ✅ approvata il 2026-10-07 |
-| 5 | I compiti | 🔶 i compiti 1–11 approvati il 2026-10-07, il 12 il 2026-10-08; il compito 13 da scrivere |
-| 6 | Come si riprende | 🔶 oggi è la consegna della settima sessione, del 2026-10-08 |
+| 5 | I compiti | 🔶 i compiti 1–11 approvati il 2026-10-07, il 12 il 2026-10-08; il 13 scritto il 2026-10-08, da presentare e approvare |
+| 6 | Come si riprende | 🔶 oggi è la consegna dell'ottava sessione, del 2026-10-08 |
 
 ---
 
@@ -3602,109 +3602,521 @@ git add package.json package-lock.json checks && git commit -m "t1(compito 12): 
 
 - [ ] **Passo 6 —** `git push`.
 
+### Compito 13 — le impronte, il cancello e la CI
+
+**File:** crea `src/lib/brand.ts`, `src/lib/brand.test.ts`, `checks/brand.test.ts`, `scripts/gate.mjs`,
+`.github/workflows/quality-gate.yml`; modifica `package.json`.
+
+**Usa:** `brand/` e la sua nota (compito 2), Zod da `astro/zod` (compito 5), i progetti `checks` e `page` coi controlli
+dei compiti 4–12, la build con l'indirizzo (compito 8). **Lascia:**
+
+- in `src/lib/brand.ts`: `brandNote`, lo schema della nota, e il suo tipo `BrandNote`; `fingerprint(path): string`;
+  `readNote(folder): BrandNote`; `copyProblems(folder): string[]` e `kitProblems(folder, root): string[]`. I messaggi
+  sono quelli del programma di prova del compito 2, tranne uno: una copia che la nota non registra si nomina;
+- `checks/brand.test.ts`, il controllo del cancello: le copie di `brand/` contro la nota, su ogni macchina; il kit contro
+  la nota, dove `../daemon_kit` sta accanto alla landing. Dove non c'è — in CI — il test si salta, e il cancello lo
+  scrive col suo nome: è il «lo scrive» della §7.2 del disegno;
+- `npm run gate`, cioè `scripts/gate.mjs`: i passi di `scripts/gate-gui.sh` di daemon, nel suo ordine, ciascuno
+  annunciato da una riga `-------- <passo>`; al primo rosso si ferma, con l'uscita di quel passo;
+- `.github/workflows/quality-gate.yml`: la CI, a ogni push e una volta a settimana, su Linux e su Windows (§6.3 del
+  disegno).
+
+**Il cancello** fa ciò che fa `scripts/gate-gui.sh` (§2.1), per le sue ragioni, misurate qui il 2026-10-08:
+
+| Passo | Perché così |
+|---|---|
+| `npm ci --no-audit --no-fund` | installa ciò che il lockfile fissa |
+| `dist/` tolta, poi `npm run build` | Astro svuota la cartella in cui scrive, ma una build che scrive altrove lascerebbe ai controlli della pagina quella vecchia, in `dist/`: senza la riga che la toglie, il cancello è verde su una build così |
+| i due progetti di Vitest, uno per volta | in un giro solo un progetto che non trova file è verde — senza i file della pagina, `npx vitest run` dà `80 passed` —; da solo è rosso, `No test files found` |
+| `checks` con `--reporter=verbose` | un test saltato si scrive col suo nome. Di base Vitest 4.1.11 scrive soltanto `1 skipped`, e non dice quale |
+| `npm audit`, alla fine | senza `--audit-level`, come in daemon |
+
+Da Node ogni passo è una stringa sola con `shell: true`: con una lista di argomenti Node 24 avvisa, `DEP0190`.
+
+**La CI** è quella di daemon — Linux e Windows con `fail-fast: false`, `actions/setup-node@v7` con `node-version-file` e
+`package-manager-cache: false`, nessuna azione di terzi, nessun blocco `permissions`, perché il `GITHUB_TOKEN` è già di
+sola lettura nei due repository —, con queste differenze:
+
+| | La landing | Perché |
+|---|---|---|
+| i checkout | due: daemon a `main` in `daemon/`, poi la landing dentro, in `daemon/landing` | la pagina legge `origin/main` di daemon nella cartella che contiene la landing (§6.2 del disegno). Con `ref: main` il checkout lascia `origin/main`, e `origin` è `https://github.com/devfrx/daemon`, che `originIsGitHub` accetta. Prima daemon: un checkout svuota una cartella che non è già il suo repository, e nell'ordine opposto quello di daemon porterebbe via la landing — `src/git-directory-helper.ts` di `actions/checkout` |
+| `actions/checkout` | la v7 | ⏳ da approvare, la seconda domanda della §6. daemon usa la v4, che gira su Node 20: GitHub l'ha tolto dai suoi runner il 2026-09-23, e ora la forza su Node 24, con un avviso a ogni giro. La v7 gira su Node 24, e per la landing fa ciò che fa la v4: lo stesso `origin`, lo stesso `origin/main` |
+| quando | a ogni push, e il lunedì alle 5:37 UTC; niente `pull_request` | la volta a settimana dice se daemon ha cambiato una frase citata (§6.3 del disegno). GitHub può ritardare uno `schedule`, soprattutto all'inizio dell'ora: per questo il minuto 37 |
+| la shell del cancello | quella del runner: `pwsh` su Windows, `bash` su Linux | ⏳ da approvare, la prima domanda della §6. Il cancello è Node, e la shell non conta; con `shell: bash`, come daemon, Git Bash riscriverebbe `LANDING_BASE` prima che arrivi a Node, e servirebbe anche `MSYS_NO_PATHCONV: 1` |
+| l'indirizzo | quello di prova, in `env:` | dove si pubblica lo decide il proprietario (§7.5 del disegno) |
+
+**Costi dichiarati:**
+
+- la CI gira anche per un commit di sola documentazione, come quella di daemon;
+- lo `schedule` gira sull'ultimo commit del ramo predefinito, può tardare, e in un repository pubblico GitHub lo spegne
+  dopo 60 giorni senza attività; il suo primo giro arriva il lunedì dopo l'esecuzione, e si guarda con
+  `gh run list -R devfrx/daemon-landing --event schedule`;
+- la velocità sulle macchine di GitHub non è misurata: il profilo rallenta di 4 volte un processore già più lento del
+  nostro, e qui l'LCP è 1,0–1,4 s su una soglia di 2,5 (§15 del verbale). Lo dirà il primo giro della CI;
+- il rosso della CI non si prova su GitHub: lo prova il cancello, nel passo 8, e la CI lancia lo stesso comando;
+- il kit vero non si tocca (§7.2 del disegno): i rossi del kit li prova il test del passo 1, su un kit di prova;
+- il cancello dura qualche minuto, e i passi 7, 8 e 11 lo lanciano cinque volte: la misura è nella §17 del verbale.
+
+- [ ] **Passo 1 — le impronte, il test rosso.** `src/lib/brand.test.ts`:
+
+```ts
+import { createHash } from 'node:crypto';
+import { appendFileSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { afterEach, describe, expect, test } from 'vitest';
+import { brandNote, copyProblems, fingerprint, kitProblems, readNote } from './brand';
+
+const roots: string[] = [];
+afterEach(() => {
+  for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
+});
+
+const sha256 = (text: string) => createHash('sha256').update(text).digest('hex');
+
+// A kit in miniature and its copy, as on the owner's machine: daemon_kit/ beside the landing, and brand/ inside it with
+// its note.
+function kit(): { root: string; brand: string } {
+  const root = mkdtempSync(join(tmpdir(), 'landing-brand-'));
+  roots.push(root);
+  const brand = join(root, 'landing', 'brand');
+  mkdirSync(join(root, 'daemon_kit'));
+  mkdirSync(brand, { recursive: true });
+  const note: Record<string, unknown> = {};
+  for (const [name, content] of [
+    ['mark.svg', '<svg></svg>\n'],
+    ['splash.html', '<p>splash</p>\n'],
+  ]) {
+    writeFileSync(join(root, 'daemon_kit', name), content);
+    writeFileSync(join(brand, name), content);
+    note[name] = { from: `daemon_kit/${name}`, copied: '2026-10-08', sha256: sha256(content) };
+  }
+  writeFileSync(join(brand, 'provenance.json'), JSON.stringify(note));
+  return { root, brand };
+}
+
+describe('fingerprint', () => {
+  test('is the SHA-256 of the file, in 64 hexadecimal digits', () => {
+    expect(fingerprint(join(kit().brand, 'mark.svg'))).toBe(sha256('<svg></svg>\n'));
+  });
+});
+
+describe('the note', () => {
+  test('records where each copy comes from, the day of the copy and the fingerprint, and nothing else', () => {
+    const entry = { from: 'daemon_kit/mark.svg', copied: '2026-10-08', sha256: sha256('<svg></svg>\n') };
+    expect(brandNote.safeParse({ 'mark.svg': entry }).success).toBe(true);
+    expect(brandNote.safeParse({ 'mark.svg': { ...entry, copied: '08/10/2026' } }).success).toBe(false);
+    expect(brandNote.safeParse({ 'mark.svg': { ...entry, sha256: 'abc' } }).success).toBe(false);
+    expect(brandNote.safeParse({ 'mark.svg': { ...entry, size: 12 } }).success).toBe(false);
+  });
+
+  test('is read beside the copies, and its absence is a red', () => {
+    const { brand } = kit();
+    expect(Object.keys(readNote(brand))).toEqual(['mark.svg', 'splash.html']);
+    rmSync(join(brand, 'provenance.json'));
+    expect(() => readNote(brand)).toThrow(/provenance\.json is missing/);
+  });
+});
+
+describe('copyProblems', () => {
+  test('accepts copies that are the files the note records', () => {
+    expect(copyProblems(kit().brand)).toEqual([]);
+  });
+
+  test('names a copy that changed, one that is gone, and one the note does not record', () => {
+    const { brand } = kit();
+    appendFileSync(join(brand, 'mark.svg'), ' ');
+    rmSync(join(brand, 'splash.html'));
+    writeFileSync(join(brand, 'extra.svg'), '<svg></svg>\n');
+    expect(copyProblems(brand)).toEqual([
+      `${brand}/extra.svg: not in the note`,
+      `${brand}/mark.svg: not the recorded fingerprint`,
+      `${brand}/splash.html: not the recorded fingerprint`,
+    ]);
+  });
+});
+
+describe('kitProblems', () => {
+  test('accepts a kit that is still what was copied', () => {
+    const { root, brand } = kit();
+    expect(kitProblems(brand, root)).toEqual([]);
+  });
+
+  test('names a file of the kit that changed, and one that is gone', () => {
+    const { root, brand } = kit();
+    appendFileSync(join(root, 'daemon_kit', 'mark.svg'), ' ');
+    rmSync(join(root, 'daemon_kit', 'splash.html'));
+    expect(kitProblems(brand, root)).toEqual([
+      `${root}/daemon_kit/mark.svg: not the recorded fingerprint`,
+      `${root}/daemon_kit/splash.html: not the recorded fingerprint`,
+    ]);
+  });
+});
+```
+
+Lancia `npx vitest run src/lib/brand.test.ts`. Atteso: `Cannot find module './brand'`.
+
+- [ ] **Passo 2 — il codice.** `src/lib/brand.ts`:
+
+```ts
+import { createHash } from 'node:crypto';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { z } from 'astro/zod';
+
+/** The note beside the copies of the kit. */
+const NOTE = 'provenance.json';
+
+/** The note of brand/: for each copy, the file of the kit it comes from, the day it was copied and its fingerprint (§7.2 of the design). */
+export const brandNote = z.record(
+  z.string(),
+  z.strictObject({ from: z.string().min(1), copied: z.iso.date(), sha256: z.hash('sha256') }),
+);
+
+export type BrandNote = z.infer<typeof brandNote>;
+
+/** The SHA-256 fingerprint of the file at `path`, in 64 hexadecimal digits. */
+export function fingerprint(path: string): string {
+  return createHash('sha256').update(readFileSync(path)).digest('hex');
+}
+
+/** The note of the copies in `folder`, checked against its schema. */
+export function readNote(folder: string): BrandNote {
+  const path = `${folder}/${NOTE}`;
+  if (!existsSync(path)) throw new Error(`${path} is missing`);
+  return brandNote.parse(JSON.parse(readFileSync(path, 'utf8')));
+}
+
+/** Whether `path` is a file with the fingerprint `sha256`. */
+function isRecorded(path: string, sha256: string): boolean {
+  return existsSync(path) && fingerprint(path) === sha256;
+}
+
+/** What does not match between the copies in `folder` and their note: a copy the note does not record, or one that is not the recorded file. */
+export function copyProblems(folder: string): string[] {
+  const note = readNote(folder);
+  const unrecorded = readdirSync(folder)
+    .filter((name) => name !== NOTE && !Object.hasOwn(note, name))
+    .sort()
+    .map((name) => `${folder}/${name}: not in the note`);
+  const changed = Object.entries(note)
+    .filter(([name, { sha256 }]) => !isRecorded(`${folder}/${name}`, sha256))
+    .map(([name]) => `${folder}/${name}: not the recorded fingerprint`);
+  return [...unrecorded, ...changed];
+}
+
+/** What does not match between the kit, under `root`, and the note of `folder`: a file of the kit that is gone, or that changed since the copy. */
+export function kitProblems(folder: string, root: string): string[] {
+  return Object.values(readNote(folder))
+    .filter(({ from, sha256 }) => !isRecorded(`${root}/${from}`, sha256))
+    .map(({ from }) => `${root}/${from}: not the recorded fingerprint`);
+}
+```
+
+Lo stesso comando del passo 1. Atteso: `7 passed`.
+
+- [ ] **Passo 3 — il controllo del cancello.** `checks/brand.test.ts`:
+
+```ts
+import { existsSync } from 'node:fs';
+import { describe, expect, test } from 'vitest';
+import { copyProblems, kitProblems, readNote } from '../src/lib/brand';
+
+// The gate's check of brand/ (§7.2 of the design): the copies are the files their note records, on every machine; and
+// the kit, where it is beside the landing, is still what was copied. Where it is not — in CI — the test is skipped.
+const KIT = '../daemon_kit';
+
+describe('the copies of the kit in brand/', () => {
+  test('sees what it judges', () => {
+    // An empty note and an empty brand/ would agree with each other.
+    expect(Object.keys(readNote('brand')).length).toBeGreaterThan(0);
+  });
+
+  test('are the files their note records', () => {
+    expect(copyProblems('brand')).toEqual([]);
+  });
+
+  test.skipIf(!existsSync(KIT))('are still the files of the kit, where ../daemon_kit is beside the landing', () => {
+    expect(kitProblems('brand', '..')).toEqual([]);
+  });
+});
+```
+
+Lancia `npx vitest run checks/brand.test.ts`. Atteso: `3 passed`, col kit accanto.
+
+- [ ] **Passo 4 — l'altro senso, sulle copie vere.** Un byte in più in una copia, poi la copia giusta torna al suo
+posto, come nel passo 7 del compito 2:
+
+```bash
+printf ' ' >> brand/daemon-mark-dark.svg; npx vitest run checks/brand.test.ts; cp ../daemon_kit/daemon-mark-dark.svg brand/ && npx vitest run checks/brand.test.ts
+```
+
+Atteso: prima `1 failed | 2 passed`, col rosso `brand/daemon-mark-dark.svg: not the recorded fingerprint`; poi
+`3 passed`.
+
+- [ ] **Passo 5 — il cancello, rosso.** `npm run gate`. Atteso: `Missing script: "gate"`, e l'uscita è 1.
+
+- [ ] **Passo 6 — il cancello.** `scripts/gate.mjs`:
+
+```js
+// The quality gate of the landing, `npm run gate` (§6.1 of the design): the steps of daemon's scripts/gate-gui.sh, in its
+// order, each announced by its line. At the first red the gate stops, with the exit code of that step. It is a Node
+// program and not a bash script, because on Windows `bash` may open WSL's (§4 of the plan); `npm run gate` runs it from
+// the landing's folder.
+import { spawnSync } from 'node:child_process';
+import { rmSync } from 'node:fs';
+
+/** Runs `command`: a red ends the gate, with its exit code. */
+function run(command) {
+  // One string, not a list of arguments: with `shell: true`, a list makes Node 24 warn, DEP0190.
+  const result = spawnSync(command, { shell: true, stdio: 'inherit' });
+  if (result.error) throw result.error;
+  if (result.status !== 0) process.exit(result.status ?? 1);
+}
+
+console.log('-------- install');
+// `npm ci` installs what the lockfile pins: a manifest and a lockfile that disagree are a red.
+run('npm ci --no-audit --no-fund');
+console.log('-------- build');
+// No output of a previous build: Astro empties the folder it writes, and a build that writes elsewhere would leave the
+// checks of the page reading the old one, in dist/.
+rmSync('dist', { recursive: true, force: true });
+run('npm run build');
+console.log('-------- checks');
+// One project at a time: inside one run of Vitest a project that finds no file is green; alone, it is red. Every check
+// is listed, so that a skipped one is named: the kit's, where ../daemon_kit is not beside the landing (§7.2 of the
+// design).
+run('npm test -- --project checks --reporter=verbose');
+console.log('-------- page');
+run('npm test -- --project page');
+console.log('-------- advisories');
+// Last, as in daemon: it asks the registry how the pinned packages are, and it can go red without a commit.
+run('npm audit');
+```
+
+Poi, in `package.json`, lo script del cancello accanto agli altri due:
+
+```json
+  "scripts": {
+    "build": "astro check && astro build",
+    "test": "vitest run",
+    "gate": "node scripts/gate.mjs"
+  },
+```
+
+- [ ] **Passo 7 — il cancello, verde.** `npm run gate`. Atteso: le righe dei passi nel loro ordine, `-------- install`,
+`-------- build`, `-------- checks`, `-------- page` e `-------- advisories`; `0 errors` e `2 page(s) built`; `80 passed`,
+cioè i 70 di prima, i 7 di `brand.ts` e i 3 del suo controllo; `70 passed` nel browser; `found 0 vulnerabilities`; e
+l'uscita è 0.
+
+- [ ] **Passo 8 — l'altro senso.** Un difetto per ciascuna ragione del cancello, un giro per difetto: i controlli della
+pagina tolti da `checks/`, e la build che scrive altrove, in `elsewhere/`; poi i file tornano com'erano, e il cancello gira
+ancora:
+
+```bash
+d=$(mktemp -d) && mv checks/*.page.test.ts "$d/" && npm run gate; echo "the gate: exit $?"; mv "$d"/*.page.test.ts checks/
+d=$(mktemp -d) && cp astro.config.mjs "$d/" && node --input-type=module - <<'EOF'
+import { readFileSync, writeFileSync } from 'node:fs';
+
+const replace = (file, from, to) => writeFileSync(file, readFileSync(file, 'utf8').replace(from, to));
+replace('astro.config.mjs', '  base,\n', "  base,\n  outDir: 'elsewhere',\n");
+EOF
+npm run gate; echo "the gate: exit $?"; cp "$d/astro.config.mjs" . && rm -rf elsewhere && npm run gate
+```
+
+Atteso: prima il cancello si ferma a `-------- page`, con `No test files found, exiting with code 1`, e `the gate: exit
+1`; poi si ferma di nuovo a `-------- page`, con `page.goto: net::ERR_HTTP_RESPONSE_CODE_FAILURE` — `dist/` non c'è
+più —, `Test Files  7 failed (7)` e `the gate: exit 1`; nessuna delle due volte `-------- advisories`; alla fine il verde
+del passo 7.
+
+- [ ] **Passo 9 — la CI.** `.github/workflows/quality-gate.yml`:
+
+```yaml
+# The CI of the landing (§6.3 of the design): the gate of the owner's machine, `npm run gate`, on Linux and on Windows,
+# at every push and once a week.
+name: quality gate
+
+on:
+  push:
+    branches: ["**"]
+  # Once a week as well, to see whether daemon has changed a sentence the page quotes: a red without a commit of the
+  # landing is the point (§6.3 of the design). GitHub runs it on the last commit of the default branch and may delay it,
+  # above all at the start of an hour, hence minute 37; in a public repository it switches it off after 60 days without
+  # activity.
+  schedule:
+    - cron: "37 5 * * 1"
+
+jobs:
+  gate:
+    # Linux and Windows, the same gate: decision 44 of daemon. Without `fail-fast: false`, a red on one system would
+    # cancel the other.
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      # daemon at its main, and the landing inside it, as on the owner's machine: the page reads daemon's origin/main in
+      # the folder that holds the landing (§6.2 of the design). daemon first: a checkout empties a folder that is not
+      # already its repository, so in the other order daemon's checkout would take the landing away.
+      - uses: actions/checkout@v7
+        with:
+          repository: devfrx/daemon
+          ref: main
+          path: daemon
+      - uses: actions/checkout@v7
+        with:
+          path: daemon/landing
+      # Node from engines.node of the landing's manifest, and no npm cache: as daemon does.
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: daemon/landing/package.json
+          package-manager-cache: false
+      # The gate is a Node program, so the step keeps the runner's own shell (§4 of the plan). The address is the trial
+      # one: where the page is published, the owner decides (§7.5 of the design).
+      - run: npm run gate
+        working-directory: daemon/landing
+        env:
+          LANDING_SITE: https://landing.invalid
+          LANDING_BASE: /daemon-landing/
+```
+
+- [ ] **Passo 10 — il commit.**
+
+```bash
+git add package.json src/lib checks scripts .github && git commit -m "t1(compito 13): le impronte, il cancello e la CI -- brand/ contro la sua nota, e contro il kit dove c'è; npm run gate coi passi di gate-gui.sh di daemon, fermo al primo rosso; la CI su Linux e Windows a ogni push e il lunedì, con daemon a main e la landing dentro; i rossi provati"
+```
+
+- [ ] **Passo 11 — la CI, a mano.** Prima del push, i passi della CI su questa macchina: in una cartella di prova, daemon a
+`main` come lo scarica `actions/checkout` — `git init`, `git fetch --depth=1` di `main` in `origin/main`,
+`git checkout -B main` —, poi la landing del commit del passo 10, clonata dentro, senza il kit accanto; e il cancello.
+`git` gira senza `MSYS_NO_PATHCONV`: col flag, `git init` della cartella di prova la crea in `C:\tmp\`:
+
+```bash
+d=$(mktemp -d) && (unset MSYS_NO_PATHCONV && git init -q "$d/daemon" && git -C "$d/daemon" remote add origin https://github.com/devfrx/daemon && git -C "$d/daemon" fetch -q --no-tags --depth=1 origin +refs/heads/main:refs/remotes/origin/main && git -C "$d/daemon" checkout -q -B main refs/remotes/origin/main && git clone -q . "$d/daemon/landing") && (cd "$d/daemon/landing" && npm run gate); echo "the gate: exit $?"; rm -rf "$d"
+```
+
+Atteso: il verde del passo 7, tranne i controlli: `79 passed | 1 skipped (80)`, e il test del kit elencato con `↓`,
+perché il kit non c'è; `the gate: exit 0`.
+
+- [ ] **Passo 12 —** `git push`.
+
+- [ ] **Passo 13 — la CI, su GitHub.** Il push del passo 12 è il primo che la CI vede. Il suo giro si trova con
+`gh run list -R devfrx/daemon-landing --commit "$(git rev-parse HEAD)"`, e si segue con
+`gh run watch <id> -R devfrx/daemon-landing --exit-status`. Atteso: `quality gate` verde, su `ubuntu-latest` e su
+`windows-latest`; e il test del kit saltato in tutti e due, `gh run view <id> -R devfrx/daemon-landing --log | grep -c
+'1 skipped'`: `2`. Se è rossa, ci si ferma e lo si dice: la divergenza si registra, e il piano non si corregge in
+silenzio.
+
 ---
 
 ## 6. Come si riprende
 
-> 🔶 Oggi questa sezione è la consegna della settima sessione, del 2026-10-08: il piano è a metà. A piano finito, qui ci
-> sarà come si esegue, e questa consegna andrà in archivio. Le consegne di prima sono in archivio, parola per parola:
+> 🔶 Oggi questa sezione è la consegna dell'ottava sessione, del 2026-10-08: il piano è scritto per intero, e il compito
+> 13 aspetta il sì del proprietario. Dopo il sì, qui ci sarà come si esegue, e questa consegna andrà in archivio. Le
+> consegne di prima sono in archivio, parola per parola:
 > [del mattino](../../archivio/2026-10-07-consegna-piano-landing-mattina.md),
 > [del pomeriggio](../../archivio/2026-10-07-consegna-piano-landing-pomeriggio.md),
 > [della terza sessione](../../archivio/2026-10-07-consegna-piano-landing-terza-sessione.md),
 > [della quarta](../../archivio/2026-10-07-consegna-piano-landing-quarta-sessione.md),
-> [della quinta](../../archivio/2026-10-07-consegna-piano-landing-quinta-sessione.md) e
-> [della sesta](../../archivio/2026-10-08-consegna-piano-landing-sesta-sessione.md).
+> [della quinta](../../archivio/2026-10-07-consegna-piano-landing-quinta-sessione.md),
+> [della sesta](../../archivio/2026-10-08-consegna-piano-landing-sesta-sessione.md) e
+> [della settima](../../archivio/2026-10-08-consegna-piano-landing-settima-sessione.md).
 
 **Dove siamo:**
 
 | Parte | Stato |
 |---|---|
 | §1–§4 | approvate, coi richiami del 2026-10-07 |
-| §5, compiti 1–12 | ✅ approvati: l'1–11 il 2026-10-07; il 12 il 2026-10-08, com'è, col comando deprecato della rete (risposta: A) |
-| §5, compito 13 | da scrivere: c'è un abbozzo, qui sotto, mai girato |
+| §5, compiti 1–12 | ✅ approvati; rifatti dal testo nell'ottava sessione, con daemon a `ca2a0d4`: tutto come scritto |
+| §5, compito 13 | scritto il 2026-10-08: provato sul banco, poi rifatto dal testo, tutto come scritto; ⏳ da presentare, con le due domande qui sotto |
 
-Il codice dei compiti si prova prima di scriverlo (risposta del proprietario: A). La storia delle prove è nel
-[verbale](../../archivio/2026-10-07-prove-piano-landing.md), §16. Il programma del banco ora sta accanto al verbale,
-[`2026-10-08-banco-prove-piano-landing.mjs`](../../archivio/2026-10-08-banco-prove-piano-landing.mjs), coi comandi che
-preparano il banco in testa (risposta del proprietario: A): non si riscrive più, si copia nello scratchpad e si lancia.
+La storia delle prove è nel [verbale](../../archivio/2026-10-07-prove-piano-landing.md), §17. Il programma del banco,
+[`2026-10-08-banco-prove-piano-landing.mjs`](../../archivio/2026-10-08-banco-prove-piano-landing.mjs), porta ora anche il
+compito 13.
 
 **Il prossimo passo**, in una sessione nuova:
 
 1. dentro `landing/`: `git fetch --all --prune`, `git status -sb`, e il fast-forward se serve;
 2. leggi `CLAUDE.md`, questo piano e il disegno, per intero;
-3. le skill: `superpowers:writing-plans`, `anthropic-skills:decision-principles`, `anthropic-skills:dev-communication`,
-   `anthropic-skills:frontend-craft`;
+3. le skill: `superpowers:writing-plans`, `anthropic-skills:decision-principles`, `anthropic-skills:dev-communication`;
 4. rilancia ciò che invecchia, coi comandi della tabella in fondo;
-5. prepara il banco coi comandi in testa al programma, e rifai i compiti 1–12 dal testo del piano: sono la base del 13;
-6. scrivi il compito 13 partendo dall'abbozzo qui sotto: provato prima sul banco — e a mano i passi del checkout della
-   CI —, poi rifatto dal testo; presentalo, con la domanda qui sotto. Commit e push;
-7. la §6 definitiva, cioè come si esegue; lo stato in testa; questa consegna in archivio; commit e push.
+5. presenta il compito 13 al proprietario: che cosa fa, e che cosa le prove hanno cambiato rispetto all'abbozzo — la
+   tabella qui sotto —; poi la prima domanda, e solo dopo la sua risposta la seconda. Le risposte vanno nelle due righe ⏳
+   del compito. Se una risposta è B, il compito cambia: si rifà dal testo sul banco, dopo i compiti 1–12 che ne sono la
+   base. Commit e push;
+6. la §6 definitiva, cioè come si esegue; lo stato in testa; questa consegna in archivio; commit e push.
 
-**L'abbozzo del compito 13.** Idee, mai girate: si provano sul banco prima di scriverle.
+**Che cosa le prove hanno cambiato**, rispetto all'abbozzo della settima sessione:
 
-| Pezzo | L'idea |
-|---|---|
-| `src/lib/brand.ts`, col test accanto | `brandNote`, lo schema della nota con `astro/zod`, come i testi; `fingerprint(path)`, `readNote(folder)`, `copyProblems(folder)` e `kitProblems(folder, root)`, coi messaggi di `verify-brand.mjs` del compito 2. I rossi del kit, sul kit di prova del test |
-| `checks/brand.test.ts` | le copie contro la nota, sempre, con la guardia che la nota non sia vuota; il kit contro la nota con `test.skipIf`, quando `../daemon_kit` non c'è: in CI Vitest scrive il test come saltato |
-| `scripts/gate.mjs`, e `"gate"` in `package.json` | i passi del cancello, ciascuno annunciato da una riga `-------- <passo>` come in `gate-gui.sh`; al primo rosso esce con l'uscita di quel passo |
-| il rosso del cancello | `src/pages/` tolta: la build esce con 0 e nessuna pagina (compito 3, passo 3), e senza `dist/` tolta i controlli della pagina leggerebbero la build vecchia. Il cancello si ferma a `page`, e `npm audit` non gira |
-| `.github/workflows/quality-gate.yml` | `push` su ogni ramo, e uno `schedule` settimanale a un minuto che non sia l'inizio dell'ora; Linux e Windows, `fail-fast: false`; daemon a `main` in `daemon/`, poi la landing in `daemon/landing`; `actions/setup-node@v7` con `node-version-file: daemon/landing/package.json` e `package-manager-cache: false`, come daemon; `npm run gate` dentro `daemon/landing`, con l'indirizzo di prova in `env:` |
-| la CI a mano | in una cartella di prova, come fa `actions/checkout`: `git init`, `git fetch --depth=1` di `main` in `origin/main`, `git checkout -B main`; la landing clonata dentro; `npm run gate`, verde, col test del kit saltato. La CI vera, su GitHub, all'esecuzione del compito |
+| L'abbozzo | Le prove | Nel compito |
+|---|---|---|
+| con `src/pages/` tolta, senza `dist/` tolta i controlli leggerebbero la build vecchia | falso per Astro 7.3.6, che svuota da solo la cartella in cui scrive. La riga del cancello resta per una build che scrive altrove: senza, il cancello è verde su una build così | il secondo difetto del passo 8 è `outDir: 'elsewhere'` |
+| in CI Vitest scrive il test del kit come saltato | di base Vitest 4.1.11 scrive soltanto `1 skipped`, e non dice quale | il passo `checks` con `--reporter=verbose`: il test saltato ha il suo nome, con `↓` |
+| la shell della CI: Git Bash riscriverebbe `LANDING_BASE`, dedotto | visto su questa macchina, anche quando la variabile arriva dal processo padre, come la dà il runner; con `MSYS_NO_PATHCONV=1` no | la prima domanda |
+| `actions/checkout@v4`, come daemon | la v4 gira su Node 20, che GitHub ha tolto dai suoi runner il 2026-09-23: ora la forza su Node 24, con un avviso a ogni giro di daemon | la seconda domanda |
+| `git` in una subshell senza `MSYS_NO_PATHCONV`, dedotto | col flag, `git init` della cartella di `mktemp -d` la crea in `C:\tmp\` | il passo 11 |
 
-**La domanda**, da portare al proprietario col compito 13, una volta provata: la shell del passo che lancia il cancello
-in CI. A — quella predefinita del runner: il cancello è Node, e la shell non conta; B — `shell: bash`, come daemon, con
-`MSYS_NO_PATHCONV: 1` in `env:`, perché Git Bash riscriverebbe `LANDING_BASE` (§1 del verbale). È dedotto, non visto su
-GitHub.
+**Le due domande**, una per volta:
 
-**Già visto, per il compito 13:**
-
-| Che cosa si sa già | Nel verbale |
-|---|---|
-| in CI, `actions/checkout` con `ref: main` lascia `origin/main` nel clone di daemon, e `origin` è `https://github.com/devfrx/daemon`, senza `.git`: `originIsGitHub` lo accetta. Prima daemon, poi la landing dentro, con `path: daemon/landing`: nell'ordine opposto il primo checkout pulirebbe via il secondo. daemon usa la v4, e l'ultima è la v7.0.1: si segue daemon e si segnala la differenza | §6, §14 |
-| l'evento `schedule` gira sull'ultimo commit del ramo predefinito, può tardare all'inizio dell'ora, e in un repository pubblico si spegne dopo 60 giorni senza attività: un costo da dichiarare | §14 |
-| la verifica delle impronte di `brand/` è già scritta, come prova a mano, nel passo 2 del compito 2: `src/lib/brand.ts` ne è la versione che resta. Nel kit vero non si mette mai un difetto, perché `daemon_kit/` resta com'è (§7.2 del disegno) | — |
-| il cancello, nell'ordine di `scripts/gate-gui.sh`: `npm ci`, `dist/` tolta, la build con `LANDING_SITE` e `LANDING_BASE`, i progetti `checks` e `page` uno per volta — dentro un giro solo, un progetto che non trova file è verde —, `npm audit` alla fine; si ferma al primo rosso. Da Node, `npm` si lancia con `shell: true` e il comando in una stringa sola: con una lista di argomenti Node 24 avvisa, `DEP0190` | §15, §16 |
-| i permessi del `GITHUB_TOKEN` sono già di sola lettura, nei due repository: un blocco `permissions` non serve, e daemon non lo scrive | §15 |
-| la CI di daemon: `push` e `pull_request`, nessuno `schedule`; `shell: bash` scritto apposta, perché l'immagine Windows ha tre `bash`; `actions/setup-node@v7`, oggi la v7.1.0, che legge `node-version-file` a partire da `GITHUB_WORKSPACE` | §16 |
-| con `MSYS_NO_PATHCONV=1`, una cartella di `mktemp -d` passata a `git` non arriva: nella CI a mano, `git` gira in una subshell con `unset MSYS_NO_PATHCONV` | §16, dedotto |
-| la velocità sulle macchine di GitHub non è misurata: il profilo rallenta di 4 volte un processore già più lento del nostro, e qui l'LCP è 1,0–1,4 s su una soglia di 2,5. Lo dirà il primo giro della CI: un rischio da dichiarare | §15 |
+1. **La shell del passo che lancia il cancello, in CI.**
+   - **A** — quella del runner: `pwsh` su Windows, `bash` su Linux. Il cancello è Node, e la shell non conta; nessuna riga
+     in più. Costo: la CI della landing scrive una cosa diversa da quella di daemon.
+   - **B** — `shell: bash`, come daemon, con `MSYS_NO_PATHCONV: 1` in `env:`, perché Git Bash riscriverebbe
+     `LANDING_BASE`. Costo: due righe, per un problema che c'è solo con bash.
+   - Il consiglio: A. La landing ha un cancello in Node proprio per non dipendere da `bash` (§4, la prima scelta).
+2. **La versione di `actions/checkout`.**
+   - **A** — la v7, l'ultima: gira su Node 24, senza avvisi, e per la landing fa ciò che fa la v4 — lo stesso `origin`,
+     lo stesso `origin/main`. Costo: una versione diversa da daemon.
+   - **B** — la v4, come daemon: va oggi, ma a ogni giro GitHub avvisa che la forza su Node 24, e chiede di aggiornare.
+     Costo: un avviso a ogni giro, su una versione che GitHub tiene in vita a forza.
+   - Il consiglio: A. La CI di daemon ha lo stesso avviso: aggiornarla è lavoro di una sessione di daemon.
 
 **Da sapere subito:**
 
-- ⚠️ daemon si muove mentre si lavora: in questa sessione `origin/main` è rimasto a `a27ea6a`. Un commit di daemon non si
-  scrive mai come vero: si rilancia `git -C .. rev-parse --short origin/main`;
-- ⚠️ **questa macchina è corta di memoria**: 16 GB, e in questa sessione 1,3 GB liberi, con altre sessioni di Claude al
-  lavoro su daemon. Coi file insieme i controlli nel browser superavano le loro attese, e una misura del tempo presa qui
-  non dice com'è altrove. La memoria del momento: `powershell -NoProfile -Command "Get-CimInstance
-  Win32_OperatingSystem | Select-Object FreePhysicalMemory, TotalVisibleMemorySize, FreeVirtualMemory,
-  TotalVirtualMemorySize"`;
+- ⚠️ daemon si muove mentre si lavora: in questa sessione `origin/main` è passato da `a27ea6a` a `ca2a0d4`, due commit di
+  documenti dell'audit che non toccano né le cinque fonti né la GUI. Un commit di daemon non si scrive mai come vero: si
+  rilancia `git -C .. rev-parse --short origin/main`;
+- ⚠️ **questa macchina è corta di memoria**: 16 GB, e in questa sessione 1,6 GB liberi. La memoria del momento:
+  `powershell -NoProfile -Command "Get-CimInstance Win32_OperatingSystem | Select-Object FreePhysicalMemory,
+  TotalVisibleMemorySize, FreeVirtualMemory, TotalVirtualMemorySize"`;
 - ⚠️ dopo il giorno del piano sono uscite `astro` 7.3.7 e `playwright` 1.64.0: il piano resta alla 7.3.6 e alla 1.63.0,
   per la regola della §2.1 — Playwright segue la GUI di daemon, e una versione nuova si prende con un atto apposta;
-- su questa macchina daemon sta su `main`, con nella cartella il lavoro di un'altra sessione: da qui non si tocca;
-- `daemon_kit/` non è nascosta a daemon, `/landing/` sì: `git -C .. check-ignore -v daemon_kit landing/CLAUDE.md`. Il
-  `.gitignore` di daemon non ha ancora la riga `landing/`, ed è lavoro di daemon;
+- ⚠️ GitHub sposta `ubuntu-latest` su Ubuntu 26 dal 2026-10-19, dice un avviso nel giro di daemon: la CI della landing
+  gira per la prima volta all'esecuzione del compito 13, forse già lì;
+- il banco: i comandi in testa al suo programma, poi `node bench.mjs <il piano> <la landing del banco> <la cartella dei
+  log> 1 2 … 13`. Il programma legge il piano con qualunque a-capo, e innesta un frammento nel blocco che segue le sue
+  parole; il compito 13 lancia il cancello cinque volte;
+- su questa macchina daemon sta su `main`. `daemon_kit/` non è nascosta a daemon, `/landing/` sì:
+  `git -C .. check-ignore -v daemon_kit landing/CLAUDE.md`. Il `.gitignore` di daemon non ha ancora la riga `landing/`,
+  ed è lavoro di daemon;
 - Vitest 4 non mostra la console dei test verdi: per vedere i valori di una misura, `--reporter=verbose --silent=false`;
-- in Git Bash, con `MSYS_NO_PATHCONV=1`, un percorso `/c/…` passato a Node o a `git -C` non viene tradotto, e non si
-  trova: si passa `cygpath -w`;
+- in Git Bash, con `MSYS_NO_PATHCONV=1`, un percorso `/c/…` o `/tmp/…` passato a Node o a `git` non viene tradotto: si
+  passa `cygpath -w`, o si toglie il flag in una subshell. `git init` lo legge come `C:\tmp\…`;
 - Git Bash a volte non riesce a creare un processo, *«fork: retry: Resource temporarily unavailable»*: è l'ambiente, e si
   rilancia il passo;
 - su Windows `chrome.exe --version` apre il browser invece di scrivere la versione: la versione si legge dal nome della
   cartella, `ls "/c/Program Files/Google/Chrome/Application/"`.
 
-**Verificato il 2026-10-07 e il 2026-10-08, nella sesta e nella settima sessione.** Si rilancia, non si crede. I comandi `git` dalla
-radice di daemon, in Git Bash, dopo `export MSYS_NO_PATHCONV=1`.
+**Verificato fra il 2026-10-07 e il 2026-10-08, dalla sesta all'ottava sessione.** Si rilancia, non si crede. I comandi
+`git` dalla radice di daemon, in Git Bash, dopo `export MSYS_NO_PATHCONV=1`.
 
 | Fatto | Comando o fonte |
 |---|---|
 | le versioni della §2.1, e `web-vitals` 6.2.3; dopo il giorno del piano `astro` 7.3.7, del 2026-10-07 alle 21:37 UTC, e `playwright` 1.64.0; Node 24.19.0 e npm 11.17.0 su questa macchina | `npm view <pacchetto> version license`; `npm view <pacchetto> time`; `git show "origin/main:gui/package.json"`; `node --version`; `npm --version` |
-| `origin/main` di daemon era `a27ea6a` alla chiusura; l'audit c'è, col segno «(col N)» | `git rev-parse --short origin/main`; `git merge-base --is-ancestor origin/repo-audit/20260930-1510 origin/main`; `git show "origin/main:docs/README.md" \| grep -c 'col N'` |
-| le cinque citazioni della §3.4 si trovano, e fra `fc43188` e `a27ea6a` nessuna delle cinque fonti è cambiata | per ciascuna: `git show "origin/main:<fonte>" \| tr -d '\r' \| tr '\n' ' ' \| tr -s ' ' \| grep -cF -- '<citazione>'`; `git diff --stat fc43188 origin/main -- <le cinque fonti>` |
-| fra `973153f` e `a27ea6a` la GUI non è cambiata: manifesto, token, cancello, CI | `git diff --stat 973153f origin/main -- gui/package.json gui/src/tokens scripts/gate-gui.sh .github` |
+| `origin/main` di daemon era `ca2a0d4` alla chiusura, uguale a GitHub; l'audit c'è, col segno «(col N)» | `git rev-parse --short origin/main`; `git ls-remote origin refs/heads/main`; `git merge-base --is-ancestor origin/repo-audit/20260930-1510 origin/main`; `git show "origin/main:docs/README.md" \| grep -c 'col N'` |
+| le cinque citazioni della §3.4 si trovano, e fra `fc43188` e `ca2a0d4` nessuna delle cinque fonti è cambiata | per ciascuna: `git show "origin/main:<fonte>" \| tr -d '\r' \| tr '\n' ' ' \| tr -s ' ' \| grep -cF -- '<citazione>'`; `git diff --stat fc43188 origin/main -- <le cinque fonti>` |
+| fra `973153f` e `ca2a0d4` la GUI non è cambiata: manifesto, token, cancello, CI | `git diff --stat 973153f origin/main -- gui/package.json gui/src/tokens scripts/gate-gui.sh .github` |
 | `themes.css` di daemon: `:root` con le `--ref-*`; `[data-theme="dark"]` e `[data-theme="light"]` coi ruoli `--color-*` e `color-scheme` | `git show "origin/main:gui/src/tokens/themes.css"` |
 | in daemon i ruoli non di testo da 3:1 sono `border-strong`, `focus`, `mark` e `border-accent`; il radio acceso della GUI usa `--color-mark` | `git show "origin/main:gui/src/tokens/contrast.test.ts" \| grep -n 'non-text'`; `git grep -n 'color-mark' origin/main -- gui/src/components` |
 | la GUI: il testo in Geist Variable, le etichette e i numeri in Barlow 300–600, importati da `gui/src/tokens/index.ts` | `git show "origin/main:gui/src/tokens/index.ts"` |
-| la CI di daemon: `actions/checkout@v4`; `actions/setup-node@v7` con `node-version-file` e `package-manager-cache: false`; la matrice con `fail-fast: false`; `shell: bash`; nessuna azione di terzi; verde | `git show "origin/main:.github/workflows/quality-gate.yml"`; `gh run list -R devfrx/daemon -L 4` |
+| la CI di daemon: `actions/checkout@v4`; `actions/setup-node@v7` con `node-version-file` e `package-manager-cache: false`; la matrice con `fail-fast: false`; `shell: bash`; nessuna azione di terzi; verde, con l'avviso che `actions/checkout@v4` gira su Node 24 per forza | `git show "origin/main:.github/workflows/quality-gate.yml"`; `gh run list -R devfrx/daemon -L 4`; `gh api repos/devfrx/daemon/check-runs/<id del giro>/annotations --jq '.[].message'` |
+| sui runner di GitHub, `actions/setup-node@v7` con l'intervallo della GUI prende Node 24.21.0, con npm 11.19.0 | `gh run view -R devfrx/daemon --job <id> --log \| grep -E 'Found in cache\|node: v\|npm: '` |
 | `actions/setup-node` alla `v7` è la v7.1.0, e legge `node-version-file` a partire da `GITHUB_WORKSPACE`: per la landing, `daemon/landing/package.json` | `gh api repos/actions/setup-node/releases/latest --jq .tag_name`; `gh api "repos/actions/setup-node/contents/src/main.ts?ref=v7" --jq .content \| base64 -d \| grep -n -A3 'const versionFilePath'` |
+| `actions/checkout`: l'ultima è la v7.0.1; la v4 gira su `node20`, dalla v5 in poi su `node24`; alla v4 e alla v7.0.1 `getFetchUrl` dà `https://github.com/devfrx/daemon`, e `getRefSpec` di `main` scrive `refs/remotes/origin/main` | `gh api repos/actions/checkout/releases/latest --jq .tag_name`; `gh api "repos/actions/checkout/contents/action.yml?ref=<tag>" --jq .content \| base64 -d \| grep using`; `src/url-helper.ts` e `src/ref-helper.ts` ai due tag |
+| un checkout svuota una cartella che non è già il suo repository | `prepareExistingDirectory` in `src/git-directory-helper.ts` di `actions/checkout`, al tag `v4` |
+| GitHub ha tolto Node 20 dai suoi runner il 2026-09-23 | https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/ |
+| in `devfrx/daemon-landing` le Actions sono accese, il `GITHUB_TOKEN` è di sola lettura, il ramo predefinito è `main` | `gh api repos/devfrx/daemon-landing/actions/permissions --jq .enabled`; `gh api repos/devfrx/daemon-landing/actions/permissions/workflow --jq .default_workflow_permissions`; `gh api repos/devfrx/daemon-landing --jq .default_branch` |
+| `gh` 2.101.0 ha `run list --commit` ed `--event`, `run watch --exit-status`, `run view --log` | `gh run list --help`; `gh run watch --help`; `gh run view --help` |
 | il cancello della GUI: `npm ci --no-audit --no-fund`, `dist/` tolta prima della build, i due progetti di Vitest uno per volta, il Chrome installato, `npm audit` alla fine | `git show "origin/main:scripts/gate-gui.sh"` |
 | Chrome 154.0.8037.98 su questa macchina | `ls "/c/Program Files/Google/Chrome/Application/"` |
 | Chrome chiede `/favicon.ico` da solo, e un 404 lì è un errore in console | il passo 2 del compito 10 |
@@ -3713,3 +4125,4 @@ radice di daemon, in Git Bash, dopo `export MSYS_NO_PATHCONV=1`.
 | `Network.emulateNetworkConditions` è deprecato, a favore di `Network.emulateNetworkConditionsByRule` e `Network.overrideNetworkState`, sperimentali; Lighthouse e Puppeteer usano il primo, e Playwright 1.63.0 per `setOffline`; DevTools il secondo | `gh api "repos/ChromeDevTools/devtools-protocol/contents/pdl/domains/Network.pdl" --jq .content \| base64 -d \| grep -n -B2 'command emulateNetworkConditions'`; `grep -n 'Network\.'` su `core/lib/emulation.js` di `GoogleChrome/lighthouse` e su `packages/puppeteer-core/src/cdp/NetworkManager.ts` di `puppeteer/puppeteer`; `gh api "repos/microsoft/playwright/contents/packages/playwright-core/src/server/chromium/crNetworkManager.ts?ref=v1.63.0" --jq .content \| base64 -d \| grep -n 'emulateNetworkConditions'`; `gh api "search/code?q=emulateNetworkConditionsByRule+repo:ChromeDevTools/devtools-frontend" --jq '.items[].path'` |
 | per la CLS, Chrome tratta un cambio della finestra come un input, per 500 ms | `gh api "repos/chromium/chromium/contents/third_party/blink/renderer/core/layout/layout_shift_tracker.cc" --jq .content \| base64 -d \| grep -n -A2 'kTimerDelay =\|NotifyViewportSizeChanged()'` |
 | `web-vitals` 6.2.3: `web-vitals.iife.js` non è fra gli `exports` del pacchetto, e sta accanto a ciò che dà `require.resolve('web-vitals')` | `grep -n -A12 '"exports"' node_modules/web-vitals/package.json`, dalla landing col pacchetto |
+| Astro 7.3.6 svuota `dist/` anche senza pagine; Vitest 4.1.11, di base, scrive di un test saltato solo `1 skipped`, e in un giro solo un progetto senza file è verde; Git Bash riscrive una `LANDING_BASE` che riceve dal processo padre | i passi 8 e 11 del compito 13, e la §17 del verbale |

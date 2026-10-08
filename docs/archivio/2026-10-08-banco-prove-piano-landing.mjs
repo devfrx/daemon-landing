@@ -1,7 +1,8 @@
-// The bench: runs tasks of the landing's plan from the plan's own text, by the rules of §14–§16 of its test log.
+// The bench: runs tasks of the landing's plan from the plan's own text, by the rules of §14–§17 of its test log.
 // A block is taken as it is; a file is written only if its step names it, in backticks, before the block; a command of
 // the text runs only if it is found, letter for letter, in its step, and so «lo stesso comando del passo N»; the
-// fragments of tasks 4 and 6 are grafted where the text says; step 7 of task 5, the review of the English, is skipped.
+// fragments of tasks 4, 6 and 13 are grafted where the text says, each into the block that follows its own words. Step
+// 7 of task 5, the review of the English, and step 13 of task 13, the CI on GitHub, are skipped.
 // The text is compared as it reads: the plan wraps inside sentences, so line breaks count as spaces.
 //
 // The bench lives in the session's scratchpad, $S, and never in a repository: daemon cloned without a working tree,
@@ -24,7 +25,8 @@
 //   node bench.mjs <the plan> <$S>\b\daemon\landing <$S>\logs 1 2 3 …
 //
 // Each command runs in Git Bash, from the landing; its whole output goes to a log of its own in <logs>, and report.txt
-// shows the lines that matter beside the «Atteso» of the step. A new task adds its commands to INLINE, below.
+// shows the lines that matter beside the «Atteso» of the step, the first 60 of each command. A new task adds its
+// commands to INLINE, below, and its fragments to GRAFTS.
 import { spawnSync } from 'node:child_process';
 import { appendFileSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
@@ -47,7 +49,8 @@ function parse(text) {
   let task = null;
   let step = null;
   let fence = null;
-  for (const line of text.split('\n')) {
+  // A copy cloned before the .gitattributes has Windows line breaks: the plan is read whatever they are.
+  for (const line of text.split(/\r?\n/)) {
     if (fence) {
       if (line === '```') {
         step?.parts.push({ kind: 'block', lang: fence.lang, code: `${fence.lines.join('\n')}\n` });
@@ -119,6 +122,15 @@ const INLINE = {
   10: { 6: ['npm test -- --project checks', 'npm audit'], 8: ['git push'] },
   11: { 3: [{ same: 2 }], 6: [{ same: 4 }], 8: ['npm test -- --project checks', 'npm audit'], 10: ['git push'] },
   12: { 4: ['npm test -- --project checks', 'npm audit'], 6: ['git push'] },
+  // Step 13, the CI on GitHub, does not run here: the bench's push reaches nothing real.
+  13: {
+    1: ['npx vitest run src/lib/brand.test.ts'],
+    2: [{ same: 1 }],
+    3: ['npx vitest run checks/brand.test.ts'],
+    5: ['npm run gate'],
+    7: ['npm run gate'],
+    12: ['git push'],
+  },
   ...JSON.parse(process.env.BENCH_INLINE ?? '{}'),
 };
 
@@ -150,6 +162,12 @@ const GRAFTS = {
     { anchor: "il campo nell'interfaccia, dopo `commit`", apply: (b) => insertAfter(join(landing, 'src/lib/daemon.ts'), '  readonly commit: string;\n', b) },
     { anchor: 'prima di `let commit: string;`', apply: (b) => insertBefore(join(landing, 'src/lib/daemon.ts'), '  let commit: string;\n', b) },
     { anchor: "nell'oggetto restituito", apply: (b) => replaceOnce(join(landing, 'src/lib/daemon.ts'), '  return {\n    commit,\n', b) },
+  ],
+  '13.6': [
+    {
+      anchor: 'in `package.json`, lo script del cancello accanto agli altri due',
+      apply: (b) => replaceOnce(join(landing, 'package.json'), /  "scripts": \{\n[^}]*\},\n/, b),
+    },
   ],
 };
 
@@ -237,9 +255,10 @@ for (const n of taskArgs.map(Number)) {
         run(n, step.n, part.code);
         continue;
       }
-      if (grafts.length > 0) {
-        const graft = grafts.shift();
-        if (!before.includes(graft.anchor)) throw new Error(`T${n} P${step.n}: the graft's words are not before the block: ${graft.anchor}`);
+      // A fragment goes where the text says: into the block that follows the graft's own words.
+      const graft = grafts.find((each) => before.includes(each.anchor));
+      if (graft) {
+        grafts.splice(grafts.indexOf(graft), 1);
         graft.apply(part.code);
         say(`  graft: ${graft.anchor}`);
         continue;
@@ -255,6 +274,7 @@ for (const n of taskArgs.map(Number)) {
       }
     }
     if (pending.length > 0) throw new Error(`T${n} P${step.n}: not found in its step: ${JSON.stringify(pending)}`);
+    if (grafts.length > 0) throw new Error(`T${n} P${step.n}: the graft's words are before no block: ${grafts.map((each) => each.anchor).join('; ')}`);
     const expected = text.split(/(?=Atteso)/).slice(1).map((piece) => piece.replace(/\s+/g, ' ').trim());
     for (const piece of expected) say(`  EXPECTED: ${piece.slice(0, 600)}`);
   }
