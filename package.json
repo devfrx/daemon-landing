@@ -7,12 +7,15 @@
     "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
   },
   "scripts": {
-    "build": "astro check && astro build"
+    "build": "astro check && astro build",
+    "test": "vitest run"
   },
   "devDependencies": {
     "@astrojs/check": "0.9.10",
+    "@types/node": "24.13.5",
     "astro": "7.3.6",
-    "typescript": "5.9.3"
+    "typescript": "5.9.3",
+    "vitest": "4.1.11"
   },
   "allowScripts": {
     "esbuild": false
