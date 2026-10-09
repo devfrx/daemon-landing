@@ -3,8 +3,9 @@
 > 🗄️ **Che cos'è questo file.** Il verbale delle prove fatte il 2026-10-07 per scrivere la §5 del
 > [piano del traguardo 1](../superpowers/plans/2026-10-07-landing-traguardo-1.md) — le §1–§9 nel pomeriggio, la §10 e la
 > §11 nella sessione dopo, la §12 e la §13 in quella dopo ancora, la §14 nella quinta, la §15 nella sesta, la §16 nella
-> settima, la §17 nell'ottava e la §18 nella decima e nell'undicesima, il pre-controllo, il 2026-10-08: il proprietario
-> ha scelto di provare il codice prima di scriverlo nel piano (risposta: A). Le prove sono girate nello scratchpad di
+> settima, la §17 nell'ottava e la §18 nella decima e nell'undicesima, il pre-controllo, il 2026-10-08; la §19 nella
+> quindicesima, il ri-controllo del compito 4, il 2026-10-09: il proprietario ha scelto di provare il codice prima di
+> scriverlo nel piano (risposta: A). Le prove sono girate nello scratchpad di
 > ciascuna sessione, poi cancellato; dalla §16 il programma del banco sta accanto a questo file. Qui c'è la storia; il
 > piano porta ciò che ne è venuto.
 
@@ -484,3 +485,42 @@ Tutto come scritto. Alla fine la landing del banco è pulita, coi tredici commit
 
 **Un limite del banco, non del piano.** `report.txt` mostra le prime 60 righe utili di ogni comando: i conti del passo 7
 del compito 11, e quelli del cancello, dove `--reporter=verbose` elenca ogni test, si leggono nel log del comando.
+
+## 19. La quindicesima sessione: il ri-controllo del compito 4
+
+Il 2026-10-09, prima di eseguirlo. Il compito letto contro la landing a `51cff86`, con le quattro domande e le regole 5–8
+di *«Prima di eseguire un compito di un piano»* (§6 del piano). daemon a `34cf745`, come alla chiusura della
+quattordicesima.
+
+**I fatti che invecchiano**, rilanciati coi comandi della tabella in fondo alla §6 del piano: tutto come scritto. In più:
+
+| Fatto | Comando |
+|---|---|
+| i pacchetti del compito 4 aggiunti a quelli del compito 3, risolti senza installare: uno script d'installazione soltanto in `esbuild` 0.28.2, spento, e in `fsevents` 2.3.3, opzionale; una `vite` sola, la 8.3.4; ogni voce dal registro di npm, con la sua `integrity`; `found 0 vulnerabilities` | in una cartella dello scratchpad, con `package.json`, `package-lock.json` e `.npmrc` della landing: `npm install --package-lock-only --ignore-scripts --no-audit --no-fund --save-exact --save-dev vitest@4.1.11 @types/node@24.13.5`, poi `node -e` sul lockfile, coi campi `hasInstallScript`, `resolved` e `integrity`, e `npm audit` |
+| il file più grande di daemon supera ancora 1 MiB, il limite di `execFileSync` che il commento di `daemon.ts` nomina | `git -C .. ls-tree -r -l origin/main \| sort -k4 -n \| tail -1` |
+| nessuna impostazione di Git della macchina tocca i repository dei test: né la firma dei commit né `core.hooksPath`; `core.autocrlf` e `init.defaultBranch` li scavalca il test | `git config --show-origin --get-regexp '^(commit\.gpgsign\|tag\.gpgsign\|gpg\.\|core\.hookspath\|init\.templatedir\|init\.defaultbranch\|core\.autocrlf\|user\.)'` |
+
+**Il difetto**, portato al proprietario in A/B. La risposta: A.
+
+| Il difetto | Che cosa lo coglie | Come si è visto | La risposta |
+|---|---|---|---|
+| il compito promette che ogni lettura viene dal commit preso all'apertura, anche dopo un `git fetch`, e i suoi quattro test non lo provano: passano anche un `read` che rilegge `origin/main` a ogni lettura, e uno che prende dalla cartella di lavoro un file che al commit non c'è | le domande 1 e 2: la sonda manca, e il test 4 chiede un file che non c'è da nessuna parte | i due `read` sbagliati, scritti nello scratchpad accanto a quello del piano: coi quattro test del piano, `4 passed` tutti e due | due controlli nei test che ci sono: il test 2 sposta `origin/main` dopo l'apertura, e la lettura resta sul commit di prima; il test 4 chiede un file che sta nel commit locale e nella cartella di lavoro, e non a `origin/main`. Restano quattro test, e nessun altro conto del piano cambia |
+
+**I test nuovi, provati** nello scratchpad, dal testo del piano corretto:
+
+| Prova | Visto |
+|---|---|
+| senza `daemon.ts` | `Cannot find module './daemon'` |
+| col `daemon.ts` del piano | `4 passed`; poi `npm test`, `4 passed`, e `npm run build`, `0 errors`, `0 warnings` e `2 page(s) built` |
+| col `read` che rilegge `origin/main` | rosso il test 2 |
+| col `read` che ripiega sulla cartella di lavoro | rosso il test 4 |
+| col `read` che legge `HEAD` | rossi i test 2 e 4 |
+| i passi 4 e 6 del compito 6, sui test nuovi | `2 failed \| 4 passed`, poi `6 passed`, come scritti |
+
+**Non è un difetto: la cartella di daemon di base.** `openDaemon()` senza argomenti apre la cartella sopra quella da cui
+si lancia; nel compito 4 nessun test la prova, perché ogni test si costruisce un repository suo. La prova il controllo
+delle fonti del compito 6, il primo che la usa: aperta sulla landing invece che su daemon, non troverebbe i file delle
+citazioni.
+
+**Il banco non si rilancia.** La correzione tocca soltanto due test di `daemon.test.ts`, e le prove qui sopra coprono
+ogni passo che lo legge: i passi 3–6 del compito 4, e i passi 4 e 6 del compito 6, l'unico altro che lo cambia.

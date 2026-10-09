@@ -698,6 +698,10 @@ export default defineConfig({
 - [ ] **Passo 3 — il test, rosso.** `src/lib/daemon.test.ts`. Ogni test si costruisce un repository suo: `origin/main`
 dice una cosa, un commit locale dopo di lui e la cartella di lavoro ne dicono altre due.
 
+⚠️ **Richiamo del 2026-10-09:** il test prova anche che `read` resta sul commit preso all'apertura, dopo un `git fetch`,
+e che rifiuta un file che c'è solo in locale (risposta del proprietario: A) — la storia nella §19 del
+[verbale delle prove](../../archivio/2026-10-07-prove-piano-landing.md).
+
 ```ts
 import { execFileSync } from 'node:child_process';
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
@@ -739,9 +743,12 @@ describe('openDaemon', () => {
     expect(openDaemon(root).commit).toBe(main);
   });
 
-  test('reads a file at origin/main, not at HEAD and not in the working tree', () => {
+  test('reads a file at the commit it took: not at HEAD, not in the working tree, not at a later origin/main', () => {
     const { root } = repository();
-    expect(openDaemon(root).read('notes.md')).toBe('on main\n');
+    const daemon = openDaemon(root);
+    // A git fetch after the opening moves origin/main; the reads stay on the commit taken at the opening.
+    git(root, 'update-ref', 'refs/remotes/origin/main', git(root, 'rev-parse', 'HEAD'));
+    expect(daemon.read('notes.md')).toBe('on main\n');
   });
 
   test('refuses a repository without origin/main', () => {
@@ -750,9 +757,12 @@ describe('openDaemon', () => {
     expect(() => openDaemon(root)).toThrow(/no origin\/main/);
   });
 
-  test('refuses a file that is not at origin/main', () => {
+  test('refuses a file that is not at origin/main, even if HEAD and the working tree have it', () => {
     const { root } = repository();
-    expect(() => openDaemon(root).read('missing.md')).toThrow(/missing\.md is not in daemon/);
+    writeFileSync(join(root, 'local.md'), 'on a local commit\n');
+    git(root, 'add', 'local.md');
+    git(root, 'commit', '--quiet', '-m', 'local file');
+    expect(() => openDaemon(root).read('local.md')).toThrow(/local\.md is not in daemon/);
   });
 });
 ```
