@@ -46,6 +46,17 @@ describe('openDaemon', () => {
     expect(daemon.read('notes.md')).toBe('on main\n');
   });
 
+  test('reads a file larger than the 1 MiB that execFileSync allows by default', () => {
+    const { root } = repository();
+    // Past that limit, as some of daemon's documents are, a read without maxBuffer fails.
+    const large = 'x'.repeat(1024 * 1024 + 1);
+    writeFileSync(join(root, 'large.md'), large);
+    git(root, 'add', 'large.md');
+    git(root, 'commit', '--quiet', '-m', 'large');
+    git(root, 'update-ref', 'refs/remotes/origin/main', git(root, 'rev-parse', 'HEAD'));
+    expect(openDaemon(root).read('large.md')).toHaveLength(large.length);
+  });
+
   test('refuses a repository without origin/main', () => {
     const { root } = repository();
     git(root, 'update-ref', '-d', 'refs/remotes/origin/main');
