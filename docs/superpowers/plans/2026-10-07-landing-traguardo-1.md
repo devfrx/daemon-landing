@@ -16,8 +16,8 @@
 | 2 | Gli strumenti e i vincoli | ✅ approvata il 2026-10-07 |
 | 3 | I testi | ✅ approvata il 2026-10-07 |
 | 4 | La mappa dei file | ✅ approvata il 2026-10-07 |
-| 5 | I compiti | ✅ i compiti 1–11 approvati il 2026-10-07, il 12 e il 13 il 2026-10-08; il pre-controllo li ha corretti, il 2026-10-08; i compiti 1 e 2 eseguiti, il 2026-10-08 (§6) |
-| 6 | Come si riprende | 🔶 oggi è la consegna della tredicesima sessione, del 2026-10-08: il compito 2 è eseguito, e il prossimo passo è il compito 3 |
+| 5 | I compiti | ✅ i compiti 1–11 approvati il 2026-10-07, il 12 e il 13 il 2026-10-08; il pre-controllo li ha corretti, il 2026-10-08; i compiti 1 e 2 eseguiti il 2026-10-08, il 3 il 2026-10-09 (§6) |
+| 6 | Come si riprende | 🔶 oggi è la consegna della quattordicesima sessione, del 2026-10-09: il compito 3 è eseguito, e il prossimo passo è il compito 4 |
 
 ---
 
@@ -533,7 +533,7 @@ Atteso: `0`, cioè ogni file va a capo alla Linux, nel repository e sul disco.
 - le due lingue in `astro.config.mjs`: `Astro.currentLocale` vale `en` su `/` e `it` su `/it/`;
 - `astro` 7.3.6, `@astrojs/check` 0.9.10 e `typescript` 5.9.3, e lo script di `esbuild` spento (§2.1).
 
-- [ ] **Passo 1 — i file del progetto.**
+- [x] **Passo 1 — i file del progetto.**
 
 `.npmrc`:
 
@@ -594,7 +594,7 @@ export default defineConfig({
 });
 ```
 
-- [ ] **Passo 2 — i pacchetti**, fuori dal cancello (vincolo 9):
+- [x] **Passo 2 — i pacchetti**, fuori dal cancello (vincolo 9):
 
 ```bash
 npm install --no-audit --no-fund && npm approve-scripts --allow-scripts-pending
@@ -603,7 +603,7 @@ npm install --no-audit --no-fund && npm approve-scripts --allow-scripts-pending
 Atteso: nessun avviso `allow-scripts` durante l'installazione, e alla fine `No packages with unreviewed install
 scripts.`. Nasce `package-lock.json`.
 
-- [ ] **Passo 3 — la prova, rossa.**
+- [x] **Passo 3 — la prova, rossa.**
 
 ```bash
 npm run build; node --input-type=module - <<'EOF'
@@ -623,7 +623,7 @@ EOF
 Atteso: la build esce con 0 e avvisa soltanto `Missing pages directory: src/pages` — per questo la prova guarda i file
 prodotti, non l'uscita; la verifica scrive `dist/index.html: no <html lang="en">` ed esce con 1.
 
-- [ ] **Passo 4 — le due pagine.** `src/pages/index.astro` e `src/pages/it/index.astro`, uguali:
+- [x] **Passo 4 — le due pagine.** `src/pages/index.astro` e `src/pages/it/index.astro`, uguali:
 
 ```astro
 <html lang={Astro.currentLocale}>
@@ -634,19 +634,19 @@ prodotti, non l'uscita; la verifica scrive `dist/index.html: no <html lang="en">
 </html>
 ```
 
-- [ ] **Passo 5 — la prova, verde.** Gli stessi comandi del passo 3. Atteso: la build scrive `0 errors` e `2 page(s)
+- [x] **Passo 5 — la prova, verde.** Gli stessi comandi del passo 3. Atteso: la build scrive `0 errors` e `2 page(s)
 built`; la verifica, `both pages, both languages`.
 
-- [ ] **Passo 6 — nessuna vulnerabilità nota.** `npm audit`. Atteso: `found 0 vulnerabilities`.
+- [x] **Passo 6 — nessuna vulnerabilità nota.** `npm audit`. Atteso: `found 0 vulnerabilities`.
 
-- [ ] **Passo 7 — il commit.** `git status --short` mostra solo i file del compito: niente `node_modules/`, `dist/` o
+- [x] **Passo 7 — il commit.** `git status --short` mostra solo i file del compito: niente `node_modules/`, `dist/` o
 `.astro/`.
 
 ```bash
 git add .npmrc .gitignore package.json package-lock.json tsconfig.json astro.config.mjs src && git commit -m "t1(compito 3): il progetto Node e le due pagine vuote -- npm run build scrive / in inglese e /it/ in italiano; astro, @astrojs/check e typescript alle versioni della §2.1, e lo script di esbuild spento"
 ```
 
-- [ ] **Passo 8 —** `git push`.
+- [x] **Passo 8 —** `git push`.
 
 ### Compito 4 — leggere daemon a `origin/main`
 
@@ -4167,8 +4167,8 @@ silenzio.
 
 ## 6. Come si riprende
 
-> 🔶 Oggi questa sezione è la consegna della tredicesima sessione, del 2026-10-08: il compito 2 è eseguito, e il
-> prossimo è il compito 3. Le consegne di prima sono in archivio, parola per parola:
+> 🔶 Oggi questa sezione è la consegna della quattordicesima sessione, del 2026-10-09: il compito 3 è eseguito, e il
+> prossimo è il compito 4. Le consegne di prima sono in archivio, parola per parola:
 > [del mattino](../../archivio/2026-10-07-consegna-piano-landing-mattina.md),
 > [del pomeriggio](../../archivio/2026-10-07-consegna-piano-landing-pomeriggio.md),
 > [della terza sessione](../../archivio/2026-10-07-consegna-piano-landing-terza-sessione.md),
@@ -4179,8 +4179,9 @@ silenzio.
 > [dell'ottava](../../archivio/2026-10-08-consegna-piano-landing-ottava-sessione.md),
 > [della nona](../../archivio/2026-10-08-consegna-piano-landing-nona-sessione.md),
 > [della decima](../../archivio/2026-10-08-consegna-piano-landing-decima-sessione.md),
-> [dell'undicesima](../../archivio/2026-10-08-consegna-piano-landing-undicesima-sessione.md) e
-> [della dodicesima](../../archivio/2026-10-08-consegna-piano-landing-dodicesima-sessione.md).
+> [dell'undicesima](../../archivio/2026-10-08-consegna-piano-landing-undicesima-sessione.md),
+> [della dodicesima](../../archivio/2026-10-08-consegna-piano-landing-dodicesima-sessione.md) e
+> [della tredicesima](../../archivio/2026-10-08-consegna-piano-landing-tredicesima-sessione.md).
 
 **Dove siamo:**
 
@@ -4189,27 +4190,22 @@ silenzio.
 | §1–§4 | approvate, coi richiami del 2026-10-07 e del 2026-10-08 |
 | §5, compiti 1–13 | ✅ approvati: l'1–11 il 2026-10-07, il 12 e il 13 il 2026-10-08; corretti dal pre-controllo, coi richiami del 2026-10-08 |
 | il pre-controllo | ✅ finito: otto difetti, tutti decisi dal proprietario, tutti A, e scritti nel piano; il banco ha rifatto dal testo i compiti 1–13, e tutto torna come scritto |
-| l'esecuzione | 🔶 i compiti 1 e 2 ✅, il 2026-10-08: `t1(compito 1)` e `t1(compito 2)`, spinti su GitHub; i compiti 3–13 da eseguire |
+| l'esecuzione | 🔶 i compiti 1, 2 e 3 ✅: `t1(compito 1)` e `t1(compito 2)` il 2026-10-08, `t1(compito 3)` il 2026-10-09, spinti su GitHub; i compiti 4–13 da eseguire |
 
 Gli otto difetti, con le prove, le risposte e ciò che il banco ha visto, sono nella §18 del
 [verbale delle prove](../../archivio/2026-10-07-prove-piano-landing.md). Il programma del banco,
 [`2026-10-08-banco-prove-piano-landing.mjs`](../../archivio/2026-10-08-banco-prove-piano-landing.mjs), rifà dal testo i
 compiti 1–13: serve di nuovo solo se un compito cambia prima di essere eseguito.
 
-**Il compito 2**, eseguito il 2026-10-08:
+**Il compito 3**, eseguito il 2026-10-09:
 
 | | |
 |---|---|
-| il ri-controllo | contro la landing a `dc5eda5`, con le quattro domande e le regole 5–8: nessun difetto. Il kit ha 16 SVG e 2 HTML, nessun CR, e `GEOMETRY-START` una volta, nella splash; in un repository di prova col `.gitattributes`, i 18 file sono `i/lf w/lf` e restano identici dopo un clone. Per chi esegue, due note nel fascicolo: al passo 6 N è 18, e al passo 8 `grep -vc` scrive `0` ed esce con 1 |
-| l'esecuzione | due subagenti `sonnet`, chi esegue e chi rivede (risposta del proprietario: A). Il rosso del passo 3, `brand/provenance.json is missing`; il verde del passo 6, `18 files, identical to the kit and to the note`; il passo 7 nei due sensi; il conto del passo 8, `0` |
-| la revisione | conforme e approvata, nessun difetto. Due osservazioni, nessuna da fare: la nota comincia dallo studio e dalla splash, perché `sort()` mette lo spazio prima del trattino — l'esempio del piano è soltanto un esempio, e il compito 13 legge la nota per chiave —; e Git scrive il nome della splash fra virgolette, in ottale (*«Da sapere subito»*) |
-| il costo | chi esegue, circa 109 mila token e 7 minuti; chi rivede, circa 137 mila token e 10 minuti: l'uscita dello strumento `Agent` |
-| il push | il coordinatore, dopo la revisione: `e97157e`, lo stesso su GitHub |
-
-La nota minore della consegna di prima — la prova del compito 1 contava soltanto `w/crlf`, e un file `w/mixed` le
-sarebbe sfuggito — non ha più dove valere: nessun compito dopo riusa quella prova, e fuori da questa sezione
-`grep -n 'w/crlf'` su questo piano trova soltanto i passi 1 e 6 del compito 1. Il passo 8 del compito 2 conta già ogni
-riga che non è `i/lf w/lf`.
+| il ri-controllo | contro la landing a `f98001c`, con le quattro domande e le regole 5–8: nessun difetto. Rilanciato ciò che invecchia — Node e npm della macchina, le versioni della §2.1 contro `gui/package.json` di daemon, gli avvisi —: tutto come nel piano, nella tabella qui sotto. `engine-strict` provato nei due sensi, in una cartella di prova. Il programma del banco, in `docs/archivio/`, sta dentro il `**/*` del `tsconfig.json`; ma c'era già nella copia della landing su cui il banco ha girato |
+| l'esecuzione | due subagenti `sonnet`, chi esegue e chi rivede (risposta del proprietario: A). Dal rapporto di chi esegue: il passo 2 senza avvisi `allow-scripts` né `EBADENGINE`, e `No packages with unreviewed install scripts.`; il rosso del passo 3, la build a 0 e la verifica a 1 con `dist/index.html: no <html lang="en">`; il verde del passo 5, `0 errors`, `2 page(s) built` e `both pages, both languages`; `found 0 vulnerabilities`. Nel rosso l'avviso `Missing pages directory: src/pages` esce tre volte, una da `astro check` e due da `astro build`: «avvisa soltanto» dice quale avviso, non quante volte |
+| la revisione | conforme e approvata, nessun difetto: i sette file scritti a mano e il messaggio del commit sono identici al piano, byte per byte. Ciò che il diff non mostrava l'ha verificato il coordinatore prima del push: la build intera, `0 errors` e `0 warnings`; il lockfile allineato al manifesto, perché `npm install --package-lock-only --ignore-scripts` non lo cambia. Quattro note minori, nessuna da fare: la riga `i18n` di `astro.config.mjs` non ha un rosso suo, perché il piano la scrive prima del rosso, e la prova la esercita nel verde; l'avviso tre volte; lo script di `fsevents` fuori da `allowScripts`, che conta solo su un Mac; la mappa della §4 mette ancora `vitest.config.ts` fra i file del compito 3, e il richiamo lì sotto lo sposta già al compito 4 |
+| il costo | chi esegue, circa 104 mila token e 5 minuti e mezzo; chi rivede, circa 136 mila token e 6 minuti: l'uscita dello strumento `Agent` |
+| il push | il coordinatore, dopo la revisione: `8eabe5e`, lo stesso su GitHub |
 
 **Come si esegue**: una fase per sessione (§7.1 del disegno), un compito per sessione, nell'ordine 1–13. Il coordinatore
 rilegge il compito contro la landing di adesso — la regola 5 di *«Prima di eseguire un compito di un piano»*, nel
@@ -4217,7 +4213,7 @@ rilegge il compito contro la landing di adesso — la regola 5 di *«Prima di es
 seguono la riga di quella skill nel `CLAUDE.md` di daemon. Il codice nasce dai test,
 `superpowers:test-driven-development`. Il compito si chiude col suo commit, `t1(compito N): …`, e col push.
 
-Come l'hanno fatto la dodicesima e la tredicesima sessione, e come conviene rifarlo:
+Come l'hanno fatto le sessioni dalla dodicesima alla quattordicesima, e come conviene rifarlo:
 
 - prima di mandare i subagenti, il costo al proprietario e il suo sì: più di un subagente lo chiede il `CLAUDE.md` di
   daemon, e il sì vale per il compito per cui è dato;
@@ -4229,42 +4225,56 @@ Come l'hanno fatto la dodicesima e la tredicesima sessione, e come conviene rifa
   compito realizza e, in fondo, le note del coordinatore: ciò che il piano lascia al momento, come la cartella delle
   prove a mano o il valore di un «Atteso» che si conosce solo quel giorno;
 - il pacchetto della revisione porta il diff intero dei file che il compito scrive; dei file che copia — le copie del
-  kit, nel compito 2 — soltanto il `--stat`, perché di loro conta l'identità, e chi rivede la prova con `cmp`;
+  kit, nel compito 2 — soltanto il `--stat`, perché di loro conta l'identità, e chi rivede la prova con `cmp`; di
+  `package-lock.json`, che lo scrive npm, il `--stat` e un riassunto — la radice, le versioni dei pacchetti del compito,
+  quelli con uno script d'installazione —, letto da `git show <commit>:package-lock.json`: per intero riempirebbe il
+  contesto di chi rivede;
+- ciò che chi rivede segna come «non verificabile dal diff» lo chiude il coordinatore prima del push, con un comando
+  suo: nel compito 3, la build intera e il lockfile;
 - chi esegue fa i passi fino al commit; il push lo fa il coordinatore, dopo una revisione pulita: un commit va su GitHub
   solo dopo essere stato rivisto;
 - il dispaccio dice in chiaro «senza co-autore»: un subagente può aggiungere da sé una riga `Co-Authored-By`.
 
-**Il prossimo passo**, in una sessione nuova — il compito 3, il progetto Node e le due pagine vuote:
+**Il prossimo passo**, in una sessione nuova — il compito 4, leggere daemon a `origin/main`:
 
 1. dentro `landing/`: `git fetch --all --prune`, `git status -sb`, e il fast-forward se serve;
 2. leggi `CLAUDE.md`, questo piano e il disegno, per intero;
 3. le skill: `anthropic-skills:decision-principles`, `anthropic-skills:dev-discipline`,
    `anthropic-skills:dev-communication`, `superpowers:subagent-driven-development` e
    `superpowers:test-driven-development`;
-4. rileggi il compito 3 contro la landing di adesso, con le quattro domande e le regole 5–8 di *«Prima di eseguire un
-   compito di un piano»*. È il primo compito che installa pacchetti: prima rilancia ciò che invecchia — le versioni,
-   Node e npm della macchina, e gli avvisi contro i pacchetti della §2.1, coi comandi della tabella qui sotto —, perché
-   il passo 6 vuole `found 0 vulnerabilities`;
+4. rileggi il compito 4 contro la landing di adesso, con le quattro domande e le regole 5–8 di *«Prima di eseguire un
+   compito di un piano»*. Installa `vitest` e `@types/node`: prima rilancia ciò che invecchia — le versioni contro
+   `gui/package.json` di daemon, Node e npm della macchina, e gli avvisi contro i pacchetti —, coi comandi della tabella
+   qui sotto. È il primo compito che legge daemon: `openDaemon` legge `origin/main` della cartella sopra, e ogni suo
+   test si costruisce un repository suo;
 5. di' al proprietario il costo dei subagenti, e aspetta il sì; poi eseguilo come dice *«Come si esegue»*: il suo commit,
-   `t1(compito 3): …`, e il push dopo la revisione;
-6. alla chiusura, la consegna qui, con questa in archivio; commit e push. La sessione dopo esegue il compito 4.
+   `t1(compito 4): …`, e il push dopo la revisione;
+6. alla chiusura, la consegna qui, con questa in archivio; commit e push. La sessione dopo esegue il compito 5.
 
 **Da sapere subito:**
 
 - ⚠️ daemon si muove mentre si lavora: un commit di daemon non si scrive mai come vero, si rilancia
-  `git -C .. rev-parse --short origin/main`. Dalla chiusura della dodicesima sessione è passato da `6166236` a
-  `b95c5cc`, con due commit di documenti — `docs/archivio/stato-storico.md`, `docs/audit-2026-09-30.md` e
-  `docs/riferimenti.md` — che non toccano né le cinque fonti né la GUI: `git log --stat 6166236..origin/main`;
-- ⚠️ **questa macchina è corta di memoria**: 16 GB, e alla chiusura di questa sessione ne era libero circa 1. La memoria
+  `git -C .. rev-parse --short origin/main`. Dalla chiusura della tredicesima sessione è passato da `b95c5cc` a
+  `34cf745`, coi commit dell'audit di daemon: `git log --oneline b95c5cc..origin/main`. Non cambiano le cinque fonti,
+  `gui/package.json` né `gui/src/tokens/themes.css`; cambiano `.github/workflows/quality-gate.yml`,
+  `scripts/gate-gui.sh` e, in `gui/src/tokens/`, `contrast.test.ts`, `dock.css`, `dock.test.ts`, `index.ts` e
+  `usage.test.ts`: `git diff --stat b95c5cc origin/main -- gui/package.json gui/src/tokens scripts/gate-gui.sh .github`.
+  I fatti che la tabella qui sotto ne prende reggono a `34cf745`; `scripts/gate-gui.sh` lo rilegge il ri-controllo del
+  compito 13, che ne copia i passi;
+- ⚠️ **questa macchina è corta di memoria**: 16 GB, e alla chiusura di questa sessione ne era libero circa 1,4. La memoria
   del momento: `powershell -NoProfile -Command "Get-CimInstance Win32_OperatingSystem | Select-Object FreePhysicalMemory,
   TotalVisibleMemorySize, FreeVirtualMemory, TotalVirtualMemorySize"`;
-- ⚠️ dopo il giorno del piano sono uscite `astro` 7.3.7 e `playwright` 1.64.0: il piano resta alla 7.3.6 e alla 1.63.0,
-  per la regola della §2.1 — Playwright segue la GUI di daemon, e una versione nuova si prende con un atto apposta;
+- ⚠️ dopo il giorno del piano sono uscite `astro` 7.3.7 e 7.3.8, e `playwright` 1.64.0: il piano resta alla 7.3.6 e alla
+  1.63.0, per la regola della §2.1 — Playwright segue la GUI di daemon, e una versione nuova si prende con un atto
+  apposta. Le note della 7.3.8 dicono che Astro non dipende più direttamente da `esbuild`: il giorno che la landing la
+  prende, `allowScripts` va riguardato, perché lo script da spegnere potrebbe non arrivare più;
 - ⚠️ GitHub sposta `ubuntu-latest` su Ubuntu 26 dal 2026-10-19, dice un avviso nel giro di daemon: la CI della landing
   gira per la prima volta al compito 13, forse già lì;
+- dal compito 3 la landing ha `node_modules/`, `dist/` e `.astro/`, che il `.gitignore` tiene fuori da Git:
+  `git status --short --ignored` li mostra con `!!`;
 - col `.gitattributes`, una copia nuova della landing ha ogni file di testo LF. La metà dei binari non ha ancora un
-  caso vero: nessun file della landing è binario, e i 18 file di `brand/` sono testo, `i/lf w/lf`. Quando arriva il
-  primo binario — le foto delle scene, col traguardo 2 — `git ls-files --eol` deve dirlo `i/-text`;
+  caso vero: nessun file della landing è binario, e i file di `brand/` e del compito 3 sono testo, `i/lf w/lf`. Quando
+  arriva il primo binario — le foto delle scene, col traguardo 2 — `git ls-files --eol` deve dirlo `i/-text`;
 - ⚠️ **Git scrive fra virgolette, in ottale, i nomi non ASCII**: la splash esce come
   `"brand/daemon \342\200\224 splash.html"`, e un conto per percorso sull'uscita di Git, come `grep '^brand/'`, la mette
   fuori da `brand/`. È successo nella verifica prima del push del compito 2. Per contare per percorso:
@@ -4288,19 +4298,19 @@ Come l'hanno fatto la dodicesima e la tredicesima sessione, e come conviene rifa
 - su Windows `chrome.exe --version` apre il browser invece di scrivere la versione: la versione si legge dal nome della
   cartella, `ls "/c/Program Files/Google/Chrome/Application/"`.
 
-**Verificato fra il 2026-10-07 e il 2026-10-08, dalla sesta alla tredicesima sessione.** Si rilancia, non si crede. I
+**Verificato fra il 2026-10-07 e il 2026-10-09, dalla sesta alla quattordicesima sessione.** Si rilancia, non si crede. I
 comandi `git` dalla radice di daemon, in Git Bash, dopo `export MSYS_NO_PATHCONV=1`, dove non è detto altro.
 
 | Fatto | Comando o fonte |
 |---|---|
-| le versioni della §2.1, e `web-vitals` 6.2.3; dopo il giorno del piano `astro` 7.3.7, del 2026-10-07 alle 21:37 UTC, e `playwright` 1.64.0, ancora le ultime alla chiusura della tredicesima sessione; Node 24.19.0 e npm 11.17.0 su questa macchina | `npm view <pacchetto> version license`; `npm view <pacchetto> time`; `git show "origin/main:gui/package.json"`; `node --version`; `npm --version` |
-| `origin/main` di daemon era `b95c5cc` alla chiusura della tredicesima sessione, uguale a GitHub; l'audit c'è, col segno «(col N)» | `git rev-parse --short origin/main`; `git ls-remote origin refs/heads/main`; `git merge-base --is-ancestor origin/repo-audit/20260930-1510 origin/main`; `git show "origin/main:docs/README.md" \| grep -c 'col N'` |
-| le cinque citazioni della §3.4 si trovano, e fra `fc43188` e `b95c5cc` nessuna delle cinque fonti è cambiata | per ciascuna: `git show "origin/main:<fonte>" \| tr -d '\r' \| tr '\n' ' ' \| tr -s ' ' \| grep -cF -- '<citazione>'`; `git diff --stat fc43188 origin/main -- <le cinque fonti>` |
-| fra `973153f` e `b95c5cc` la GUI non è cambiata: manifesto, token, cancello, CI | `git diff --stat 973153f origin/main -- gui/package.json gui/src/tokens scripts/gate-gui.sh .github` |
+| le versioni della §2.1, e `web-vitals` 6.2.3; dopo il giorno del piano `astro` 7.3.7, del 2026-10-07 alle 21:37 UTC, e 7.3.8, del 2026-10-08 alle 15:41 UTC, e `playwright` 1.64.0, ancora le ultime alla chiusura della quattordicesima sessione; Node 24.19.0 e npm 11.17.0 su questa macchina | `npm view <pacchetto> version license`; `npm view <pacchetto> time`; `git show "origin/main:gui/package.json"`; `node --version`; `npm --version` |
+| `origin/main` di daemon era `34cf745` alla chiusura della quattordicesima sessione, uguale a GitHub; l'audit c'è, col segno «(col N)» | `git rev-parse --short origin/main`; `git ls-remote origin refs/heads/main`; `git merge-base --is-ancestor origin/repo-audit/20260930-1510 origin/main`; `git show "origin/main:docs/README.md" \| grep -c 'col N'` |
+| le cinque citazioni della §3.4 si trovano, e fra `fc43188` e `34cf745` nessuna delle cinque fonti è cambiata | per ciascuna: `git show "origin/main:<fonte>" \| tr -d '\r' \| tr '\n' ' ' \| tr -s ' ' \| grep -cF -- '<citazione>'`; `git diff --stat fc43188 origin/main -- <le cinque fonti>` |
+| fra `973153f` e `34cf745` non cambiano né il manifesto della GUI né `themes.css`; fra `b95c5cc` e `34cf745` cambiano altri file dei token, il cancello della GUI e la CI (*«Da sapere subito»*) | `git diff --stat 973153f origin/main -- gui/package.json gui/src/tokens/themes.css`; `git diff --stat b95c5cc origin/main -- gui/src/tokens scripts/gate-gui.sh .github` |
 | `themes.css` di daemon: `:root` con le `--ref-*`; `[data-theme="dark"]` e `[data-theme="light"]` coi ruoli `--color-*` e `color-scheme` | `git show "origin/main:gui/src/tokens/themes.css"` |
 | in daemon i ruoli non di testo da 3:1 sono `border-strong`, `focus`, `mark` e `border-accent`; il radio acceso della GUI usa `--color-mark` | `git show "origin/main:gui/src/tokens/contrast.test.ts" \| grep -n 'non-text'`; `git grep -n 'color-mark' origin/main -- gui/src/components` |
 | la GUI: il testo in Geist Variable, le etichette e i numeri in Barlow 300–600, importati da `gui/src/tokens/index.ts` | `git show "origin/main:gui/src/tokens/index.ts"` |
-| la CI di daemon: `actions/checkout@v4`; `actions/setup-node@v7` con `node-version-file` e `package-manager-cache: false`; la matrice con `fail-fast: false`; `shell: bash`; nessuna azione di terzi; verde, con l'avviso che `actions/checkout@v4` gira su Node 24 per forza | `git show "origin/main:.github/workflows/quality-gate.yml"`; `gh run list -R devfrx/daemon -L 4`; `gh api repos/devfrx/daemon/check-runs/<id del giro>/annotations --jq '.[].message'` |
+| la CI di daemon: `actions/checkout@v4`; `actions/setup-node@v7` con `node-version-file` e `package-manager-cache: false`; la matrice con `fail-fast: false`; `shell: bash`; nessuna azione di terzi; verde, con l'avviso che `actions/checkout@v4` gira su Node 24 per forza; a `34cf745` le stesse righe | `git show "origin/main:.github/workflows/quality-gate.yml"`; `gh run list -R devfrx/daemon -L 4`; `gh api repos/devfrx/daemon/check-runs/<id del giro>/annotations --jq '.[].message'` |
 | sui runner di GitHub, `actions/setup-node@v7` con l'intervallo della GUI prende Node 24.21.0, con npm 11.19.0 | `gh run view -R devfrx/daemon --job <id> --log \| grep -E 'Found in cache\|node: v\|npm: '` |
 | `actions/setup-node` alla `v7` è la v7.1.0, e legge `node-version-file` a partire da `GITHUB_WORKSPACE`: per la landing, `daemon/landing/package.json` | `gh api repos/actions/setup-node/releases/latest --jq .tag_name`; `gh api "repos/actions/setup-node/contents/src/main.ts?ref=v7" --jq .content \| base64 -d \| grep -n -A3 'const versionFilePath'` |
 | `actions/checkout`: l'ultima è la v7.0.1, e il tag `v7` punta lì; la v4 gira su `node20`, dalla v5 in poi su `node24`; alla v4 e alla v7.0.1 `getFetchUrl` dà `https://github.com/devfrx/daemon`, e `getRefSpec` di `main` scrive `refs/remotes/origin/main` | `gh api repos/actions/checkout/releases/latest --jq .tag_name`; `gh api repos/actions/checkout/git/ref/tags/<tag> --jq .object.sha`, per `v7` e `v7.0.1`; `gh api "repos/actions/checkout/contents/action.yml?ref=<tag>" --jq .content \| base64 -d \| grep using`; `src/url-helper.ts` e `src/ref-helper.ts` ai due tag |
@@ -4318,7 +4328,9 @@ comandi `git` dalla radice di daemon, in Git Bash, dopo `export MSYS_NO_PATHCONV
 | per la CLS, Chrome tratta un cambio della finestra come un input, per 500 ms | `gh api "repos/chromium/chromium/contents/third_party/blink/renderer/core/layout/layout_shift_tracker.cc" --jq .content \| base64 -d \| grep -n -A2 'kTimerDelay =\|NotifyViewportSizeChanged()'` |
 | `web-vitals` 6.2.3: `web-vitals.iife.js` non è fra gli `exports` del pacchetto, e sta accanto a ciò che dà `require.resolve('web-vitals')` | `grep -n -A12 '"exports"' node_modules/web-vitals/package.json`, dalla landing col pacchetto |
 | Astro 7.3.6 svuota `dist/` anche senza pagine; Vitest 4.1.11, di base, scrive di un test saltato solo `1 skipped`, e in un giro solo un progetto senza file è verde; Git Bash riscrive una `LANDING_BASE` che riceve dal processo padre | i passi 8 e 11 del compito 13, e la §17 del verbale |
-| l'insieme dei pacchetti della §2.1, alle versioni esatte, non ha vulnerabilità note; `astro` 7.3.7 corregge soltanto errori, e contro la 7.3.6 non c'è nessun avviso | `npm install --package-lock-only --ignore-scripts` e `npm audit`, in una cartella fuori dal repository; `gh api "/advisories?ecosystem=npm&affects=astro@7.3.6"` |
+| l'insieme dei pacchetti della §2.1, alle versioni esatte e risolto il 2026-10-09, non ha vulnerabilità note; `astro` 7.3.7 e 7.3.8 correggono soltanto errori, e contro la 7.3.6 non c'è nessun avviso | `npm install --package-lock-only --ignore-scripts` e `npm audit`, in una cartella fuori dal repository; `gh api "/advisories?ecosystem=npm&affects=astro@7.3.6"`; le note delle due versioni, `gh api "repos/withastro/astro/releases?per_page=40"` |
+| con `engine-strict=true` in `.npmrc`, npm rifiuta un progetto il cui `engines.node` esclude il Node della macchina: `EBADENGINE`, e l'uscita è 1; senza, soltanto un avviso, e l'uscita è 0 | in una cartella di prova fuori dal repository: un `package.json` con `engines.node` a `>=99.0.0`, poi `npm install --package-lock-only --ignore-scripts`, con e senza `.npmrc` |
+| il lockfile del compito 3: ogni voce viene dal registro di npm, con la sua `integrity`; uno script d'installazione soltanto in `esbuild` 0.28.2, spento, e in `fsevents` 2.3.3, opzionale e solo per macOS | dalla landing: `node -e` su `package-lock.json`, coi campi `resolved`, `integrity` e `hasInstallScript` delle voci |
 | cspell, di base, salta le parole sotto le quattro lettere; con `minWordLength: 2` le guarda, e una lettera sola la accetta sempre; il dizionario italiano conosce «download» | il programma della §18 del verbale delle prove |
 | la GUI di daemon vieta il testo scritto nei componenti col linter, `@intlify/vue-i18n/no-raw-text`; `eslint-plugin-astro` 3.2.1 una regola così non ce l'ha | `git show "origin/main:gui/eslint.config.js"`; `gh api "repos/ota-meshi/eslint-plugin-astro/contents/docs/rules" --jq '.[].name'` |
 | con `* text=auto eol=lf`, e `core.autocrlf=true` dalla configurazione di sistema di Git, un file con un byte NUL resta com'è in un clone, `i/-text`; con `* text eol=lf` cambia | in una cartella di prova fuori dal repository, senza `MSYS_NO_PATHCONV`: `git init`, il `.gitattributes`, `printf 'a\r\nb\0c\r\n' > probe.bin`, `git add -A`, il commit, `git clone`, poi `git ls-files --eol` nel clone e `cmp` fra le due copie; `git config --show-origin --get-all core.autocrlf` |
