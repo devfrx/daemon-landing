@@ -1,0 +1,12 @@
+{
+  "site-title": { "text": "daemon" },
+  "skip-to-content": { "text": "Skip to content" },
+  "contents": { "text": "Contents" },
+  "section-what": { "text": "What it is" },
+  "dark-theme": { "text": "Dark theme" },
+  "other-language": { "text": "Italiano" },
+  "other-language-short": { "text": "IT" },
+  "source": { "text": "Source" },
+  "code-on-github": { "text": "devfrx/daemon on GitHub" },
+  "provenance": { "text": "The sentences and numbers on this page come from devfrx/daemon, at commit {commit}." }
+}

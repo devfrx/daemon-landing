@@ -1,0 +1,27 @@
+{
+  "what-app": {
+    "text": "Un assistente desktop locale, per un utente solo.",
+    "source": "CLAUDE.md",
+    "quote": "Assistente desktop locale, utente singolo"
+  },
+  "what-pillars": {
+    "text": "Quattro pilastri paritari, su un kernel comune.",
+    "source": "docs/superpowers/specs/2026-08-06-kernel-design.md",
+    "quote": "Piattaforma a quattro pilastri paritari su kernel comune"
+  },
+  "what-pillar-names": {
+    "text": "Conversazione e conoscenza, agenti e coding, voce e gesti, generazione di asset 3D.",
+    "source": "CLAUDE.md",
+    "quote": "conversazione e conoscenza, agenti e coding, voce e gesti, generazione asset 3D"
+  },
+  "what-kernel": {
+    "text": "Il kernel non implementa nessuna funzionalità utente: fornisce i meccanismi.",
+    "source": "docs/tracciabilita.md",
+    "quote": "**Il kernel non implementa nessuna funzionalità utente.** Fornisce i meccanismi"
+  },
+  "what-limit": {
+    "text": "I quattro pilastri si contendono una sola GPU da 16\u00a0GB.",
+    "source": "docs/adr/0005-arbitrato-gpu-su-due-dimensioni.md",
+    "quote": "Quattro pilastri paritari si contendono una sola GPU da 16 GB."
+  }
+}
