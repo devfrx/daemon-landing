@@ -592,3 +592,14 @@ schemi, e `getEntry` sulle quattro raccolte —: `astro check` dà `0 errors`. T
 
 **Il banco non si rilancia.** La correzione tocca soltanto tre test di `texts.test.ts`, che nessun altro compito cambia, e
 le prove qui sopra coprono ogni passo che lo legge, i passi 1–6 del compito 5.
+
+**La rilettura dell'inglese**, il passo 7, da un subagente nuovo, `opus`, col compito del piano parola per parola:
+quindici identificatori, quattordici «va bene» e un «da cambiare», portato al proprietario in A/B. La risposta: A.
+
+| Il «da cambiare» | Come si è visto | La risposta |
+|---|---|---|
+| `what-kernel`, in inglese: «user features» si usa poco, e chi lavora con l'IA ci legge i dati che descrivono un utente; le funzionalità che l'utente vede e usa, in inglese, sono «user-facing» | daemon usa «user-facing» per lo stesso principio, ed è l'unica volta che scrive l'una o l'altra parola: `git grep -n -i "user-facing\|user feature" origin/main`, dalla radice di daemon, dà soltanto `crates/kernel/src/permission.rs:20`. La frase nuova passa le parole del compito 7, dal testo del piano: nessun refuso, e un refuso accanto al trattino, «user-facnig», si vede ancora | «The kernel implements no user-facing features: it provides the mechanisms.», nella §3.4 col suo richiamo, nel blocco di `src/texts/en.json` del compito 5, e nel file |
+
+**Le altre due note della rilettura**, nessuna da fare: «Italiano» e «IT», parole italiane sulla pagina inglese, vogliono
+`lang="it"` perché un lettore di schermo le pronunci bene, e il link all'altra lingua del compito 8 lo porta già,
+`lang={other}`; «3D asset» rispetta la tipografia, perché dopo la cifra viene una lettera e non uno spazio.

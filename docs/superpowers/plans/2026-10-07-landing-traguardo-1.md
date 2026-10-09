@@ -225,11 +225,15 @@ fa il controllo (§3.2 del disegno).
 | `what-app` | Un assistente desktop locale, per un utente solo. | A local desktop assistant, for a single user. | `CLAUDE.md` | `Assistente desktop locale, utente singolo` |
 | `what-pillars` | Quattro pilastri paritari, su un kernel comune. | Four equal pillars, on a shared kernel. | `docs/superpowers/specs/2026-08-06-kernel-design.md` | `Piattaforma a quattro pilastri paritari su kernel comune` |
 | `what-pillar-names` | Conversazione e conoscenza, agenti e coding, voce e gesti, generazione di asset 3D. | Conversation and knowledge, agents and coding, voice and gestures, 3D asset generation. | `CLAUDE.md` | `conversazione e conoscenza, agenti e coding, voce e gesti, generazione asset 3D` |
-| `what-kernel` | Il kernel non implementa nessuna funzionalità utente: fornisce i meccanismi. | The kernel implements no user features: it provides the mechanisms. | `docs/tracciabilita.md` | `**Il kernel non implementa nessuna funzionalità utente.** Fornisce i meccanismi` |
+| `what-kernel` | Il kernel non implementa nessuna funzionalità utente: fornisce i meccanismi. | The kernel implements no user-facing features: it provides the mechanisms. | `docs/tracciabilita.md` | `**Il kernel non implementa nessuna funzionalità utente.** Fornisce i meccanismi` |
 | `what-limit` | I quattro pilastri si contendono una sola GPU da 16 GB. | The four pillars compete for a single 16 GB GPU. | `docs/adr/0005-arbitrato-gpu-su-due-dimensioni.md` | `Quattro pilastri paritari si contendono una sola GPU da 16 GB.` |
 
 In «16 GB», fra il numero e l'unità, c'è lo spazio che non va a capo (§3.3): nei file JSON si scrive `16\u00a0GB`. Le
 citazioni sono letterali, asterischi compresi. La descrizione per i motori di ricerca è la frase `what-app`.
+
+⚠️ **Richiamo del 2026-10-09:** in inglese `what-kernel` dice «user-facing features», la parola che daemon usa in
+`crates/kernel/src/permission.rs` (risposta del proprietario: A, dalla rilettura dell'inglese del compito 5) — la storia
+nella §20 del [verbale delle prove](../../archivio/2026-10-07-prove-piano-landing.md).
 
 **L'interfaccia:**
 
@@ -998,7 +1002,7 @@ export const collections = {
   "what-app": { "text": "A local desktop assistant, for a single user." },
   "what-pillars": { "text": "Four equal pillars, on a shared kernel." },
   "what-pillar-names": { "text": "Conversation and knowledge, agents and coding, voice and gestures, 3D asset generation." },
-  "what-kernel": { "text": "The kernel implements no user features: it provides the mechanisms." },
+  "what-kernel": { "text": "The kernel implements no user-facing features: it provides the mechanisms." },
   "what-limit": { "text": "The four pillars compete for a single 16\u00a0GB GPU." }
 }
 ```
