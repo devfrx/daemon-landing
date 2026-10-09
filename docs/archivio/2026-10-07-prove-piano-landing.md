@@ -4,10 +4,10 @@
 > [piano del traguardo 1](../superpowers/plans/2026-10-07-landing-traguardo-1.md) — le §1–§9 nel pomeriggio, la §10 e la
 > §11 nella sessione dopo, la §12 e la §13 in quella dopo ancora, la §14 nella quinta, la §15 nella sesta, la §16 nella
 > settima, la §17 nell'ottava e la §18 nella decima e nell'undicesima, il pre-controllo, il 2026-10-08; la §19 nella
-> quindicesima, il ri-controllo del compito 4, il 2026-10-09: il proprietario ha scelto di provare il codice prima di
-> scriverlo nel piano (risposta: A). Le prove sono girate nello scratchpad di
-> ciascuna sessione, poi cancellato; dalla §16 il programma del banco sta accanto a questo file. Qui c'è la storia; il
-> piano porta ciò che ne è venuto.
+> quindicesima, il ri-controllo del compito 4, e la §20 nella sedicesima, il ri-controllo del compito 5, il 2026-10-09:
+> il proprietario ha scelto di provare il codice prima di scriverlo nel piano (risposta: A). Le prove sono girate nello
+> scratchpad di ciascuna sessione, poi cancellato; dalla §16 il programma del banco sta accanto a questo file. Qui c'è la
+> storia; il piano porta ciò che ne è venuto.
 
 **La macchina:** Windows 11, Git Bash, Node 24.19.0, npm 11.17.0, Chrome 154.0.8037.98. I pacchetti, alle versioni
 esatte della §2.1 del piano.
@@ -549,3 +549,46 @@ I conti dei compiti 8–13 crescono di uno per costruzione, e non sono stati ril
 `new Error(…, { cause })` terrebbe; `git show <commit>:<cartella>` esce con 0 e dà l'elenco della cartella invece di
 fallire, mentre `git cat-file blob` fallirebbe; l'aiuto `git()` dei test non fissa `commit.gpgsign` né `core.hooksPath`, e
 non toglie le variabili `GIT_*` che un hook di Git gli passerebbe.
+
+## 20. La sedicesima sessione: il ri-controllo del compito 5
+
+Il 2026-10-09, prima di eseguirlo. Il compito letto contro la landing a `0b92f72`, con le quattro domande e le regole 5–8
+di *«Prima di eseguire un compito di un piano»* (§6 del piano). daemon a `34cf745`, come alla chiusura della
+quindicesima.
+
+**I fatti che invecchiano** e che il compito tocca, rilanciati coi comandi della tabella in fondo alla §6 del piano —
+Node e npm della macchina, `origin/main` di daemon, le cinque citazioni, l'ultima `astro` —: tutto come scritto. In più:
+
+| Fatto | Comando |
+|---|---|
+| `astro/zod`, in Astro 7.3.6, è `zod/v4`, e la Zod installata è la 4.6.5 | `node_modules/astro/dist/zod.js`; `node -e "console.log(require('./node_modules/zod/package.json').version)"`, dalla landing |
+| il caricatore `file()` di Astro 7.3.6, se il file non c'è o non è JSON valido, scrive `[ERROR] [file-loader]` e lascia vuota la raccolta: la build esce con 0, con `0 errors` e `2 page(s) built` | `node_modules/astro/dist/content/loaders/file.js`; nello scratchpad, la build con `uiIt` su un file che non c'è e una virgola in più in `src/ui/en.json` |
+
+**Il difetto**, portato al proprietario in A/B. La risposta: A.
+
+| Il difetto | Che cosa lo coglie | Come si è visto | La risposta |
+|---|---|---|---|
+| lo schema vuole non vuote la fonte, la citazione, la frase inglese e la parola d'interfaccia, `.min(1)`, e i cinque test lo provano soltanto per il testo italiano: senza uno di quei quattro `.min(1)` restano verdi. Una citazione vuota si trova in ogni file, e il controllo delle fonti del compito 6 passerebbe su una frase che non cita niente; una frase inglese vuota non la vede nessun controllo dopo | la domanda 2, la sonda manca; e il vincolo 11 del piano | i quattro schemi sbagliati, scritti nello scratchpad accanto a quello del piano: coi cinque test del piano, `5 passed` tutti e quattro. `quoteIsIn` e `numbersNotInQuote` del compito 6, dal testo del piano: la citazione vuota si trova in ogni file, e una frase senza numeri passa. Che nessun controllo dopo veda una frase inglese vuota è dedotto, dal codice dei compiti 6–12 | quattro controlli nei test che ci sono: la fonte e la citazione vuote, nel test della frase italiana; il testo vuoto, in quello della frase inglese e in quello della parola d'interfaccia. Restano cinque test, e nessun altro conto del piano cambia |
+
+**I test nuovi, provati** nello scratchpad, dal testo del piano corretto:
+
+| Prova | Visto |
+|---|---|
+| senza `texts.ts` | `Cannot find module './texts'` |
+| col `texts.ts` del piano | `5 passed`; i passi 4–6 come scritti: `0 errors`, `0 warnings` e `2 page(s) built`, poi la frase inglese con la fonte che ferma la build, `[InvalidContentEntryDataError] textsEn → what-app data does not match collection schema.` e `Unrecognized key: "source"`, con l'uscita a 1, poi di nuovo verde; `npm test`, `10 passed` |
+| con la fonte, la citazione, la frase inglese o la parola d'interfaccia che possono essere vuote, una per volta | rosso il test di quello schema |
+| col testo italiano che può essere vuoto, con uno dei tre schemi che accetta un campo in più, con un `readTexts` che non controlla | rosso, come coi test di prima |
+
+**Da fuori, la domanda 3.** Un file nello scratchpad usa i testi come li useranno i compiti 6, 7 e 8 — `readTexts` coi tre
+schemi, e `getEntry` sulle quattro raccolte —: `astro check` dà `0 errors`. Tre righe che leggono una `source` o una
+`quote` che lo schema non ha danno tre errori, come `Property 'source' does not exist on type '{ text: string; }'`.
+
+**Non sono difetti: due cose che il compito non prova, e i compiti dopo sì.**
+
+| Che cosa | Chi lo prova |
+|---|---|
+| un `readTexts` che non usa lo schema che riceve, e controlla ogni file come le frasi inglesi: i cinque test restano verdi | il controllo delle fonti del compito 6, che legge `src/texts/it.json` con `italianSentence`: si fermerebbe, perché le frasi italiane hanno la fonte e la citazione |
+| un file dei testi che non c'è, o che non è JSON valido: la build resta verde (qui sopra) | nei controlli, dal compito 6, `readTexts`, che si ferma; dal compito 8, la pagina, che si ferma su una parola o una frase che manca. Il percorso di `textsEn` lo prova già il passo 6 |
+
+**Il banco non si rilancia.** La correzione tocca soltanto tre test di `texts.test.ts`, che nessun altro compito cambia, e
+le prove qui sopra coprono ogni passo che lo legge, i passi 1–6 del compito 5.
