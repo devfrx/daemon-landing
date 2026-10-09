@@ -1,0 +1,20 @@
+{
+  "name": "daemon-landing",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
+  },
+  "scripts": {
+    "build": "astro check && astro build"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.10",
+    "astro": "7.3.6",
+    "typescript": "5.9.3"
+  },
+  "allowScripts": {
+    "esbuild": false
+  }
+}
