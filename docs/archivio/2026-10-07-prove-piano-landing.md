@@ -542,6 +542,9 @@ piano», due righe di `daemon.ts` che nessun test prova.
 | i passi 4 e 6 del compito 6, sui cinque test | `2 failed \| 5 passed`, poi `7 passed` |
 | `npm run build` | `0 errors`, `0 warnings` e `2 page(s) built` |
 
+I conti dei compiti 8–13 crescono di uno per costruzione, e non sono stati rilanciati: il test nuovo sta nel progetto
+`checks`, che ciascuno di quei passi conta per intero.
+
 **Le note minori della revisione**, nessuna da fare adesso: i due `catch` di `daemon.ts` buttano la causa dell'errore, che
 `new Error(…, { cause })` terrebbe; `git show <commit>:<cartella>` esce con 0 e dà l'elenco della cartella invece di
 fallire, mentre `git cat-file blob` fallirebbe; l'aiuto `git()` dei test non fissa `commit.gpgsign` né `core.hooksPath`, e
