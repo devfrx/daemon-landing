@@ -702,6 +702,10 @@ dice una cosa, un commit locale dopo di lui e la cartella di lavoro ne dicono al
 e che rifiuta un file che c'è solo in locale (risposta del proprietario: A) — la storia nella §19 del
 [verbale delle prove](../../archivio/2026-10-07-prove-piano-landing.md).
 
+⚠️ **Richiamo del 2026-10-09:** un quinto test legge un file oltre 1 MiB, il limite di base di `execFileSync`, e i conti
+dei compiti 6 e 8–13 crescono di uno (risposta del proprietario: A, dalla revisione del compito) — la storia nella §19 del
+[verbale delle prove](../../archivio/2026-10-07-prove-piano-landing.md).
+
 ```ts
 import { execFileSync } from 'node:child_process';
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
@@ -749,6 +753,17 @@ describe('openDaemon', () => {
     // A git fetch after the opening moves origin/main; the reads stay on the commit taken at the opening.
     git(root, 'update-ref', 'refs/remotes/origin/main', git(root, 'rev-parse', 'HEAD'));
     expect(daemon.read('notes.md')).toBe('on main\n');
+  });
+
+  test('reads a file larger than the 1 MiB that execFileSync allows by default', () => {
+    const { root } = repository();
+    // Past that limit, as some of daemon's documents are, a read without maxBuffer fails.
+    const large = 'x'.repeat(1024 * 1024 + 1);
+    writeFileSync(join(root, 'large.md'), large);
+    git(root, 'add', 'large.md');
+    git(root, 'commit', '--quiet', '-m', 'large');
+    git(root, 'update-ref', 'refs/remotes/origin/main', git(root, 'rev-parse', 'HEAD'));
+    expect(openDaemon(root).read('large.md')).toHaveLength(large.length);
   });
 
   test('refuses a repository without origin/main', () => {
@@ -813,7 +828,7 @@ Il file più grande di daemon supera il limite di `execFileSync`; il comando che
 `git ls-tree -r -l origin/main | sort -k4 -n | tail -1`.
 
 - [ ] **Passo 5 — il test, verde.** `npm test`, che prova anche lo script del passo 1 e la configurazione del passo 2.
-Atteso: `4 passed`.
+Atteso: `5 passed`.
 
 - [ ] **Passo 6 — i tipi.** `npm run build`. Atteso: `0 errors` e `2 page(s) built`.
 
@@ -1180,7 +1195,7 @@ e due test nuovi, prima di `refuses a repository without origin/main`:
   });
 ```
 
-Lancia `npx vitest run src/lib/daemon.test.ts`. Atteso: `2 failed | 4 passed`.
+Lancia `npx vitest run src/lib/daemon.test.ts`. Atteso: `2 failed | 5 passed`.
 
 - [ ] **Passo 5 — `origin`, il codice.** In `src/lib/daemon.ts`, il campo nell'interfaccia, dopo `commit`:
 
@@ -1208,7 +1223,7 @@ e nell'oggetto restituito:
     origin,
 ```
 
-- [ ] **Passo 6 — `origin`, il test verde.** `npx vitest run src/lib/daemon.test.ts`. Atteso: `6 passed`.
+- [ ] **Passo 6 — `origin`, il test verde.** `npx vitest run src/lib/daemon.test.ts`. Atteso: `7 passed`.
 
 - [ ] **Passo 7 — il controllo del cancello.** `checks/sources.test.ts`:
 
@@ -2273,7 +2288,7 @@ source at the commit` e `says nothing that is not in the files of the texts`, co
 lingue; poi la build senza il sito si ferma, `LANDING_SITE is missing: hreflang wants full addresses`, con l'uscita a 1;
 alla fine di nuovo `24 passed`.
 
-- [ ] **Passo 12 — il resto, e le vulnerabilità.** `npm test -- --project checks`, poi `npm audit`. Atteso: `62 passed`,
+- [ ] **Passo 12 — il resto, e le vulnerabilità.** `npm test -- --project checks`, poi `npm audit`. Atteso: `63 passed`,
 e `found 0 vulnerabilities`.
 
 - [ ] **Passo 13 — il commit.**
@@ -2863,7 +2878,7 @@ of the system, while the visitor has not chosen` e su `keeps the switch working 
 alla fine `5 passed` e `38 passed`. `--color-bg` è ridefinito sul segno della fonte, che non ha uno sfondo suo: la pagina
 non cambia aspetto, e i temi restano verdi su quel difetto.
 
-- [ ] **Passo 8 — il resto, e le vulnerabilità.** `npm test -- --project checks`, poi `npm audit`. Atteso: `71 passed`,
+- [ ] **Passo 8 — il resto, e le vulnerabilità.** `npm test -- --project checks`, poi `npm audit`. Atteso: `72 passed`,
 e `found 0 vulnerabilities`.
 
 - [ ] **Passo 9 — il commit.**
@@ -3105,7 +3120,7 @@ cp "$d/Page.astro" src/layouts/ && rm -rf dist && npm run build && npx vitest ru
 
 Atteso: prima `6 failed`, i tre controlli in tutte e due le lingue; poi di nuovo `44 passed`.
 
-- [ ] **Passo 5 — il resto, e le vulnerabilità.** `npm test -- --project checks`, poi `npm audit`. Atteso: `71 passed`,
+- [ ] **Passo 5 — il resto, e le vulnerabilità.** `npm test -- --project checks`, poi `npm audit`. Atteso: `72 passed`,
 e `found 0 vulnerabilities`.
 
 - [ ] **Passo 6 — il commit.**
@@ -3539,7 +3554,7 @@ screen, and shows its ring`, perché «Vai al contenuto» ha il fuoco sopra lo s
 brings its section below itself`, perché l'indice scorre via. axe resta verde in tutti e due i giri: nessun difetto tocca
 una sua regola WCAG. Alla fine `68 passed`.
 
-- [ ] **Passo 8 — il resto, e le vulnerabilità.** `npm test -- --project checks`, poi `npm audit`. Atteso: `71 passed`,
+- [ ] **Passo 8 — il resto, e le vulnerabilità.** `npm test -- --project checks`, poi `npm audit`. Atteso: `72 passed`,
 e `found 0 vulnerabilities`.
 
 - [ ] **Passo 9 — il commit.**
@@ -3757,7 +3772,7 @@ Atteso: prima `6 failed | 2 passed`: l'LCP, la CLS e l'INP nelle due lingue, cia
 verde; poi `2 failed | 6 passed`: la guardia nelle due lingue, con `responseEnd` di pochi millisecondi; alla fine
 `76 passed`.
 
-- [ ] **Passo 4 — il resto, e le vulnerabilità.** `npm test -- --project checks`, poi `npm audit`. Atteso: `71 passed`,
+- [ ] **Passo 4 — il resto, e le vulnerabilità.** `npm test -- --project checks`, poi `npm audit`. Atteso: `72 passed`,
 e `found 0 vulnerabilities`.
 
 - [ ] **Passo 5 — il commit.**
@@ -3793,7 +3808,7 @@ dei compiti 4–12, la build con l'indirizzo (compito 8). **Lascia:**
 |---|---|
 | `npm ci --no-audit --no-fund` | installa ciò che il lockfile fissa |
 | `dist/` tolta, poi `npm run build` | Astro svuota la cartella in cui scrive, ma una build che scrive altrove lascerebbe ai controlli della pagina quella vecchia, in `dist/`: senza la riga che la toglie, il cancello è verde su una build così |
-| i due progetti di Vitest, uno per volta | in un giro solo un progetto che non trova file è verde — senza i file della pagina, `npx vitest run` dà `81 passed` —; da solo è rosso, `No test files found` |
+| i due progetti di Vitest, uno per volta | in un giro solo un progetto che non trova file è verde — senza i file della pagina, `npx vitest run` dà `82 passed` —; da solo è rosso, `No test files found` |
 | `checks` con `--reporter=verbose` | un test saltato si scrive col suo nome. Di base Vitest 4.1.11 scrive soltanto `1 skipped`, e non dice quale |
 | `npm audit`, alla fine | senza `--audit-level`, come in daemon |
 
@@ -4070,8 +4085,8 @@ Poi, in `package.json`, lo script del cancello accanto agli altri due:
 ```
 
 - [ ] **Passo 7 — il cancello, verde.** `npm run gate`. Atteso: le righe dei passi nel loro ordine, `-------- install`,
-`-------- build`, `-------- checks`, `-------- page` e `-------- advisories`; `0 errors` e `2 page(s) built`; `81 passed`,
-cioè i 71 di prima, i 7 di `brand.ts` e i 3 del suo controllo; `76 passed` nel browser; `found 0 vulnerabilities`; e
+`-------- build`, `-------- checks`, `-------- page` e `-------- advisories`; `0 errors` e `2 page(s) built`; `82 passed`,
+cioè i 72 di prima, i 7 di `brand.ts` e i 3 del suo controllo; `76 passed` nel browser; `found 0 vulnerabilities`; e
 l'uscita è 0.
 
 - [ ] **Passo 8 — l'altro senso.** Un difetto per ciascuna ragione del cancello, un giro per difetto: i controlli della
@@ -4161,7 +4176,7 @@ git add package.json src/lib checks scripts .github && git commit -m "t1(compito
 d=$(mktemp -d) && (unset MSYS_NO_PATHCONV && git init -q "$d/daemon" && git -C "$d/daemon" remote add origin https://github.com/devfrx/daemon && git -C "$d/daemon" fetch -q --no-tags --depth=1 origin +refs/heads/main:refs/remotes/origin/main && git -C "$d/daemon" checkout -q -B main refs/remotes/origin/main && git clone -q . "$d/daemon/landing") && (cd "$d/daemon/landing" && npm run gate); echo "the gate: exit $?"; rm -rf "$d"
 ```
 
-Atteso: il verde del passo 7, tranne i controlli: `80 passed | 1 skipped (81)`, e il test del kit elencato con `↓`,
+Atteso: il verde del passo 7, tranne i controlli: `81 passed | 1 skipped (82)`, e il test del kit elencato con `↓`,
 perché il kit non c'è; `the gate: exit 0`.
 
 - [ ] **Passo 12 —** `git push`.

@@ -524,3 +524,25 @@ citazioni.
 
 **Il banco non si rilancia.** La correzione tocca soltanto due test di `daemon.test.ts`, e le prove qui sopra coprono
 ogni passo che lo legge: i passi 3–6 del compito 4, e i passi 4 e 6 del compito 6, l'unico altro che lo cambia.
+
+**La revisione del compito**, dopo il suo commit, `253a9a2`: aderente e approvata, con due rilievi Important «imposti dal
+piano», due righe di `daemon.ts` che nessun test prova.
+
+| Il rilievo | Come si è visto | La decisione |
+|---|---|---|
+| la cartella di daemon di base, `resolve(process.cwd(), '..')`: con un'altra, i test del compito restano verdi | letto il test | resta com'è: era già nel ri-controllo, qui sopra, e la revisione non porta una prova nuova |
+| `maxBuffer: Infinity`: senza, i test restano verdi; e nessun controllo del piano lo prova, perché nessun file che la pagina legge supera 1 MiB. Una lettura oltre il limite direbbe che il file non c'è | `git cat-file -s "origin/main:<file>"`, per le cinque fonti e per `gui/src/tokens/themes.css`; `git ls-tree -r -l origin/main \| awk '$4 > 1048576'`, i file di daemon oltre 1 MiB | un quinto test: un file appena oltre 1 MiB si legge per intero (risposta del proprietario: A). I conti dei compiti 6 e 8–13 crescono di uno |
+
+**Il quinto test, provato** nello scratchpad, dal testo del piano corretto:
+
+| Prova | Visto |
+|---|---|
+| col `daemon.ts` del piano | `5 passed` |
+| col `daemon.ts` senza `maxBuffer` | rosso il test nuovo: `Error: large.md is not in daemon at …` |
+| i passi 4 e 6 del compito 6, sui cinque test | `2 failed \| 5 passed`, poi `7 passed` |
+| `npm run build` | `0 errors`, `0 warnings` e `2 page(s) built` |
+
+**Le note minori della revisione**, nessuna da fare adesso: i due `catch` di `daemon.ts` buttano la causa dell'errore, che
+`new Error(…, { cause })` terrebbe; `git show <commit>:<cartella>` esce con 0 e dà l'elenco della cartella invece di
+fallire, mentre `git cat-file blob` fallirebbe; l'aiuto `git()` dei test non fissa `commit.gpgsign` né `core.hooksPath`, e
+non toglie le variabili `GIT_*` che un hook di Git gli passerebbe.
