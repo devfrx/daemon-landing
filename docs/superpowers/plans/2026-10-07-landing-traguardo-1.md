@@ -16,8 +16,8 @@
 | 2 | Gli strumenti e i vincoli | ✅ approvata il 2026-10-07 |
 | 3 | I testi | ✅ approvata il 2026-10-07 |
 | 4 | La mappa dei file | ✅ approvata il 2026-10-07 |
-| 5 | I compiti | ✅ i compiti 1–11 approvati il 2026-10-07, il 12 e il 13 il 2026-10-08; il pre-controllo li ha corretti, il 2026-10-08, e il 4 l'hanno corretto il suo ri-controllo e la sua revisione, il 2026-10-09; i compiti 1 e 2 eseguiti il 2026-10-08, il 3 e il 4 il 2026-10-09 (§6) |
-| 6 | Come si riprende | 🔶 oggi è la consegna della quindicesima sessione, del 2026-10-09: il compito 4 è eseguito, e il prossimo passo è il compito 5 |
+| 5 | I compiti | ✅ i compiti 1–11 approvati il 2026-10-07, il 12 e il 13 il 2026-10-08; il pre-controllo li ha corretti, il 2026-10-08, il 4 l'hanno corretto il suo ri-controllo e la sua revisione, e il 5 il suo ri-controllo e la rilettura dell'inglese, il 2026-10-09; i compiti 1 e 2 eseguiti il 2026-10-08, dal 3 al 5 il 2026-10-09 (§6) |
+| 6 | Come si riprende | 🔶 oggi è la consegna della sedicesima sessione, del 2026-10-09: il compito 5 è eseguito, e il prossimo passo è il compito 6 |
 
 ---
 
@@ -857,7 +857,7 @@ git add package.json package-lock.json vitest.config.ts src/lib && git commit -m
 - in `src/content.config.ts` le quattro raccolte di Astro: `textsIt`, `textsEn`, `uiIt`, `uiEn`;
 - le parole della §3.4, nei quattro file.
 
-- [ ] **Passo 1 — il test, rosso.** `src/lib/texts.test.ts`:
+- [x] **Passo 1 — il test, rosso.** `src/lib/texts.test.ts`:
 
 ⚠️ **Richiamo del 2026-10-09:** il test prova anche che la fonte, la citazione, la frase inglese e la parola
 d'interfaccia non possono essere vuote (risposta del proprietario: A) — la storia nella §20 del
@@ -921,7 +921,7 @@ describe('readTexts', () => {
 
 Lancia `npx vitest run src/lib/texts.test.ts`. Atteso: `Cannot find module './texts'`.
 
-- [ ] **Passo 2 — gli schemi.** `src/lib/texts.ts`:
+- [x] **Passo 2 — gli schemi.** `src/lib/texts.ts`:
 
 ```ts
 import { readFileSync } from 'node:fs';
@@ -946,9 +946,9 @@ export function readTexts<Schema extends z.ZodType>(path: string, schema: Schema
 }
 ```
 
-- [ ] **Passo 3 — il test, verde.** `npx vitest run src/lib/texts.test.ts`. Atteso: `5 passed`.
+- [x] **Passo 3 — il test, verde.** `npx vitest run src/lib/texts.test.ts`. Atteso: `5 passed`.
 
-- [ ] **Passo 4 — le raccolte e le parole.** `src/content.config.ts`:
+- [x] **Passo 4 — le raccolte e le parole.** `src/content.config.ts`:
 
 ```ts
 import { defineCollection } from 'astro:content';
@@ -1041,10 +1041,10 @@ export const collections = {
 }
 ```
 
-- [ ] **Passo 5 — la build, verde.** `npm run build`. Atteso: `0 errors` e `2 page(s) built`. Astro controlla le
+- [x] **Passo 5 — la build, verde.** `npm run build`. Atteso: `0 errors` e `2 page(s) built`. Astro controlla le
 raccolte anche se nessuna pagina le usa ancora.
 
-- [ ] **Passo 6 — l'altro senso.** Una frase inglese con una fonte ferma la build; poi il file torna com'era:
+- [x] **Passo 6 — l'altro senso.** Una frase inglese con una fonte ferma la build; poi il file torna com'era:
 
 ```bash
 d=$(mktemp -d) && cp src/texts/en.json "$d/en.json" && node -e "const fs=require('node:fs');const t=JSON.parse(fs.readFileSync('src/texts/en.json','utf8'));t['what-app'].source='CLAUDE.md';fs.writeFileSync('src/texts/en.json',JSON.stringify(t,null,2))" && npm run build; cp "$d/en.json" src/texts/en.json && npm run build
@@ -1053,7 +1053,7 @@ d=$(mktemp -d) && cp src/texts/en.json "$d/en.json" && node -e "const fs=require
 Atteso: prima `[InvalidContentEntryDataError] textsEn → what-app data does not match collection schema.` e
 `Unrecognized key: "source"`, con l'uscita a 1; poi di nuovo il verde del passo 5.
 
-- [ ] **Passo 7 — l'inglese, riletto** (§3.2 del disegno). Lo fa il **coordinatore**, non il subagente del compito: un
+- [x] **Passo 7 — l'inglese, riletto** (§3.2 del disegno). Lo fa il **coordinatore**, non il subagente del compito: un
 subagente nuovo, `model: "opus"`, che non ha scritto la traduzione, con questo compito:
 
 > Sei il secondo revisore dell'inglese della landing di daemon, in `landing/`. Per ogni identificatore di
@@ -1066,13 +1066,13 @@ subagente nuovo, `model: "opus"`, che non ha scritto la traduzione, con questo c
 
 Ogni «da cambiare» va al proprietario, in A/B, prima di toccare una frase: le parole della §3.4 sono approvate.
 
-- [ ] **Passo 8 — il commit.**
+- [x] **Passo 8 — il commit.**
 
 ```bash
 git add src && git commit -m "t1(compito 5): i testi e i loro schemi -- le frasi di «Cos’è» con fonte e citazione, l'interfaccia senza fonte, in quattro file JSON controllati da Astro con gli schemi di src/lib/texts.ts (§3 del piano); l'inglese riletto da un subagente nuovo"
 ```
 
-- [ ] **Passo 9 —** `git push`.
+- [x] **Passo 9 —** `git push`.
 
 ### Compito 6 — il controllo delle fonti
 
@@ -4205,8 +4205,8 @@ silenzio.
 
 ## 6. Come si riprende
 
-> 🔶 Oggi questa sezione è la consegna della quindicesima sessione, del 2026-10-09: il compito 4 è eseguito, e il
-> prossimo è il compito 5. Le consegne di prima sono in archivio, parola per parola:
+> 🔶 Oggi questa sezione è la consegna della sedicesima sessione, del 2026-10-09: il compito 5 è eseguito, e il
+> prossimo è il compito 6. Le consegne di prima sono in archivio, parola per parola:
 > [del mattino](../../archivio/2026-10-07-consegna-piano-landing-mattina.md),
 > [del pomeriggio](../../archivio/2026-10-07-consegna-piano-landing-pomeriggio.md),
 > [della terza sessione](../../archivio/2026-10-07-consegna-piano-landing-terza-sessione.md),
@@ -4219,35 +4219,39 @@ silenzio.
 > [della decima](../../archivio/2026-10-08-consegna-piano-landing-decima-sessione.md),
 > [dell'undicesima](../../archivio/2026-10-08-consegna-piano-landing-undicesima-sessione.md),
 > [della dodicesima](../../archivio/2026-10-08-consegna-piano-landing-dodicesima-sessione.md),
-> [della tredicesima](../../archivio/2026-10-08-consegna-piano-landing-tredicesima-sessione.md) e
-> [della quattordicesima](../../archivio/2026-10-09-consegna-piano-landing-quattordicesima-sessione.md).
+> [della tredicesima](../../archivio/2026-10-08-consegna-piano-landing-tredicesima-sessione.md),
+> [della quattordicesima](../../archivio/2026-10-09-consegna-piano-landing-quattordicesima-sessione.md) e
+> [della quindicesima](../../archivio/2026-10-09-consegna-piano-landing-quindicesima-sessione.md).
 
 **Dove siamo:**
 
 | Parte | Stato |
 |---|---|
-| §1–§4 | approvate, coi richiami del 2026-10-07 e del 2026-10-08 |
-| §5, compiti 1–13 | ✅ approvati: l'1–11 il 2026-10-07, il 12 e il 13 il 2026-10-08; corretti dal pre-controllo, coi richiami del 2026-10-08, e il 4 dal suo ri-controllo e dalla sua revisione, coi richiami del 2026-10-09 |
+| §1–§4 | approvate, coi richiami del 2026-10-07, del 2026-10-08 e del 2026-10-09 |
+| §5, compiti 1–13 | ✅ approvati: l'1–11 il 2026-10-07, il 12 e il 13 il 2026-10-08; corretti dal pre-controllo, coi richiami del 2026-10-08; il 4 dal suo ri-controllo e dalla sua revisione, e il 5 dal suo ri-controllo e dalla rilettura dell'inglese, coi richiami del 2026-10-09 |
 | il pre-controllo | ✅ finito: otto difetti, tutti decisi dal proprietario, tutti A, e scritti nel piano; il banco ha rifatto dal testo i compiti 1–13, e tutto torna come scritto |
-| l'esecuzione | 🔶 i compiti 1–4 ✅: `t1(compito 1)` e `t1(compito 2)` il 2026-10-08, `t1(compito 3)` e `t1(compito 4)` il 2026-10-09, spinti su GitHub; i compiti 5–13 da eseguire |
+| l'esecuzione | 🔶 i compiti 1–5 ✅: `t1(compito 1)` e `t1(compito 2)` il 2026-10-08, `t1(compito 3)`, `t1(compito 4)` e `t1(compito 5)` il 2026-10-09, spinti su GitHub; i compiti 6–13 da eseguire |
 
 Gli otto difetti, con le prove, le risposte e ciò che il banco ha visto, sono nella §18 del
 [verbale delle prove](../../archivio/2026-10-07-prove-piano-landing.md); il difetto del ri-controllo del compito 4 e il
-rilievo della sua revisione, nella §19. Il programma del banco,
+rilievo della sua revisione, nella §19; il difetto del ri-controllo del compito 5, la sua rilettura dell'inglese e la sua
+revisione, nella §20. Il programma del banco,
 [`2026-10-08-banco-prove-piano-landing.mjs`](../../archivio/2026-10-08-banco-prove-piano-landing.mjs), rifà dal testo i
-compiti 1–13: serve di nuovo solo se un compito cambia prima di essere eseguito. Dopo le due correzioni del compito 4 non
-è stato rilanciato: le prove della §19 coprono i passi dei compiti 4 e 6, e i conti dei compiti 8–13 crescono di uno per
-costruzione.
+compiti 1–13: serve di nuovo solo se un compito cambia prima di essere eseguito. Dopo le correzioni dei compiti 4 e 5 non
+è stato rilanciato: le prove della §19 coprono i passi dei compiti 4 e 6, quelle della §20 i passi del compito 5, e i
+conti dei compiti 8–13 crescono di uno per costruzione, col quinto test del compito 4.
 
-**Il compito 4**, eseguito il 2026-10-09:
+**Il compito 5**, eseguito il 2026-10-09:
 
 | | |
 |---|---|
-| il ri-controllo | contro la landing a `51cff86`, con le quattro domande e le regole 5–8: un difetto. I quattro test li passavano anche un `read` che rilegge `origin/main` a ogni lettura e uno che ripiega sulla cartella di lavoro: la sonda mancava. Risposta del proprietario: A, i test 2 e 4 più forti, scritti nel piano in `c4fea9d`; la storia nella §19 del verbale. Rilanciato ciò che invecchia — Node e npm della macchina, le versioni contro `gui/package.json` di daemon, gli avvisi, il file più grande di daemon —: tutto come nel piano |
-| l'esecuzione | due subagenti `sonnet`, chi esegue e chi rivede (risposta del proprietario: A). Dal rapporto di chi esegue: `No packages with unreviewed install scripts.`; il rosso del passo 3, `Cannot find module './daemon'`; il verde del passo 5, `4 passed`, e `5 passed` col quinto test; il passo 6, `0 errors`, `0 warnings` e `2 page(s) built`. In più, senza tracce nel repository: i due `read` sbagliati presi ciascuno dal suo test, e `openDaemon()` senza argomenti che legge per intero il file più grande di daemon |
-| la revisione | conforme e approvata: i tre file nuovi identici al piano, byte per byte, e il lockfile come richiesto. Due rilievi Important «imposti dal piano», due righe di `daemon.ts` senza un test: la cartella di daemon di base resta com'è, come nel ri-controllo; per `maxBuffer: Infinity` un quinto test, un file appena oltre 1 MiB (risposta del proprietario: A), scritto nel piano in `c850eae` e nel codice in `b2aef1a`, nel giro di correzione 1, e la sua revisione corta lo dà risolto, senza niente di nuovo rotto. Ciò che il diff non mostrava l'ha verificato il coordinatore prima del push: la build intera, `0 errors` e `0 warnings`; `npm test`; la riga di `npm ci --dry-run`, che esce uguale col lockfile del compito 3. Le note minori, nessuna da fare adesso, sono nella §19 del verbale; e una della revisione corta: il quinto test prova «oltre il limite di base», non «senza limite», e un `maxBuffer` fra 1 e 2 MiB resterebbe verde |
-| il costo | chi esegue, circa 125 mila token e 9 minuti; chi rivede, circa 161 mila token e 10 minuti; nel giro di correzione, chi esegue, ripreso col suo contesto, altri 3 minuti e mezzo, circa 149 mila token contando il contesto, e la revisione corta circa 125 mila token e 5 minuti e mezzo: l'uscita dello strumento `Agent` |
-| il push | il coordinatore, dopo ciascuna revisione: `253a9a2` e `b2aef1a`, gli stessi su GitHub |
+| il ri-controllo | contro la landing a `0b92f72`, con le quattro domande e le regole 5–8: un difetto. Senza uno dei quattro `.min(1)` — la fonte, la citazione, la frase inglese, la parola d'interfaccia — i cinque test restavano verdi, e una citazione vuota si trova in ogni file: la sonda mancava. Risposta del proprietario: A, quattro controlli nei test che ci sono, scritti nel piano in `8f63b49`; la storia nella §20 del verbale, con due cose che il compito non prova e i compiti 6 e 8 sì. Rilanciato ciò che invecchia — Node e npm della macchina, `origin/main` di daemon, le cinque citazioni, l'ultima `astro` —: tutto come nel piano |
+| l'esecuzione | tre subagenti: chi esegue e chi rivede `sonnet`, chi rilegge l'inglese `opus` (risposta del proprietario: A). Chi esegue ha fatto i passi 1–6, e si è fermato prima del commit: il rosso del passo 1, `Cannot find module './texts'`; il verde del passo 3, `5 passed`; il passo 5, `0 errors` e `2 page(s) built`, senza righe `[ERROR]`; il passo 6, `Unrecognized key: "source"` con l'uscita a 1, poi il verde |
+| il passo 7 | la rilettura dell'inglese: quattordici «va bene» e un «da cambiare», `what-kernel`, che ora dice «user-facing features», la parola che daemon usa (risposta del proprietario: A); nel piano in `07fd6a1`, e nel file dal coordinatore |
+| il passo 8 | il commit, `d9958f7`, l'ha fatto il coordinatore col comando del piano (risposta del proprietario: A), così chi esegue non si è riaperto per un commit solo. Prima, ciò che chi esegue non poteva vedere: i sette file identici ai blocchi del piano a `07fd6a1`, byte per byte; `npm test`, `10 passed`; la build, `0 errors`, senza righe `[ERROR]` |
+| la revisione | aderente e approvata, senza rilievi Critical né Important. Due note minori «imposte dal piano», nessuna da fare adesso: nessun test toglie un campo intero a uno schema, e `.min(1)` non ferma una citazione fatta di spazi — la §20 del verbale |
+| il costo | chi esegue, circa 166 mila token e 12 minuti; chi rilegge l'inglese, circa 105 mila token e 5 minuti; chi rivede, circa 191 mila token e 11 minuti: l'uscita dello strumento `Agent`. In tutto circa 462 mila token, più dei 250–330 mila della stima detta al proprietario |
+| il push | il coordinatore: `8f63b49` e `07fd6a1` appena scritti, `d9958f7` dopo la revisione, gli stessi su GitHub |
 
 **Come si esegue**: una fase per sessione (§7.1 del disegno), un compito per sessione, nell'ordine 1–13. Il coordinatore
 rilegge il compito contro la landing di adesso — la regola 5 di *«Prima di eseguire un compito di un piano»*, nel
@@ -4255,22 +4259,25 @@ rilegge il compito contro la landing di adesso — la regola 5 di *«Prima di es
 seguono la riga di quella skill nel `CLAUDE.md` di daemon. Il codice nasce dai test,
 `superpowers:test-driven-development`. Il compito si chiude col suo commit, `t1(compito N): …`, e col push.
 
-Come l'hanno fatto le sessioni dalla dodicesima alla quindicesima, e come conviene rifarlo:
+Come l'hanno fatto le sessioni dalla dodicesima alla sedicesima, e come conviene rifarlo:
 
 - prima di eseguire un compito, il coordinatore ne prova i test in una cartella dello scratchpad — `package.json`,
   `package-lock.json` e `.npmrc` della landing, i pacchetti del compito risolti e installati, i blocchi del piano estratti
   per righe —: verdi sul codice del piano, e rossi su un codice sbagliato apposta, uno per ogni promessa del compito. Così
   il ri-controllo della quindicesima sessione ha trovato i due test del compito 4 che non vedevano niente (§19 del
-  verbale);
+  verbale), e quello della sedicesima i quattro `.min(1)` del compito 5 che nessun test provava (§20);
 - prima di mandare i subagenti, il costo al proprietario e il suo sì: più di un subagente lo chiede il `CLAUDE.md` di
-  daemon, e il sì vale per il compito per cui è dato;
+  daemon, e il sì vale per il compito per cui è dato. La stima si fa sui numeri dell'ultimo compito, nella sua tabella
+  qui sopra: quella del compito 5, fatta sui numeri del compito 4, è uscita bassa, perché chi rilegge e chi rivede
+  scrivono programmi di controllo propri;
 - il lavoro dei subagenti — il fascicolo del compito, il rapporto, il pacchetto della revisione, il registro — sta nello
   scratchpad della sessione, non nella landing: `sdd-workspace` della skill scriverebbe `.superpowers/sdd/` dentro il
   repository, e `review-package` lo stesso, se non riceve come quarto argomento il file da scrivere;
 - il fascicolo si estrae per righe, perché `task-brief` della skill cerca un titolo «Task N» e qui i titoli dicono
   «Compito N». Dentro: il compito, la §2.3, la tabella *«Come si leggono»* della §5, la sezione del disegno che il
   compito realizza e, in fondo, le note del coordinatore: ciò che il piano lascia al momento, come la cartella delle
-  prove a mano o il valore di un «Atteso» che si conosce solo quel giorno;
+  prove a mano o il valore di un «Atteso» che si conosce solo quel giorno. Se il piano cambia dopo, chi rivede riceve un
+  fascicolo estratto di nuovo, dal commit nuovo;
 - il pacchetto della revisione porta il diff intero dei file che il compito scrive; dei file che copia — le copie del
   kit, nel compito 2 — soltanto il `--stat`, perché di loro conta l'identità, e chi rivede la prova con `cmp`; di
   `package-lock.json`, che lo scrive npm, il `--stat` e un riassunto — la radice, le versioni dei pacchetti del compito,
@@ -4282,31 +4289,32 @@ Come l'hanno fatto le sessioni dalla dodicesima alla quindicesima, e come convie
   solo dopo essere stato rivisto;
 - il dispaccio dice in chiaro «senza co-autore»: un subagente può aggiungere da sé una riga `Co-Authored-By`.
 
-**Il prossimo passo**, in una sessione nuova — il compito 5, i testi e i loro schemi:
+**Il prossimo passo**, in una sessione nuova — il compito 6, il controllo delle fonti:
 
 1. dentro `landing/`: `git fetch --all --prune`, `git status -sb`, e il fast-forward se serve;
 2. leggi `CLAUDE.md`, questo piano e il disegno, per intero;
 3. le skill: `anthropic-skills:decision-principles`, `anthropic-skills:dev-discipline`,
    `anthropic-skills:dev-communication`, `superpowers:subagent-driven-development` e
    `superpowers:test-driven-development`;
-4. rileggi il compito 5 contro la landing di adesso, con le quattro domande e le regole 5–8 di *«Prima di eseguire un
+4. rileggi il compito 6 contro la landing di adesso, con le quattro domande e le regole 5–8 di *«Prima di eseguire un
    compito di un piano»*, e provane i test nello scratchpad, anche contro un codice sbagliato apposta; prima rilancia ciò
-   che invecchia, coi comandi della tabella qui sotto. Il compito 5 non installa pacchetti: Zod arriva da `astro/zod`. Il
-   suo passo 7 lo fa il coordinatore, e sta prima del commit: l'inglese riletto da un subagente nuovo, `model: "opus"`, e
-   ogni «da cambiare» va al proprietario, in A/B, prima di toccare una frase;
-5. di' al proprietario il costo dei subagenti — chi esegue, chi rivede e chi rilegge l'inglese —, e aspetta il sì; poi
-   eseguilo come dice *«Come si esegue»*: il suo commit, `t1(compito 5): …`, e il push dopo la revisione;
-6. alla chiusura, la consegna qui, con questa in archivio; commit e push. La sessione dopo esegue il compito 6.
+   che invecchia, coi comandi della tabella qui sotto. Il compito 6 non installa pacchetti, ed è il primo che legge
+   daemon per davvero: `openDaemon()` senza argomenti, cioè la cartella sopra la landing, e le cinque citazioni a
+   `origin/main`. Nello scratchpad, quindi, la landing di prova sta dentro una copia di daemon col suo `origin` su
+   GitHub, come nella §9 del verbale;
+5. di' al proprietario il costo dei subagenti — chi esegue e chi rivede —, e aspetta il sì; poi eseguilo come dice
+   *«Come si esegue»*: il suo commit, `t1(compito 6): …`, e il push dopo la revisione;
+6. alla chiusura, la consegna qui, con questa in archivio; commit e push. La sessione dopo esegue il compito 7.
 
 **Da sapere subito:**
 
 - ⚠️ daemon si muove mentre si lavora: un commit di daemon non si scrive mai come vero, si rilancia
-  `git -C .. rev-parse --short origin/main`. Alla chiusura della quindicesima sessione era ancora `34cf745`, come alla
-  quattordicesima. Fra `b95c5cc` e `34cf745` sono cambiati la CI di daemon, `scripts/gate-gui.sh` e alcuni file di
-  `gui/src/tokens/`, non le cinque fonti, `gui/package.json` né `themes.css`:
+  `git -C .. rev-parse --short origin/main`. Alla chiusura della sedicesima sessione era ancora `34cf745`, come alla
+  quattordicesima e alla quindicesima. Fra `b95c5cc` e `34cf745` sono cambiati la CI di daemon, `scripts/gate-gui.sh`
+  e alcuni file di `gui/src/tokens/`, non le cinque fonti, `gui/package.json` né `themes.css`:
   `git diff --stat b95c5cc origin/main -- gui/package.json gui/src/tokens scripts/gate-gui.sh .github`.
   `scripts/gate-gui.sh` lo rilegge il ri-controllo del compito 13, che ne copia i passi;
-- ⚠️ **questa macchina è corta di memoria**: 16 GB, e alla chiusura di questa sessione ne era libero circa 0,7. La memoria
+- ⚠️ **questa macchina è corta di memoria**: 16 GB, e alla chiusura di questa sessione ne era libero circa 1,5. La memoria
   del momento: `powershell -NoProfile -Command "Get-CimInstance Win32_OperatingSystem | Select-Object FreePhysicalMemory,
   TotalVisibleMemorySize, FreeVirtualMemory, TotalVirtualMemorySize"`;
 - ⚠️ dopo il giorno del piano sono uscite `astro` 7.3.7 e 7.3.8, e `playwright` 1.64.0: il piano resta alla 7.3.6 e alla
@@ -4333,6 +4341,12 @@ Come l'hanno fatto le sessioni dalla dodicesima alla quindicesima, e come convie
   compito 13, che usa `npm ci`;
 - `openDaemon()` senza argomenti apre la cartella sopra quella da cui si lancia: nessun test del compito 4 lo prova, e il
   primo è il controllo delle fonti del compito 6 (§19 del verbale);
+- ⚠️ il caricatore `file()` di Astro, se un file dei testi non c'è o non è JSON valido, scrive `[ERROR] [file-loader]` e
+  lascia vuota la raccolta, e la build esce con 0 e `0 errors`: una build è verde solo senza righe `[ERROR]`. Dal
+  compito 6 lo ferma `readTexts`, nei controlli; dal compito 8, la pagina (§20 del verbale);
+- ⚠️ una sequenza di escape come quella dello spazio che non va a capo nei JSON, scritta nei parametri di uno strumento,
+  può arrivare nel file come il carattere U+00A0: l'ha visto chi ha eseguito il compito 5, e l'ha corretto. Chi scrive
+  un file del piano con una sequenza così lo confronta dopo col blocco del piano, con `cmp`;
 - i test di `daemon.ts` costruiscono repository con `git` e non tolgono le variabili `GIT_*`: lanciati da un hook di Git
   agirebbero sul repository che li lancia. Oggi nessun hook li lancia (§19 del verbale);
 - `landing.browser`, nell'interfaccia `Landing` dei compiti 8, 9 e 11, non lo usa nessun compito: segnalato qui, non
@@ -4350,13 +4364,13 @@ Come l'hanno fatto le sessioni dalla dodicesima alla quindicesima, e come convie
 - su Windows `chrome.exe --version` apre il browser invece di scrivere la versione: la versione si legge dal nome della
   cartella, `ls "/c/Program Files/Google/Chrome/Application/"`.
 
-**Verificato fra il 2026-10-07 e il 2026-10-09, dalla sesta alla quindicesima sessione.** Si rilancia, non si crede. I
+**Verificato fra il 2026-10-07 e il 2026-10-09, dalla sesta alla sedicesima sessione.** Si rilancia, non si crede. I
 comandi `git` dalla radice di daemon, in Git Bash, dopo `export MSYS_NO_PATHCONV=1`, dove non è detto altro.
 
 | Fatto | Comando o fonte |
 |---|---|
-| le versioni della §2.1, e `web-vitals` 6.2.3; dopo il giorno del piano `astro` 7.3.7, del 2026-10-07 alle 21:37 UTC, e 7.3.8, del 2026-10-08 alle 15:41 UTC, e `playwright` 1.64.0, ancora le ultime alla chiusura della quindicesima sessione; le ultime `vitest` e `@types/node` sono la 5.0.3 e la 26.6.4, e la GUI resta alla 4.1.11 e alla 24.13.5; Node 24.19.0 e npm 11.17.0 su questa macchina | `npm view <pacchetto> version license`; `npm view <pacchetto> time`; `git show "origin/main:gui/package.json"`; `node --version`; `npm --version` |
-| `origin/main` di daemon era `34cf745` alla chiusura della quindicesima sessione, uguale a GitHub; l'audit c'è, col segno «(col N)» | `git rev-parse --short origin/main`; `git ls-remote origin refs/heads/main`; `git merge-base --is-ancestor origin/repo-audit/20260930-1510 origin/main`; `git show "origin/main:docs/README.md" \| grep -c 'col N'` |
+| le versioni della §2.1, e `web-vitals` 6.2.3; dopo il giorno del piano `astro` 7.3.7, del 2026-10-07 alle 21:37 UTC, e 7.3.8, del 2026-10-08 alle 15:41 UTC, e `playwright` 1.64.0, ancora le ultime alla chiusura della sedicesima sessione; le ultime `vitest` e `@types/node` sono la 5.0.3 e la 26.6.4, e la GUI resta alla 4.1.11 e alla 24.13.5; Node 24.19.0 e npm 11.17.0 su questa macchina | `npm view <pacchetto> version license`; `npm view <pacchetto> time`; `git show "origin/main:gui/package.json"`; `node --version`; `npm --version` |
+| `origin/main` di daemon era `34cf745` alla chiusura della sedicesima sessione, uguale a GitHub; l'audit c'è, col segno «(col N)» | `git rev-parse --short origin/main`; `git ls-remote origin refs/heads/main`; `git merge-base --is-ancestor origin/repo-audit/20260930-1510 origin/main`; `git show "origin/main:docs/README.md" \| grep -c 'col N'` |
 | le cinque citazioni della §3.4 si trovano, e fra `fc43188` e `34cf745` nessuna delle cinque fonti è cambiata | per ciascuna: `git show "origin/main:<fonte>" \| tr -d '\r' \| tr '\n' ' ' \| tr -s ' ' \| grep -cF -- '<citazione>'`; `git diff --stat fc43188 origin/main -- <le cinque fonti>` |
 | fra `973153f` e `34cf745` non cambiano né il manifesto della GUI né `themes.css`; fra `b95c5cc` e `34cf745` cambiano altri file dei token, il cancello della GUI e la CI (*«Da sapere subito»*) | `git diff --stat 973153f origin/main -- gui/package.json gui/src/tokens/themes.css`; `git diff --stat b95c5cc origin/main -- gui/src/tokens scripts/gate-gui.sh .github` |
 | `themes.css` di daemon: `:root` con le `--ref-*`; `[data-theme="dark"]` e `[data-theme="light"]` coi ruoli `--color-*` e `color-scheme` | `git show "origin/main:gui/src/tokens/themes.css"` |
@@ -4392,3 +4406,6 @@ comandi `git` dalla radice di daemon, in Git Bash, dopo `export MSYS_NO_PATHCONV
 | le 18 copie di `brand/` sono identiche al kit, una per una | dalla landing, senza `MSYS_NO_PATHCONV`: `for f in brand/*.svg brand/*.html; do cmp "$f" "../daemon_kit/${f#brand/}"; done`, che non scrive niente; poi il controllo del compito 13 |
 | Git scrive fra virgolette, in ottale, i nomi non ASCII; con `core.quotepath=false` li scrive come sono | dalla landing: `git ls-files brand \| grep splash`; `git -c core.quotepath=false ls-files brand \| grep splash` |
 | `superpowers:subagent-driven-development` 6.3.0: `task-brief` cerca un titolo «Task N»; `sdd-workspace` scrive `.superpowers/sdd/` nella cartella di lavoro del repository, e `review-package` lo stesso, se non riceve il file come quarto argomento | `scripts/task-brief`, `scripts/sdd-workspace` e `scripts/review-package`, nella cartella della skill |
+| `astro/zod`, in Astro 7.3.6, è `zod/v4`, e la Zod installata è la 4.6.5 | `node_modules/astro/dist/zod.js`; `node -e "console.log(require('./node_modules/zod/package.json').version)"`, dalla landing |
+| il caricatore `file()` di Astro 7.3.6: un file che non c'è, o non è JSON valido, scrive `[ERROR] [file-loader]` e lascia vuota la raccolta, e la build esce con 0 | `node_modules/astro/dist/content/loaders/file.js`; la prova nella §20 del verbale |
+| daemon scrive «user-facing» una volta sola, in `crates/kernel/src/permission.rs`, e «user feature» mai | `git grep -n -i "user-facing\|user feature" origin/main` |

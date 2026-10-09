@@ -598,8 +598,20 @@ quindici identificatori, quattordici «va bene» e un «da cambiare», portato a
 
 | Il «da cambiare» | Come si è visto | La risposta |
 |---|---|---|
-| `what-kernel`, in inglese: «user features» si usa poco, e chi lavora con l'IA ci legge i dati che descrivono un utente; le funzionalità che l'utente vede e usa, in inglese, sono «user-facing» | daemon usa «user-facing» per lo stesso principio, ed è l'unica volta che scrive l'una o l'altra parola: `git grep -n -i "user-facing\|user feature" origin/main`, dalla radice di daemon, dà soltanto `crates/kernel/src/permission.rs:20`. La frase nuova passa le parole del compito 7, dal testo del piano: nessun refuso, e un refuso accanto al trattino, «user-facnig», si vede ancora | «The kernel implements no user-facing features: it provides the mechanisms.», nella §3.4 col suo richiamo, nel blocco di `src/texts/en.json` del compito 5, e nel file |
+| `what-kernel`, in inglese: «user features» si usa poco, e chi lavora con l'IA ci legge i dati che descrivono un utente; le funzionalità che l'utente vede e usa, in inglese, sono «user-facing» | daemon usa «user-facing» per lo stesso principio, ed è l'unica volta che scrive l'una o l'altra parola: `git grep -n -i "user-facing\|user feature" origin/main`, dalla radice di daemon, dà soltanto `crates/kernel/src/permission.rs:20`. La frase nuova passa le parole del compito 7, dal testo del piano, nello scratchpad coi suoi due pacchetti: nessun refuso, e un refuso accanto al trattino, «user-facnig», si vede ancora | «The kernel implements no user-facing features: it provides the mechanisms.», nella §3.4 col suo richiamo, nel blocco di `src/texts/en.json` del compito 5, e nel file |
 
 **Le altre due note della rilettura**, nessuna da fare: «Italiano» e «IT», parole italiane sulla pagina inglese, vogliono
 `lang="it"` perché un lettore di schermo le pronunci bene, e il link all'altra lingua del compito 8 lo porta già,
 `lang={other}`; «3D asset» rispetta la tipografia, perché dopo la cifra viene una lettera e non uno spazio.
+
+**La revisione del compito**, dopo il suo commit, `d9958f7`: aderente e approvata, senza rilievi Critical né Important.
+Ciò che il diff non mostrava l'ha chiuso il coordinatore: la rilettura dell'inglese l'ha lanciata lui; la build, dopo la
+riga cambiata in `src/texts/en.json` e prima del commit, `0 errors` e `2 page(s) built`, senza righe `[ERROR]`;
+«user-facnig», nello scratchpad, qui sopra.
+
+**Le note minori della revisione**, tutte e due «imposte dal piano», nessuna da fare adesso: nessun test dà a uno schema
+un oggetto senza `text`, né alla frase italiana uno senza `source`, e con quei campi facoltativi i test restano verdi — un
+campo è obbligatorio di base in Zod, e i compiti 6–8 leggono `text` e `source` come stringhe, così un campo facoltativo lo
+fermerebbe `astro check`: dedotto, non provato; `.min(1)` ferma la citazione vuota, non una fatta di spazi o di una
+lettera sola, e `" "` e `"\n"` passano anche `quoteIsIn` del compito 6 — l'errore realistico è il segnaposto vuoto, che
+ora si ferma, una citazione che non dice niente la vede chi rilegge, e `/\S/` lascerebbe passare la lettera sola.
